@@ -10,6 +10,19 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdio.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+#include <signal.h>
+#include <stdio.h>
+
+void	print_signal(int signal)
+{
+	rl_on_new_line();
+	printf("\n");
+	rl_redisplay();
+}
+
 #include "minishell.h"
 
 void	ft_error(void)
@@ -161,6 +174,8 @@ int	ft_pipe_count(char *input)
 
 int	main(int argc, char **argv, char **envp)
 {
+	signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, print_signal);
 	t_data	data;
 	int		i;
 
