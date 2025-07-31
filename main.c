@@ -5,7 +5,7 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */\
+/*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
 /*   Updated: 2025/07/31 15:10:10 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -174,8 +174,6 @@ int	ft_pipe_count(char *input)
 
 int	main(int argc, char **argv, char **envp)
 {
-	char	*string_cmd;
-
 	signal(SIGQUIT, SIG_IGN);
 	signal(SIGINT, print_signal);
 	t_data	data;
