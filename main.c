@@ -6,31 +6,28 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/07/31 15:10:10 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/07/31 17:54:58 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <readline/readline.h>
-#include <readline/history.h>
-#include <signal.h>
-#include <stdio.h>
-
-void	print_signal(int signal)
-{
-	rl_on_new_line();
-	printf("\n");
-	rl_redisplay();
-}
-
 #include "minishell.h"
 
+//For ctrl related signals
+void	print_signal(int signal)
+{
+	(void)signal;
+	printf("\n");
+	rl_replace_line("", 0);
+	rl_on_new_line();
+	rl_redisplay();
+}
+//Displays error when required
 void	ft_error(void)
 {
 	write(1, strerror(errno), ft_strlen(strerror(errno)));
 	write(1, "\n", 1);
 }
-
+//Gets the path value from env
 char	*ft_find_path(char **envp)
 {
 	char *path;
@@ -48,7 +45,7 @@ char	*ft_find_path(char **envp)
 		path = "/usr/bin:/bin";
 	return (path);	
 }
-
+//Finds the path to the command
 char	*ft_cmd_path(t_data *data)
 {
 	int 	i;
@@ -65,7 +62,7 @@ char	*ft_cmd_path(t_data *data)
 	}
 	return (NULL);
 }
-
+//Redirects the input/output when pipes are involved and executes child process
 void	ft_child_minishell(t_data *data, char **envp, int i)
 {
 	if (i == 0)
@@ -83,7 +80,7 @@ void	ft_child_minishell(t_data *data, char **envp, int i)
 	}
 	execve(data->cmd_path, data->cmd, envp);
 }
-
+//To close the fd in case of pipes in input
 void	ft_fd_close(t_data *data, int i)
 {
 	if (i != 0 && data->prevfd > 2)
@@ -101,7 +98,40 @@ void	ft_fd_close(t_data *data, int i)
 		}
 	}
 }
+//To execute builtin func, likely to be split into two or more functions later
+void	ft_builtin_exec(t_data *data, char **envp)
+{
+	t_env	temp_envp;
+	
+	(void)envp; //TO be removed
+	if (ft_strncmp(data->cmd[0], "cd", ft_strlen(data->cmd[0])) == 0)
+	{
+		if (chdir(data->cmd[1]) == 0)
+		{
+			getcwd(data->cmd[1], sizeof(data->cmd[2]));
+			//Need to update oldpwd and pwd in env after directory is changed
+		}
+		else
+			perror("cd");
+	}
+}
 
+// To check if the command is a builtin command or not
+//echo, pwd, env work through execve also because there are external func
+int	is_buildin(char *str)
+{
+	if (ft_strncmp(str, "echo", ft_strlen(str)) == 0
+		|| ft_strncmp(str, "cd", ft_strlen(str)) == 0
+		|| ft_strncmp(str, "pwd", ft_strlen(str)) == 0
+		|| ft_strncmp(str, "export", ft_strlen(str)) == 0
+		|| ft_strncmp(str, "unset", ft_strlen(str)) == 0
+		|| ft_strncmp(str, "env", ft_strlen(str)) == 0
+		|| ft_strncmp(str, "exit", ft_strlen(str)) == 0)
+		return (1);
+	return (0);
+}
+//This func checks if there are pipes or not in the input.
+//If pipes are present then splits into child processes
 void	ft_minishell(t_data *data, char **envp)
 {
 	int	i;
@@ -110,7 +140,7 @@ void	ft_minishell(t_data *data, char **envp)
 	if (data->pipes == 0)
 	{
 		data->cmd = ft_split(data->input, ' ');
-		if (data->cmd[0])
+		if (data->cmd[0] && !is_buildin(data->cmd[0]))
 		{
 			data->path = ft_find_path(envp);
 			data->path_dir = ft_split(data->path, ':');
@@ -124,10 +154,10 @@ void	ft_minishell(t_data *data, char **envp)
 				}
 			}
 			else
-			{
-				ft_error();	
-			}
+				ft_error();
 		}
+		else if (is_buildin(data->cmd[i]))
+			ft_builtin_exec(data, envp);
 	}
 	else if (data->pipes > 0)
 	{
@@ -137,7 +167,7 @@ void	ft_minishell(t_data *data, char **envp)
 			data->path = ft_find_path(envp);
 			data->path_dir = ft_split(data->path, ':');
 			data->cmd_path = ft_cmd_path(data);
-			if (data->cmd_path)
+			if (data->cmd_path && !is_buildin(data->cmd[0]))
 			{
 				if (i < data->pipes)
 					data->pipe_status = pipe(data->pipe_fd);
@@ -147,7 +177,7 @@ void	ft_minishell(t_data *data, char **envp)
 				if (data->c_id == 0)
 					ft_child_minishell(data, envp, i);
 			}
-			else
+			else if (!data->cmd_path && !is_buildin(data->cmd[0]))
 				ft_error();
 			ft_fd_close(data, i);
 			i++;
@@ -155,7 +185,7 @@ void	ft_minishell(t_data *data, char **envp)
 	}
 	waitpid(data->c_id, NULL, 0);
 }
-
+//Counts the number of pipes in the input
 int	ft_pipe_count(char *input)
 {
 	int	i;
@@ -193,35 +223,6 @@ int	main(int argc, char **argv, char **envp)
 			if (data.pipes > 0)
 				data.cmd_dir = ft_split(data.input, '|');
 			ft_minishell(&data, envp);
-			// if (data.pipes > 0)
-			// {
-			// 	data.cmd_dir = ft_split(data.input, '|');
-			// 	while (i <= data.pipes + 1)
-			// 	{
-			// 		data.cmd = ft_split(data.cmd_dir[i], ' ');
-			// 		data.path = ft_find_path(envp);
-			// 		data.path_dir = ft_split(data.path, ':');
-			// 		data.cmd_path = ft_cmd_path(&data);
-			// 		if (data.cmd_path)
-			// 		{
-			// 			ft_minishell(&data, envp);	
-			// 		}
-			// 		else
-			// 			ft_error();
-			// 		i++;
-			// 	}
-			// }
-			// else
-			// {
-			// 	data.cmd = ft_split(data.input, ' ');
-			// 	data.path = ft_find_path(envp);
-			// 	data.path_dir = ft_split(data.path, ':');
-			// 	data.cmd_path = ft_cmd_path(&data);
-			// 	if (data.cmd_path)
-			// 		ft_minishell(&data, envp);
-			// 	else
-			// 		ft_error();	
-			// }
 		}
 	}
 	return (0);
