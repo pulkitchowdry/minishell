@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/01 15:03:02 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/01 15:20:07 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,14 +165,12 @@ void	ft_builtin_exec(t_data *data, char **envp)
 
 // To check if the command is a builtin command or not
 //echo, pwd, env work through execve also because there are external func
+//Removed echo, pwd and env as they work fine with execve function
 int	is_buildin(char *str)
 {
-	if (str && (ft_strncmp(str, "echo", ft_strlen(str)) == 0
-		|| ft_strncmp(str, "cd", ft_strlen(str)) == 0
-		// || ft_strncmp(str, "pwd", ft_strlen(str)) == 0
+	if (str && (ft_strncmp(str, "cd", ft_strlen(str)) == 0
 		|| ft_strncmp(str, "export", ft_strlen(str)) == 0
 		|| ft_strncmp(str, "unset", ft_strlen(str)) == 0
-		// || ft_strncmp(str, "env", ft_strlen(str)) == 0
 		|| ft_strncmp(str, "exit", ft_strlen(str)) == 0))
 		return (1);
 	return (0);
