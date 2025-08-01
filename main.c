@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/07/31 17:54:58 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/07/31 19:00:24 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ void	ft_fd_close(t_data *data, int i)
 //To execute builtin func, likely to be split into two or more functions later
 void	ft_builtin_exec(t_data *data, char **envp)
 {
-	t_env	temp_envp;
+	// t_env	temp_envp;
 	
 	(void)envp; //TO be removed
 	if (ft_strncmp(data->cmd[0], "cd", ft_strlen(data->cmd[0])) == 0)
