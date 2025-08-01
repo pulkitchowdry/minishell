@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/01 12:56:07 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/01 15:03:02 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,41 @@ void	ft_fd_close(t_data *data, int i)
 		}
 	}
 }
+
+//To update the entries in envp
+void	ft_update_envp(t_env *temp_envp, t_data *data, char **envp)
+{
+	int	i;
+
+	i = 0;
+	if (ft_strncmp(data->cmd[0], "cd", ft_strlen(data->cmd[0])) == 0)
+	{
+		while (envp[i])
+		{
+			if (ft_strncmp(envp[i], "PWD=", 4) == 0)
+				envp[i] = ft_strjoin("PWD=", temp_envp->pwd);
+			else if (ft_strncmp(envp[i], "OLDPWD=", 7) == 0)
+				envp[i] = ft_strjoin("OLDPWD=", temp_envp->oldpwd);
+			i++;
+		}
+	}
+}
+
+//To extract variable from envp
+char	*ft_extract_envp(char **envp, char *str)
+{
+	char	*value;
+	int		i;
+
+	i = 0;
+	while (envp[i])
+	{
+		if (ft_strncmp(envp[i], str, ft_strlen(str)) == 0)
+			value = envp[i] + ft_strlen(str);
+		i++;
+	}
+	return (value);
+}
 //To execute builtin func, likely to be split into two or more functions later
 void	ft_builtin_exec(t_data *data, char **envp)
 {
@@ -108,8 +143,20 @@ void	ft_builtin_exec(t_data *data, char **envp)
 	{
 		if (chdir(data->cmd[1]) == 0)
 		{
-			getcwd(data->cmd[1], sizeof(data->cmd[2]));
+			temp_envp.pwd = getcwd(NULL, 0);
+			temp_envp.oldpwd = ft_extract_envp(envp, "PWD=");
+			ft_update_envp(&temp_envp, data, envp);
 			//Need to update oldpwd and pwd in env after directory is changed
+		}
+		else if (!data->cmd[1])
+		{
+			if (chdir(getenv("HOME")) == 0)
+			{
+				temp_envp.pwd = getcwd(NULL, 0);
+				temp_envp.oldpwd = ft_extract_envp(envp, "PWD=");
+				ft_update_envp(&temp_envp, data, envp);
+				//Need to update oldpwd and pwd in env after directory is changed
+			}
 		}
 		else
 			perror("cd");
@@ -120,13 +167,13 @@ void	ft_builtin_exec(t_data *data, char **envp)
 //echo, pwd, env work through execve also because there are external func
 int	is_buildin(char *str)
 {
-	if (ft_strncmp(str, "echo", ft_strlen(str)) == 0
+	if (str && (ft_strncmp(str, "echo", ft_strlen(str)) == 0
 		|| ft_strncmp(str, "cd", ft_strlen(str)) == 0
-		|| ft_strncmp(str, "pwd", ft_strlen(str)) == 0
+		// || ft_strncmp(str, "pwd", ft_strlen(str)) == 0
 		|| ft_strncmp(str, "export", ft_strlen(str)) == 0
 		|| ft_strncmp(str, "unset", ft_strlen(str)) == 0
-		|| ft_strncmp(str, "env", ft_strlen(str)) == 0
-		|| ft_strncmp(str, "exit", ft_strlen(str)) == 0)
+		// || ft_strncmp(str, "env", ft_strlen(str)) == 0
+		|| ft_strncmp(str, "exit", ft_strlen(str)) == 0))
 		return (1);
 	return (0);
 }
@@ -140,7 +187,7 @@ void	ft_minishell(t_data *data, char **envp)
 	if (data->pipes == 0)
 	{
 		data->cmd = ft_split(data->input, ' ');
-		if (data->cmd[0] && !is_buildin(data->cmd[0]))
+		if (data->cmd && data->cmd[0] && !is_buildin(data->cmd[0]))
 		{
 			data->path = ft_find_path(envp);
 			data->path_dir = ft_split(data->path, ':');
@@ -156,7 +203,7 @@ void	ft_minishell(t_data *data, char **envp)
 			else
 				ft_error();
 		}
-		else if (is_buildin(data->cmd[i]))
+		else if (data->cmd && is_buildin(data->cmd[i]))
 			ft_builtin_exec(data, envp);
 	}
 	else if (data->pipes > 0)
