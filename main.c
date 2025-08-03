@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/07/31 15:10:10 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/02 21:44:51 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <readline/history.h>
 #include <signal.h>
 #include <stdio.h>
+#include "libft/libft.h"
 
 void	print_signal(int signal)
 {
@@ -178,6 +179,8 @@ int	main(int argc, char **argv, char **envp)
 	signal(SIGINT, print_signal);
 	t_data	data;
 	int		i;
+	t_list	*list_start;
+	t_list	*list;
 
 	i = 0;
 	if(argc > 0 && argv[0])
@@ -188,6 +191,15 @@ int	main(int argc, char **argv, char **envp)
 			if (data.input)
 			{
 				add_history(data.input);
+				list = create_tokens(data.input);
+				list_start = list;
+				while (list)
+				{
+					char *string = (char *)list->content;
+					printf("%s\n", string);
+					list = list->next;
+				}
+				ft_lstclear(&list_start, free);
 			}
 			data.pipes = ft_pipe_count(data.input);
 			if (data.pipes > 0)
