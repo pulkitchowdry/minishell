@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/04 12:13:52 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/04 15:18:14 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ typedef struct s_env
 	char	**new_env; //For export to store both key and value
 	char	*new_env_key; //For export
 	char	*new_env_value; //For export
-	// char	**myenvp; //For export to duplicate envp
+	char	*char_unset;
 }	t_env;
 
 char	**ft_split(char const *s, char c);

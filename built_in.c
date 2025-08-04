@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 11:57:59 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/04 14:15:27 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/04 16:27:17 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,13 +40,6 @@ char	**ft_copy_envp(char **myenvp, char *new)
 	copy[i] = ft_strdup(new);
 	i++;
 	copy[i] = NULL;
-	// int j = 0;
-	// while (copy[j])
-	// {
-	// 	write(1, copy[j], ft_strlen(copy[j]));
-	// 	write(1, "\n", 1);
-	// 	j++;
-	// }
 	return (copy);
 }
 //Initially duplicating envp into temp for export command
@@ -174,10 +167,6 @@ void	ft_update_envp(t_env *temp_envp, t_data *data, char **envp)
 				i++;
 				envp[i] = NULL;
 			}
-			// else
-			// {
-			// 	data->myenvp = ft_copy_envp(data->myenvp, temp_envp->new_env_key);
-			// }
 			ft_add_to_myenvp(data, temp_envp);
 	}
 }
@@ -197,6 +186,28 @@ char	*ft_extract_envp(char **envp, char *str)
 	}
 	return (value);
 }
+char	**ft_remove_from_myenvp(t_data *data, t_env *temp_envp)
+{
+	int			i;
+	int			j;
+	char	**new;
+
+	i = 0;
+	j = 0;
+	new = malloc(ft_env_length(data->myenvp) * sizeof(char *));
+	while (data->myenvp[i])
+	{
+		if (ft_strncmp(data->myenvp[i], temp_envp->char_unset, ft_strlen(temp_envp->char_unset)) != 0)
+		{
+			new[j] = data->myenvp[i];
+			j++;
+		}
+		i++;
+	}
+	new[j] = NULL;
+	return (new);
+}
+
 //To execute builtin func, likely to be split into two or more functions later
 void	ft_builtin_exec(t_data *data, char **envp)
 {
@@ -255,6 +266,32 @@ void	ft_builtin_exec(t_data *data, char **envp)
 				i++;
 			}
 			return ;
+		}
+	}
+	i = 0;
+	if (ft_strncmp(data->cmd[0], "unset", ft_strlen(data->cmd[0])) == 0)
+	{
+		if (data->cmd[1])
+		{
+			temp_envp.char_unset = ft_strjoin(data->cmd[1], "=");
+			while (envp[i])
+			{
+				if (ft_strncmp(envp[i], temp_envp.char_unset, ft_strlen(temp_envp.char_unset)) == 0)
+					envp[i] = NULL;
+				i++;
+			}
+			i = 0;
+			temp_envp.char_unset = ft_strdup(data->cmd[1]);
+			temp_envp.char_unset = ft_strjoin("declare -x ",temp_envp.char_unset);
+			temp_envp.char_unset = ft_strjoin(temp_envp.char_unset, "=");
+			while (data->myenvp[i])
+			{
+				if (ft_strncmp(data->myenvp[i], temp_envp.char_unset, ft_strlen(temp_envp.char_unset)) == 0)
+				{
+					data->myenvp = ft_remove_from_myenvp(data, &temp_envp);	
+				}
+				i++;
+			}
 		}
 	}
 }
