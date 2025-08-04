@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 16:09:08 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/04 16:26:22 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/04 16:48:24 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,11 @@ t_list	*construct_single_quote(char **string)
 	string_start = *string;
 	(*string)++;
 	while (**string != '\'' && **string)
+	{
+		if (**string == '\\')
+			(*string)++;
 		(*string)++;
+	}
 	(*string)++;
 	result = (char *)ft_calloc(sizeof(char), *string - string_start + 1);
 	ft_strlcpy(result, string_start, *string - string_start + 1);
