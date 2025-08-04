@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 16:09:08 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/03 17:04:58 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/04 16:26:22 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,11 @@ t_list	*construct_double_quote(char **string)
 	string_start = *string;
 	(*string)++;
 	while (**string != '"' && **string)
+	{
+		if (**string == '\\')
+			(*string)++;
 		(*string)++;
+	}
 	(*string)++;
 	result = (char *)ft_calloc(sizeof(char), *string - string_start + 1);
 	ft_strlcpy(result, string_start, *string - string_start + 1);
@@ -98,6 +102,7 @@ t_list	*construct_variable(char **string)
 {
 	char	*string_start;
 	char	*result;
+	char	curly_brackets;
 
 	string_start = *string;
 	(*string)++;
@@ -109,7 +114,9 @@ t_list	*construct_variable(char **string)
 	}
 	else
 	{
-		while ((ft_isalnum(**string) || **string == '_') && **string)
+		curly_brackets = **string == '{';
+		*string += curly_brackets;
+		while ((ft_isalnum(**string) || **string == '_' || (curly_brackets && **string == '}')) && **string)
 			(*string)++;
 		result = (char *)ft_calloc(sizeof(char), *string - string_start + 1);
 		ft_strlcpy(result, string_start, *string - string_start + 1);
