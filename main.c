@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/01 15:20:07 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/04 12:32:25 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,83 +98,6 @@ void	ft_fd_close(t_data *data, int i)
 		}
 	}
 }
-
-//To update the entries in envp
-void	ft_update_envp(t_env *temp_envp, t_data *data, char **envp)
-{
-	int	i;
-
-	i = 0;
-	if (ft_strncmp(data->cmd[0], "cd", ft_strlen(data->cmd[0])) == 0)
-	{
-		while (envp[i])
-		{
-			if (ft_strncmp(envp[i], "PWD=", 4) == 0)
-				envp[i] = ft_strjoin("PWD=", temp_envp->pwd);
-			else if (ft_strncmp(envp[i], "OLDPWD=", 7) == 0)
-				envp[i] = ft_strjoin("OLDPWD=", temp_envp->oldpwd);
-			i++;
-		}
-	}
-}
-
-//To extract variable from envp
-char	*ft_extract_envp(char **envp, char *str)
-{
-	char	*value;
-	int		i;
-
-	i = 0;
-	while (envp[i])
-	{
-		if (ft_strncmp(envp[i], str, ft_strlen(str)) == 0)
-			value = envp[i] + ft_strlen(str);
-		i++;
-	}
-	return (value);
-}
-//To execute builtin func, likely to be split into two or more functions later
-void	ft_builtin_exec(t_data *data, char **envp)
-{
-	t_env	temp_envp;
-	
-	(void)envp; //TO be removed
-	if (ft_strncmp(data->cmd[0], "cd", ft_strlen(data->cmd[0])) == 0)
-	{
-		if (chdir(data->cmd[1]) == 0)
-		{
-			temp_envp.pwd = getcwd(NULL, 0);
-			temp_envp.oldpwd = ft_extract_envp(envp, "PWD=");
-			ft_update_envp(&temp_envp, data, envp);
-			//Need to update oldpwd and pwd in env after directory is changed
-		}
-		else if (!data->cmd[1])
-		{
-			if (chdir(getenv("HOME")) == 0)
-			{
-				temp_envp.pwd = getcwd(NULL, 0);
-				temp_envp.oldpwd = ft_extract_envp(envp, "PWD=");
-				ft_update_envp(&temp_envp, data, envp);
-				//Need to update oldpwd and pwd in env after directory is changed
-			}
-		}
-		else
-			perror("cd");
-	}
-}
-
-// To check if the command is a builtin command or not
-//echo, pwd, env work through execve also because there are external func
-//Removed echo, pwd and env as they work fine with execve function
-int	is_buildin(char *str)
-{
-	if (str && (ft_strncmp(str, "cd", ft_strlen(str)) == 0
-		|| ft_strncmp(str, "export", ft_strlen(str)) == 0
-		|| ft_strncmp(str, "unset", ft_strlen(str)) == 0
-		|| ft_strncmp(str, "exit", ft_strlen(str)) == 0))
-		return (1);
-	return (0);
-}
 //This func checks if there are pipes or not in the input.
 //If pipes are present then splits into child processes
 void	ft_minishell(t_data *data, char **envp)
@@ -185,7 +108,7 @@ void	ft_minishell(t_data *data, char **envp)
 	if (data->pipes == 0)
 	{
 		data->cmd = ft_split(data->input, ' ');
-		if (data->cmd && data->cmd[0] && !is_buildin(data->cmd[0]))
+		if (data->cmd && data->cmd[0] && !is_builtin(data->cmd[0]))
 		{
 			data->path = ft_find_path(envp);
 			data->path_dir = ft_split(data->path, ':');
@@ -201,7 +124,7 @@ void	ft_minishell(t_data *data, char **envp)
 			else
 				ft_error();
 		}
-		else if (data->cmd && is_buildin(data->cmd[i]))
+		else if (data->cmd && is_builtin(data->cmd[i]))
 			ft_builtin_exec(data, envp);
 	}
 	else if (data->pipes > 0)
@@ -212,7 +135,7 @@ void	ft_minishell(t_data *data, char **envp)
 			data->path = ft_find_path(envp);
 			data->path_dir = ft_split(data->path, ':');
 			data->cmd_path = ft_cmd_path(data);
-			if (data->cmd_path && !is_buildin(data->cmd[0]))
+			if (data->cmd_path && !is_builtin(data->cmd[0]))
 			{
 				if (i < data->pipes)
 					data->pipe_status = pipe(data->pipe_fd);
@@ -222,7 +145,7 @@ void	ft_minishell(t_data *data, char **envp)
 				if (data->c_id == 0)
 					ft_child_minishell(data, envp, i);
 			}
-			else if (!data->cmd_path && !is_buildin(data->cmd[0]))
+			else if (!data->cmd_path && !is_builtin(data->cmd[0]))
 				ft_error();
 			ft_fd_close(data, i);
 			i++;
@@ -255,6 +178,7 @@ int	main(int argc, char **argv, char **envp)
 	int		i;
 
 	i = 0;
+	data.myenvp = ft_dup_envp(envp);
 	if(argc > 0 && argv[0])
 	{
 		while (1)

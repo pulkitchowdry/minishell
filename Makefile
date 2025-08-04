@@ -4,7 +4,7 @@ LFLAGS = -lreadline
 
 NAME = minishell
 
-SRC = main.c
+SRC = main.c built_in.c
 HDR = minishell.h
 OBJ = $(SRC:.c=.o)
 
