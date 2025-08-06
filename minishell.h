@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/02 21:43:54 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/05 23:24:39 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ enum e_token_type
 	OPEN_BRACKET,
 	CLOSE_BRACKET,
 	ARGUMENTS,
+	ASSIGNMENT,
 	STRING
 };
 
@@ -53,6 +54,15 @@ typedef struct s_token
 	enum e_token_type	type;
 	char		*string;
 }	t_token;
+
+typedef struct s_ast_node
+{
+	t_token	*node;
+	t_list	*command;
+	t_list	*redirection;
+	struct s_ast_node	*left;
+	struct s_ast_node	*right;
+}	t_ast_node;
 
 typedef struct s_data
 {
