@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/05 23:24:39 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/09 22:43:48 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ enum e_token_type
 	COMMAND,
 	HERE_DOC,
 	REDIRECT_INPUT,
-	REDIRECT_OUPUT,
+	REDIRECT_OUTPUT,
 	REDIRECT_APPEND,
 	PIPE,
 	LOGICAL_AND,
@@ -49,6 +49,22 @@ enum e_token_type
 	STRING
 };
 
+enum e_command_state
+{
+	ASSIGN_STRING_VAL,
+	ASSIGN_SPACE,
+	ASSIGN_OP,
+	INITIAL_COMMAND_STRING,
+	COMMAND_SPACE,
+	COMMAND_REDIRECT,
+	REDIRECT_SPACE,
+	REDIRECT_STRING,
+	COMMAND_QUOTES,
+	COMMAND_STRING,
+	COMMAND_VARIABLE,
+	EXIT
+};
+	
 typedef struct s_token
 {
 	enum e_token_type	type;
@@ -60,6 +76,7 @@ typedef struct s_ast_node
 	t_token	*node;
 	t_list	*command;
 	t_list	*redirection;
+	t_list	*assignment;
 	struct s_ast_node	*left;
 	struct s_ast_node	*right;
 }	t_ast_node;
@@ -85,4 +102,19 @@ char	*ft_strjoin(char const *s1, char const *s2);
 size_t	ft_strlen(const char *str);
 t_list	*create_tokens(char *string);
 
+void	free_command(t_ast_node **current);
+int	initialize_command_state(t_token *cur_tok, t_ast_node **current);
+int	process_assign_string_val(t_list **list, t_token *cur_tok, t_ast_node **current);
+int	process_assign_space(t_list **list, t_ast_node **current);
+int	process_assign_op(t_list **list, t_ast_node **current);
+int	process_initial_command_string(t_list **list, t_token *cur_tok, t_ast_node **current);
+int	process_command_space(t_list **list, t_ast_node **current);
+int	process_command_redirect(t_list **list, t_token *cur_tok, t_ast_node **current);
+int	process_command_string(t_list **list, t_token *cur_tok, t_ast_node **current);
+int	process_redirect_string(t_list **list, t_token *cur_tok, t_ast_node **current);
+int	process_redirect_space(t_list **list, t_ast_node **current);
+t_ast_node	*extract_command(t_list **list);
+t_ast_node	*parse_command(t_list **list);
+t_ast_node	*parse_pipeline(t_list **list);
+t_ast_node	*parse_list(t_list **list);
 #endif

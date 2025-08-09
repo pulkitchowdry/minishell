@@ -6,11 +6,12 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 16:09:08 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/05 20:17:28 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/09 21:50:41 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft/libft.h"
+#include "minishell.h"
 
 t_list	*construct_single_quote(char **string)
 {
@@ -61,13 +62,13 @@ t_list	*construct_2_characters(char **string)
 
 	string_start = *string;
 	result = (t_token *)ft_calloc(sizeof(t_token), 1);
-	if (*string == '<' && *(string + 1) == '<')
+	if (**string == '<' && *(*string + 1) == '<')
 		result->type = HERE_DOC;
-	else if (*string == '>' && *(string + 1) == '>')
+	else if (**string == '>' && *(*string + 1) == '>')
 		result->type = REDIRECT_APPEND;
-	else if (*string == '|' && *(string + 1) == '|')
+	else if (**string == '|' && *(*string + 1) == '|')
 		result->type = LOGICAL_OR;
-	else if (*string == '&' && *(string + 1) == '&')
+	else if (**string == '&' && *(*string + 1) == '&')
 		result->type = LOGICAL_AND;
 	*string += 2;
 	result->string = (char *)ft_calloc(sizeof(char), *string - string_start + 1);
@@ -82,15 +83,15 @@ t_list	*construct_1_character(char **string)
 
 	string_start = *string;
 	result = (t_token *)ft_calloc(sizeof(t_token), 1);
-	if (*string == '>' && *(string + 1) != '>')
+	if (**string == '>' && *(*string + 1) != '>')
 		result->type = REDIRECT_OUTPUT;
-	else if (*string == '<' && *(string + 1) != '<')
+	else if (**string == '<' && *(*string + 1) != '<')
 		result->type = REDIRECT_INPUT;
-	else if (*string == '|' && *(string + 1) != '|')
+	else if (**string == '|' && *(*string + 1) != '|')
 		result->type = PIPE;
-	else if (*string == '(')
+	else if (**string == '(')
 		result->type = OPEN_BRACKET;
-	else if (*string == ')')
+	else if (**string == ')')
 		result->type = CLOSE_BRACKET;
 	*string += 1;
 	result->string = (char *)ft_calloc(sizeof(char), *string - string_start + 1);
