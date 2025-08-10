@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/09 23:17:22 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/10 16:34:58 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,14 +44,13 @@ void	free_command(t_ast_node **current)
 
 int	initialize_command_state(t_token *cur_tok, t_ast_node **current)
 {
-
 	if (cur_tok->type == DOUBLE_QUOTE_STRING || cur_tok->type == SINGLE_QUOTE_STRING)
 	{
 		if (cur_tok->type == DOUBLE_QUOTE_STRING)
 			process_double_quote(cur_tok->string);
 		else if (cur_tok->type == SINGLE_QUOTE_STRING)
 			process_single_quote(cur_tok->string);
-		ft_lstadd_back(&((*current)->command), ft_lstnew(cur_tok->string));
+		ft_lstadd_back(&((*current)->command), ft_lstnew(ft_strdup("")));
 		return (COMMAND_QUOTES);
 	}
 	else if (cur_tok->type == HERE_DOC || cur_tok->type == REDIRECT_INPUT
@@ -110,6 +109,8 @@ int	process_assign_string_val(t_list **list, t_token *cur_tok, t_ast_node **curr
 		return (COMMAND_REDIRECT);
 	else if (next_tok->type == SPACES)
 		return (ASSIGN_SPACE);
+	else if (next_tok->type == PIPE || next_tok->type == LOGICAL_AND || next_tok->type == LOGICAL_OR || next_tok->type == CLOSE_BRACKET)
+		return (EXIT);
 	else
 	{
 		free_command(current);
@@ -134,6 +135,8 @@ int	process_assign_space(t_list **list, t_ast_node **current)
 		return (COMMAND_STRING);
 	else if (next_tok->type == SPACES)
 		return (ASSIGN_SPACE);
+	else if (next_tok->type == PIPE || next_tok->type == LOGICAL_AND || next_tok->type == LOGICAL_OR || next_tok->type == CLOSE_BRACKET)
+		return (EXIT);
 	else
 	{
 		free_command(current);
@@ -183,6 +186,8 @@ int	process_initial_command_string(t_list **list, t_token *cur_tok, t_ast_node *
 	}
 	else if (next_tok->type == SPACES)
 		return (COMMAND_SPACE);
+	else if (next_tok->type == PIPE || next_tok->type == LOGICAL_AND || next_tok->type == LOGICAL_OR || next_tok->type == CLOSE_BRACKET)
+		return (EXIT);
 	else
 	{
 		free_command(current);
@@ -207,6 +212,8 @@ int	process_command_space(t_list **list, t_ast_node **current)
 		return (COMMAND_QUOTES);
 	else if (next_tok->type == STRING || next_tok->type == ASSIGNMENT || next_tok->type == VARIABLE)
 		return (COMMAND_STRING);
+	else if (next_tok->type == PIPE || next_tok->type == LOGICAL_AND || next_tok->type == LOGICAL_OR || next_tok->type == CLOSE_BRACKET)
+		return (EXIT);
 	else
 	{
 		free_command(current);
@@ -259,7 +266,7 @@ int	process_command_string(t_list **list, t_token *cur_tok, t_ast_node **current
 	}
 	if (*list == 0)
 		return (EXIT);
-	next_tok = (t_token *)(*list)->next;
+	next_tok = (t_token *)(*list)->content;
 	if (next_tok->type == ASSIGNMENT || next_tok->type == DOUBLE_QUOTE_STRING
 			|| next_tok->type == SINGLE_QUOTE_STRING || next_tok->type == VARIABLE)
 		return (COMMAND_STRING);
@@ -268,6 +275,8 @@ int	process_command_string(t_list **list, t_token *cur_tok, t_ast_node **current
 		return (COMMAND_REDIRECT);
 	else if (next_tok->type == SPACES)
 		return (COMMAND_SPACE);
+	else if (next_tok->type == PIPE || next_tok->type == LOGICAL_AND || next_tok->type == LOGICAL_OR || next_tok->type == CLOSE_BRACKET)
+		return (EXIT);
 	else
 	{
 		free_command(current);
@@ -373,7 +382,13 @@ t_ast_node	*parse_command(t_list **list)
 
 	if (*list == 0)
 		return (0);
+	current = 0;
 	cur_tok = (t_token *)(*list)->content;
+	while (cur_tok->type == SPACES)
+	{
+		*list = (*list)->next;
+		cur_tok = (t_token *)(*list)->content;
+	}
 	if (cur_tok->type == OPEN_BRACKET)
 	{
 		*list = (*list)->next;
@@ -384,7 +399,7 @@ t_ast_node	*parse_command(t_list **list)
 			*list = (*list)->next;
 			cur_tok = (t_token *)(*list)->content;
 		}
-		if (current->node->type == CLOSE_BRACKET)
+		if (cur_tok->type == CLOSE_BRACKET)
 			*list = (*list)->next;
 		else
 			free_command(&current);
@@ -418,15 +433,16 @@ t_ast_node	*parse_pipeline(t_list **list)
 		return (0);
 	if (*list == 0)
 		return (left_node);
+	current = 0;
 	cur_tok = (t_token *)(*list)->content;
-	while (cur_tok->type == SPACES || cur_tok->type == LOGICAL_OR || cur_tok->type == LOGICAL_AND)
+	while (cur_tok->type == SPACES || cur_tok->type == PIPE)
 	{
 		while (cur_tok->type == SPACES)
 		{
 			*list = (*list)->next;
 			cur_tok = (t_token *)(*list)->content;
 		}
-		if (cur_tok->type == LOGICAL_OR || cur_tok->type == LOGICAL_AND)
+		if (cur_tok->type == PIPE)
 		{
 			current = (t_ast_node *)ft_calloc(sizeof(t_ast_node), 1);
 			current->node = cur_tok;
@@ -435,8 +451,11 @@ t_ast_node	*parse_pipeline(t_list **list)
 			current->right = parse_command(list);
 			left_node = current;
 		}
+		if (*list == 0)
+			break ;
+		cur_tok = (t_token *)(*list)->content;
 	}
-	return (current);
+	return (left_node);
 }
 
 t_ast_node	*parse_list(t_list **list)
@@ -450,6 +469,7 @@ t_ast_node	*parse_list(t_list **list)
 		return (0);
 	if (*list == 0)
 		return (left_node);
+	current = 0;
 	cur_tok = (t_token *)(*list)->content;
 	while (cur_tok->type == SPACES || cur_tok->type == LOGICAL_OR || cur_tok->type == LOGICAL_AND)
 	{
@@ -467,6 +487,9 @@ t_ast_node	*parse_list(t_list **list)
 			current->right = parse_pipeline(list);
 			left_node = current;
 		}
+		if (*list == 0)
+			break ;
+		cur_tok = (t_token *)(*list)->content;
 	}
 	return (left_node);
 }

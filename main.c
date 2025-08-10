@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/09 22:59:33 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/10 15:16:49 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,12 +190,21 @@ void	print_ast(t_ast_node *node)
 	print_ast(node->left);
 	if (node->node != 0)
 		printf("node: %s", node->node->string);
-	printf("command: ");
-	print_string_list(node->command);
-	printf(" redirection: ");
-	print_string_list(node->redirection);
-	printf(" assignment: ");
-	print_string_list(node->assignment);
+	if (node->command != 0)
+	{
+		printf("command: ");
+		print_string_list(node->command);
+	}
+	if (node->redirection != 0)
+	{
+		printf(" redirection: ");
+		print_string_list(node->redirection);
+	}
+	if (node->assignment != 0)
+	{
+		printf(" assignment: ");
+		print_string_list(node->assignment);
+	}
 	print_ast(node->right);
 	printf(")");
 }
@@ -230,10 +239,10 @@ int	main(int argc, char **argv, char **envp)
 				}
 				ft_lstclear(&list_start, free);
 			}
-			data.pipes = ft_pipe_count(data.input);
-			if (data.pipes > 0)
-				data.cmd_dir = ft_split(data.input, '|');
-			ft_minishell(&data, envp);
+			//data.pipes = ft_pipe_count(data.input);
+			//if (data.pipes > 0)
+			//	data.cmd_dir = ft_split(data.input, '|');
+			//ft_minishell(&data, envp);
 			// if (data.pipes > 0)
 			// {
 			// 	data.cmd_dir = ft_split(data.input, '|');
