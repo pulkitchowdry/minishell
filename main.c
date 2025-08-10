@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/10 15:16:49 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/10 21:35:01 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,12 +197,12 @@ void	print_ast(t_ast_node *node)
 	}
 	if (node->redirection != 0)
 	{
-		printf(" redirection: ");
+		printf("redirection: ");
 		print_string_list(node->redirection);
 	}
 	if (node->assignment != 0)
 	{
-		printf(" assignment: ");
+		printf("assignment: ");
 		print_string_list(node->assignment);
 	}
 	print_ast(node->right);

@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/10 16:34:58 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/10 21:33:57 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,7 @@ int	initialize_command_state(t_token *cur_tok, t_ast_node **current)
 	}
 	else if (cur_tok->type == HERE_DOC || cur_tok->type == REDIRECT_INPUT
 			|| cur_tok->type == REDIRECT_OUTPUT || cur_tok->type == REDIRECT_APPEND)
-	{
-		ft_lstadd_back(&((*current)->redirection), ft_lstnew(cur_tok->string));
 		return (COMMAND_REDIRECT);
-	}
 	else if (cur_tok->type == VARIABLE)
 	{
 		ft_lstadd_back(&((*current)->command), ft_lstnew(process_variable(cur_tok->string)));
@@ -199,7 +196,6 @@ int	process_command_space(t_list **list, t_ast_node **current)
 {
 	t_token	*next_tok;
 
-	ft_lstadd_back(&((*current)->command), ft_lstnew(ft_strdup("")));
 	if (*list == 0)
 		return (EXIT);
 	next_tok = (t_token *)(*list)->content;
@@ -211,7 +207,10 @@ int	process_command_space(t_list **list, t_ast_node **current)
 	else if (next_tok->type == DOUBLE_QUOTE_STRING || next_tok->type == SINGLE_QUOTE_STRING)
 		return (COMMAND_QUOTES);
 	else if (next_tok->type == STRING || next_tok->type == ASSIGNMENT || next_tok->type == VARIABLE)
+	{
+		ft_lstadd_back(&((*current)->command), ft_lstnew(ft_strdup("")));
 		return (COMMAND_STRING);
+	}
 	else if (next_tok->type == PIPE || next_tok->type == LOGICAL_AND || next_tok->type == LOGICAL_OR || next_tok->type == CLOSE_BRACKET)
 		return (EXIT);
 	else
@@ -300,7 +299,7 @@ int	process_redirect_string(t_list **list, t_token *cur_tok, t_ast_node **curren
 			process_single_quote(cur_tok->string);
 		else if (cur_tok->type == VARIABLE)
 			process_variable(cur_tok->string);
-		last_node = ft_lstlast((*current)->assignment);
+		last_node = ft_lstlast((*current)->redirection);
 		string = (char *)last_node->content;
 		string = ft_strjoin(string, next_tok->string);
 		free(last_node->content);
@@ -331,7 +330,7 @@ int	process_redirect_space(t_list **list, t_ast_node **current)
 	if (next_tok->type == SPACES)
 		return (REDIRECT_SPACE);
 	else if (next_tok->type == DOUBLE_QUOTE_STRING || next_tok->type == SINGLE_QUOTE_STRING
-		|| next_tok->type == ASSIGNMENT || next_tok->type == VARIABLE)
+		|| next_tok->type == STRING || next_tok->type == ASSIGNMENT || next_tok->type == VARIABLE)
 		return (REDIRECT_STRING);
 	else
 	{
