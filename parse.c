@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/10 21:33:57 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/10 22:22:17 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,6 @@ int	initialize_command_state(t_token *cur_tok, t_ast_node **current)
 int	process_assign_string_val(t_list **list, t_token *cur_tok, t_ast_node **current)
 {
 	t_token	*next_tok;
-	char	*current_string;
 	t_list	*last_node;
 
 	if (cur_tok->type == DOUBLE_QUOTE_STRING || cur_tok->type == SINGLE_QUOTE_STRING
@@ -88,11 +87,7 @@ int	process_assign_string_val(t_list **list, t_token *cur_tok, t_ast_node **curr
 			process_single_quote(cur_tok->string);
 		else if (cur_tok->type == VARIABLE)
 			process_variable(cur_tok->string);
-		last_node = ft_lstlast((*current)->assignment);
-		current_string = (char *)last_node->content;
-		current_string = ft_strjoin(current_string, next_tok->string);
-		free(last_node->content);
-		last_node->content = current_string;
+		ft_lstadd_back(&(*current)->assignment, ft_lstnew(cur_tok->string));
 	}
 	if (*list == 0)
 		return (EXIT);
@@ -164,7 +159,6 @@ int	process_initial_command_string(t_list **list, t_token *cur_tok, t_ast_node *
 {
 	t_token	*next_tok;
 
-	ft_lstadd_back(&((*current)->command), ft_lstnew(cur_tok->string));
 	if (*list == 0)
 		return (EXIT);
 	next_tok = (t_token *)(*list)->content;
@@ -182,7 +176,10 @@ int	process_initial_command_string(t_list **list, t_token *cur_tok, t_ast_node *
 		return (COMMAND_REDIRECT);
 	}
 	else if (next_tok->type == SPACES)
+	{
+		ft_lstadd_back(&((*current)->command), ft_lstnew(cur_tok->string));
 		return (COMMAND_SPACE);
+	}
 	else if (next_tok->type == PIPE || next_tok->type == LOGICAL_AND || next_tok->type == LOGICAL_OR || next_tok->type == CLOSE_BRACKET)
 		return (EXIT);
 	else
@@ -232,7 +229,7 @@ int	process_command_redirect(t_list **list, t_token *cur_tok, t_ast_node **curre
 	if (next_tok->type == SPACES)
 		return (REDIRECT_SPACE);
 	else if (next_tok->type == DOUBLE_QUOTE_STRING || next_tok->type == SINGLE_QUOTE_STRING
-		|| next_tok->type == ASSIGNMENT)
+		|| next_tok->type == STRING || next_tok->type == ASSIGNMENT)
 		return (REDIRECT_STRING);
 	else
 	{
@@ -267,7 +264,8 @@ int	process_command_string(t_list **list, t_token *cur_tok, t_ast_node **current
 		return (EXIT);
 	next_tok = (t_token *)(*list)->content;
 	if (next_tok->type == ASSIGNMENT || next_tok->type == DOUBLE_QUOTE_STRING
-			|| next_tok->type == SINGLE_QUOTE_STRING || next_tok->type == VARIABLE)
+			|| next_tok->type == SINGLE_QUOTE_STRING || next_tok->type == VARIABLE
+			|| next_tok->type == STRING)
 		return (COMMAND_STRING);
 	else if (next_tok->type == REDIRECT_INPUT || next_tok->type == REDIRECT_OUTPUT
 		|| next_tok->type == REDIRECT_APPEND || next_tok->type == HERE_DOC)

@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 16:09:08 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/09 21:50:41 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/10 21:44:54 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,8 @@ t_list	*construct_1_character(char **string)
 		result->type = OPEN_BRACKET;
 	else if (**string == ')')
 		result->type = CLOSE_BRACKET;
+	else if (**string == '=')
+		result->type = ASSIGNMENT;
 	*string += 1;
 	result->string = (char *)ft_calloc(sizeof(char), *string - string_start + 1);
 	ft_strlcpy(result->string, string_start, *string - string_start + 1);
