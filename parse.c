@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/10 22:22:17 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/10 22:26:31 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,8 +146,6 @@ int	process_assign_op(t_list **list, t_ast_node **current)
 	if (next_tok->type == DOUBLE_QUOTE_STRING || next_tok->type == SINGLE_QUOTE_STRING
 		|| next_tok->type == STRING || next_tok->type == VARIABLE)
 		return (ASSIGN_STRING_VAL);
-	else if (next_tok->type == SPACES)
-		return (ASSIGN_SPACE);
 	else
 	{
 		free_command(current);
