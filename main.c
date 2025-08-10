@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/02 21:44:51 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/10 15:16:49 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,6 +173,42 @@ int	ft_pipe_count(char *input)
 	return (pipes);
 }
 
+void	print_string_list(t_list *list)
+{
+	while (list != 0)
+	{
+		printf("%s ", (char *)list->content);
+		list = list->next;
+	}
+}
+
+void	print_ast(t_ast_node *node)
+{
+	if (node == 0)
+		return ;
+	printf("(");
+	print_ast(node->left);
+	if (node->node != 0)
+		printf("node: %s", node->node->string);
+	if (node->command != 0)
+	{
+		printf("command: ");
+		print_string_list(node->command);
+	}
+	if (node->redirection != 0)
+	{
+		printf(" redirection: ");
+		print_string_list(node->redirection);
+	}
+	if (node->assignment != 0)
+	{
+		printf(" assignment: ");
+		print_string_list(node->assignment);
+	}
+	print_ast(node->right);
+	printf(")");
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	signal(SIGQUIT, SIG_IGN);
@@ -193,18 +229,20 @@ int	main(int argc, char **argv, char **envp)
 				add_history(data.input);
 				list = create_tokens(data.input);
 				list_start = list;
+				t_ast_node *root = parse_list(&list);
+				print_ast(root);
 				while (list)
 				{
-					char *string = (char *)list->content;
-					printf("%s\n", string);
+					t_token *tok = (t_token *)list->content;
+					printf("%s\n", tok->string);
 					list = list->next;
 				}
 				ft_lstclear(&list_start, free);
 			}
-			data.pipes = ft_pipe_count(data.input);
-			if (data.pipes > 0)
-				data.cmd_dir = ft_split(data.input, '|');
-			ft_minishell(&data, envp);
+			//data.pipes = ft_pipe_count(data.input);
+			//if (data.pipes > 0)
+			//	data.cmd_dir = ft_split(data.input, '|');
+			//ft_minishell(&data, envp);
 			// if (data.pipes > 0)
 			// {
 			// 	data.cmd_dir = ft_split(data.input, '|');
