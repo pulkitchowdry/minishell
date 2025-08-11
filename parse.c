@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/11 22:00:23 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/11 22:11:56 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,10 @@ int	process_assign_space(t_list **list, t_ast_node **current)
 		|| next_tok->type == REDIRECT_APPEND || next_tok->type == HERE_DOC)
 		return (ASSIGN_REDIRECT);
 	else if (next_tok->type == VARIABLE)
+	{
+		ft_lstadd_back(&((*current)->command), ft_lstnew(ft_strdup("")));
 		return (COMMAND_STRING);
+	}
 	else if (next_tok->type == SPACES)
 		return (ASSIGN_SPACE);
 	else if (next_tok->type == PIPE || next_tok->type == LOGICAL_AND || next_tok->type == LOGICAL_OR || next_tok->type == CLOSE_BRACKET)
@@ -174,8 +177,14 @@ int	process_initial_command_string(t_list **list, t_token *cur_tok, t_ast_node *
 		ft_lstadd_back(&((*current)->assignment), ft_lstnew(ft_strdup(cur_tok->string)));
 		return (ASSIGN_OP);
 	}
-	else if (next_tok->type == DOUBLE_QUOTE_STRING || next_tok->type == SINGLE_QUOTE_STRING)
+	else if (next_tok->type == DOUBLE_QUOTE_STRING || next_tok->type == SINGLE_QUOTE_STRING || next_tok->type == VARIABLE)
 	{
+		if (cur_tok->type == DOUBLE_QUOTE_STRING)
+			process_double_quote(cur_tok->string);
+		else if (cur_tok->type == SINGLE_QUOTE_STRING)
+			process_single_quote(cur_tok->string);
+		else if (cur_tok->type == VARIABLE)
+			process_variable(cur_tok->string);
 		ft_lstadd_back(&((*current)->command), ft_lstnew(ft_strdup(cur_tok->string)));
 		return (COMMAND_STRING);
 	}
