@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 16:09:08 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/10 21:44:54 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/11 15:14:03 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,10 +160,8 @@ t_list	*construct_variable(char **string)
 
 t_list	*create_tokens(char *string)
 {
-	char	*string_start;
 	t_list	*result;
 
-	string_start = string;
 	result = 0;
 	while(*string)
 	{
