@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/11 17:05:11 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/11 20:49:40 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,7 @@ char	**ft_split(char const *s, char c);
 char	*ft_strjoin(char const *s1, char const *s2);
 size_t	ft_strlen(const char *str);
 t_list	*create_tokens(char *string);
+void	free_token(void *token);
 
 void	free_command(t_ast_node **current);
 int	initialize_command_state(t_token *cur_tok, t_ast_node **current);

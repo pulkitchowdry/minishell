@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 16:09:08 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/11 15:14:03 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/11 20:49:46 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,6 +156,12 @@ t_list	*construct_variable(char **string)
 	result->string = (char *)ft_calloc(sizeof(char), *string - string_start + 1);
 	ft_strlcpy(result->string, string_start, *string - string_start + 1);
 	return (ft_lstnew(result));
+}
+
+void	free_token(void *token)
+{
+	free(((t_token *)token)->string);
+	free(token);
 }
 
 t_list	*create_tokens(char *string)

@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/11 20:44:41 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/11 21:09:06 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,10 +46,6 @@ int	initialize_command_state(t_token *cur_tok, t_ast_node **current)
 {
 	if (cur_tok->type == DOUBLE_QUOTE_STRING || cur_tok->type == SINGLE_QUOTE_STRING)
 	{
-		if (cur_tok->type == DOUBLE_QUOTE_STRING)
-			process_double_quote(cur_tok->string);
-		else if (cur_tok->type == SINGLE_QUOTE_STRING)
-			process_single_quote(cur_tok->string);
 		ft_lstadd_back(&((*current)->command), ft_lstnew(ft_strdup("")));
 		return (COMMAND_QUOTES);
 	}
@@ -58,7 +54,7 @@ int	initialize_command_state(t_token *cur_tok, t_ast_node **current)
 		return (ASSIGN_REDIRECT);
 	else if (cur_tok->type == VARIABLE)
 	{
-		ft_lstadd_back(&((*current)->command), ft_lstnew(process_variable(cur_tok->string)));
+		ft_lstadd_back(&((*current)->command), ft_lstnew(process_variable(ft_strdup(cur_tok->string))));
 		return (COMMAND_VARIABLE);
 	}
 	else if (cur_tok->type == SPACES)
@@ -169,34 +165,34 @@ int	process_initial_command_string(t_list **list, t_token *cur_tok, t_ast_node *
 
 	if (*list == 0)
 	{
-		ft_lstadd_back(&((*current)->command), ft_lstnew(cur_tok->string));
+		ft_lstadd_back(&((*current)->command), ft_lstnew(ft_strdup(cur_tok->string)));
 		return (EXIT);
 	}
 	next_tok = (t_token *)(*list)->content;
 	if (next_tok->type == ASSIGNMENT)
 	{
-		ft_lstadd_back(&((*current)->assignment), ft_lstnew(cur_tok->string));
+		ft_lstadd_back(&((*current)->assignment), ft_lstnew(ft_strdup(cur_tok->string)));
 		return (ASSIGN_OP);
 	}
 	else if (next_tok->type == DOUBLE_QUOTE_STRING || next_tok->type == SINGLE_QUOTE_STRING)
 	{
-		ft_lstadd_back(&((*current)->command), ft_lstnew(cur_tok->string));
+		ft_lstadd_back(&((*current)->command), ft_lstnew(ft_strdup(cur_tok->string)));
 		return (COMMAND_STRING);
 	}
 	else if (next_tok->type == REDIRECT_INPUT || next_tok->type == REDIRECT_OUTPUT
 		|| next_tok->type == REDIRECT_APPEND || next_tok->type == HERE_DOC)
 	{
-		ft_lstadd_back(&((*current)->redirection), ft_lstnew(cur_tok->string));
+		ft_lstadd_back(&((*current)->redirection), ft_lstnew(ft_strdup(cur_tok->string)));
 		return (COMMAND_REDIRECT);
 	}
 	else if (next_tok->type == SPACES)
 	{
-		ft_lstadd_back(&((*current)->command), ft_lstnew(cur_tok->string));
+		ft_lstadd_back(&((*current)->command), ft_lstnew(ft_strdup(cur_tok->string)));
 		return (COMMAND_SPACE);
 	}
 	else
 	{
-		ft_lstadd_back(&((*current)->command), ft_lstnew(cur_tok->string));
+		ft_lstadd_back(&((*current)->command), ft_lstnew(ft_strdup(cur_tok->string)));
 		return (EXIT);
 	}	
 }
@@ -233,7 +229,7 @@ int	process_redirect(t_list **list, t_token *cur_tok, t_ast_node **current, int 
 {
 	t_token	*next_tok;
 
-	ft_lstadd_back(&((*current)->redirection), ft_lstnew(cur_tok->string));
+	ft_lstadd_back(&((*current)->redirection), ft_lstnew(ft_strdup(cur_tok->string)));
 	ft_lstadd_back(&((*current)->redirection), ft_lstnew(ft_strdup("")));
 	if (*list == 0)
 		return (EXIT);

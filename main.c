@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/10 21:35:01 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/11 21:46:44 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,7 +237,14 @@ int	main(int argc, char **argv, char **envp)
 					printf("%s\n", tok->string);
 					list = list->next;
 				}
-				ft_lstclear(&list_start, free);
+				free_command(&root);
+				ft_lstclear(&list_start, free_token);
+				free(data.input);
+			}
+			else
+			{
+				free(data.input);
+				break ;
 			}
 			//data.pipes = ft_pipe_count(data.input);
 			//if (data.pipes > 0)
@@ -273,6 +280,7 @@ int	main(int argc, char **argv, char **envp)
 			// 		ft_error();	
 			// }
 		}
+		rl_clear_history();
 	}
 	return (0);
 }
