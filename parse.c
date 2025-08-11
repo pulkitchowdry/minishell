@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/11 16:51:44 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/11 19:18:10 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int	initialize_command_state(t_token *cur_tok, t_ast_node **current)
 	}
 	else if (cur_tok->type == HERE_DOC || cur_tok->type == REDIRECT_INPUT
 			|| cur_tok->type == REDIRECT_OUTPUT || cur_tok->type == REDIRECT_APPEND)
-		return (COMMAND_REDIRECT);
+		return (ASSIGN_REDIRECT);
 	else if (cur_tok->type == VARIABLE)
 	{
 		ft_lstadd_back(&((*current)->command), ft_lstnew(process_variable(cur_tok->string)));
@@ -102,7 +102,7 @@ int	process_assign_string_val(t_list **list, t_token *cur_tok, t_ast_node **curr
 		return (ASSIGN_STRING_VAL);
 	else if (next_tok->type == HERE_DOC || next_tok->type == REDIRECT_APPEND
 		|| next_tok->type == REDIRECT_OUTPUT || next_tok->type == REDIRECT_INPUT)
-		return (COMMAND_REDIRECT);
+		return (ASSIGN_REDIRECT);
 	else if (next_tok->type == SPACES)
 		return (ASSIGN_SPACE);
 	else if (next_tok->type == PIPE || next_tok->type == LOGICAL_AND || next_tok->type == LOGICAL_OR || next_tok->type == CLOSE_BRACKET)
@@ -225,7 +225,7 @@ int	process_command_space(t_list **list, t_ast_node **current)
 	}	
 }
 
-int	process_command_redirect(t_list **list, t_token *cur_tok, t_ast_node **current)
+int	process_redirect(t_list **list, t_token *cur_tok, t_ast_node **current, int current_state)
 {
 	t_token	*next_tok;
 
@@ -235,10 +235,20 @@ int	process_command_redirect(t_list **list, t_token *cur_tok, t_ast_node **curre
 		return (EXIT);
 	next_tok = (t_token *)(*list)->content;
 	if (next_tok->type == SPACES)
-		return (REDIRECT_SPACE);
+	{
+		if (current_state == ASSIGN_REDIRECT)
+			return (ASSIGN_REDIRECT_SPACE);
+		else if (current_state == COMMAND_REDIRECT)
+			return (COMMAND_REDIRECT_SPACE);
+	}
 	else if (next_tok->type == DOUBLE_QUOTE_STRING || next_tok->type == SINGLE_QUOTE_STRING
 		|| next_tok->type == STRING || next_tok->type == ASSIGNMENT)
-		return (REDIRECT_STRING);
+	{
+		if (current_state == ASSIGN_REDIRECT)
+			return (ASSIGN_REDIRECT_STRING);
+		else if (current_state == COMMAND_REDIRECT)
+			return (COMMAND_REDIRECT_STRING);
+	}
 	else
 	{
 		free_command(current);
@@ -289,7 +299,7 @@ int	process_command_string(t_list **list, t_token *cur_tok, t_ast_node **current
 	}
 }
 
-int	process_redirect_string(t_list **list, t_token *cur_tok, t_ast_node **current)
+int	process_redirect_string(t_list **list, t_token *cur_tok, t_ast_node **current, int current_state)
 {
 	t_token	*next_tok;
 	char	*string;
@@ -315,10 +325,20 @@ int	process_redirect_string(t_list **list, t_token *cur_tok, t_ast_node **curren
 		return (EXIT);
 	next_tok = (t_token *)(*list)->content;
 	if (next_tok->type == SPACES)
-		return (COMMAND_SPACE);
+	{
+		if (current_state == ASSIGN_REDIRECT_STRING)
+			return (ASSIGN_SPACE);
+		else if (current_state == COMMAND_REDIRECT_STRING)
+			return (COMMAND_SPACE);
+	}
 	else if (next_tok->type == DOUBLE_QUOTE_STRING || next_tok->type == SINGLE_QUOTE_STRING
 		|| next_tok->type == ASSIGNMENT)
-		return (REDIRECT_STRING);
+	{
+		if (current_state == ASSIGN_REDIRECT_STRING)
+			return (ASSIGN_REDIRECT_STRING);
+		else if (current_state == COMMAND_REDIRECT_STRING)
+			return (COMMAND_REDIRECT_STRING);
+	}
 	else
 	{
 		free_command(current);
@@ -326,7 +346,7 @@ int	process_redirect_string(t_list **list, t_token *cur_tok, t_ast_node **curren
 	}	
 }
 
-int	process_redirect_space(t_list **list, t_ast_node **current)
+int	process_redirect_space(t_list **list, t_ast_node **current, int current_state)
 {
 	t_token	*next_tok;
 
@@ -334,10 +354,20 @@ int	process_redirect_space(t_list **list, t_ast_node **current)
 		return (EXIT);
 	next_tok = (t_token *)(*list)->content;
 	if (next_tok->type == SPACES)
-		return (REDIRECT_SPACE);
+	{
+		if (current_state == ASSIGN_REDIRECT_SPACE)
+			return (ASSIGN_REDIRECT_SPACE);
+		else if (current_state == COMMAND_REDIRECT_SPACE)
+			return (COMMAND_REDIRECT_SPACE);
+	}
 	else if (next_tok->type == DOUBLE_QUOTE_STRING || next_tok->type == SINGLE_QUOTE_STRING
 		|| next_tok->type == STRING || next_tok->type == ASSIGNMENT || next_tok->type == VARIABLE)
-		return (REDIRECT_STRING);
+	{
+		if (current_state == ASSIGN_REDIRECT_SPACE)
+			return (ASSIGN_REDIRECT_STRING);
+		else if (current_state == COMMAND_REDIRECT_SPACE)
+			return (COMMAND_REDIRECT_STRING);
+	}
 	else
 	{
 		free_command(current);
@@ -368,12 +398,12 @@ t_ast_node	*extract_command(t_list **list)
 			current_state = process_initial_command_string(list, cur_tok, &current);
 		else if (current_state == COMMAND_SPACE)
 			current_state = process_command_space(list, &current);
-		else if (current_state == COMMAND_REDIRECT)
-			current_state = process_command_redirect(list, cur_tok, &current);
-		else if (current_state == REDIRECT_SPACE)
-			current_state = process_redirect_space(list, &current);
-		else if (current_state == REDIRECT_STRING)
-			current_state = process_redirect_string(list, cur_tok, &current);
+		else if (current_state == COMMAND_REDIRECT || current_state == ASSIGN_REDIRECT)
+			current_state = process_redirect(list, cur_tok, &current, current_state);
+		else if (current_state == COMMAND_REDIRECT_SPACE || current_state == ASSIGN_REDIRECT_SPACE)
+			current_state = process_redirect_space(list, &current, current_state);
+		else if (current_state == COMMAND_REDIRECT_STRING || current_state == ASSIGN_REDIRECT_STRING)
+			current_state = process_redirect_string(list, cur_tok, &current, current_state);
 		else if (current_state == COMMAND_QUOTES || current_state == COMMAND_STRING)
 			current_state = process_command_string(list, cur_tok, &current);
 	}
