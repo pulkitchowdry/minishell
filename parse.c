@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/11 19:18:10 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/11 20:44:41 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ int	process_assign_space(t_list **list, t_ast_node **current)
 		return (INITIAL_COMMAND_STRING);
 	else if (next_tok->type == REDIRECT_INPUT || next_tok->type == REDIRECT_OUTPUT
 		|| next_tok->type == REDIRECT_APPEND || next_tok->type == HERE_DOC)
-		return (COMMAND_REDIRECT);
+		return (ASSIGN_REDIRECT);
 	else if (next_tok->type == VARIABLE)
 		return (COMMAND_STRING);
 	else if (next_tok->type == SPACES)
@@ -168,7 +168,10 @@ int	process_initial_command_string(t_list **list, t_token *cur_tok, t_ast_node *
 	t_token	*next_tok;
 
 	if (*list == 0)
+	{
+		ft_lstadd_back(&((*current)->command), ft_lstnew(cur_tok->string));
 		return (EXIT);
+	}
 	next_tok = (t_token *)(*list)->content;
 	if (next_tok->type == ASSIGNMENT)
 	{
@@ -176,7 +179,10 @@ int	process_initial_command_string(t_list **list, t_token *cur_tok, t_ast_node *
 		return (ASSIGN_OP);
 	}
 	else if (next_tok->type == DOUBLE_QUOTE_STRING || next_tok->type == SINGLE_QUOTE_STRING)
+	{
+		ft_lstadd_back(&((*current)->command), ft_lstnew(cur_tok->string));
 		return (COMMAND_STRING);
+	}
 	else if (next_tok->type == REDIRECT_INPUT || next_tok->type == REDIRECT_OUTPUT
 		|| next_tok->type == REDIRECT_APPEND || next_tok->type == HERE_DOC)
 	{
@@ -188,11 +194,9 @@ int	process_initial_command_string(t_list **list, t_token *cur_tok, t_ast_node *
 		ft_lstadd_back(&((*current)->command), ft_lstnew(cur_tok->string));
 		return (COMMAND_SPACE);
 	}
-	else if (next_tok->type == PIPE || next_tok->type == LOGICAL_AND || next_tok->type == LOGICAL_OR || next_tok->type == CLOSE_BRACKET)
-		return (EXIT);
 	else
 	{
-		free_command(current);
+		ft_lstadd_back(&((*current)->command), ft_lstnew(cur_tok->string));
 		return (EXIT);
 	}	
 }
@@ -428,6 +432,11 @@ t_ast_node	*parse_command(t_list **list)
 	{
 		*list = (*list)->next;
 		current = parse_list(list);
+		if (*list == 0)
+		{
+			free_command(&current);
+			return (0);
+		}
 		cur_tok = (t_token *)(*list)->content;
 		while (cur_tok->type == SPACES)
 		{
