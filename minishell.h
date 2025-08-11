@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/11 20:49:40 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/11 21:59:02 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,6 @@ enum e_command_state
 	COMMAND_REDIRECT_STRING,
 	COMMAND_QUOTES,
 	COMMAND_STRING,
-	COMMAND_VARIABLE,
 	EXIT
 };
 	

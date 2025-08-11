@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/11 21:09:06 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/11 22:00:23 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,8 @@ int	initialize_command_state(t_token *cur_tok, t_ast_node **current)
 		return (ASSIGN_REDIRECT);
 	else if (cur_tok->type == VARIABLE)
 	{
-		ft_lstadd_back(&((*current)->command), ft_lstnew(process_variable(ft_strdup(cur_tok->string))));
-		return (COMMAND_VARIABLE);
+		ft_lstadd_back(&((*current)->command), ft_lstnew(ft_strdup("")));
+		return (COMMAND_STRING);
 	}
 	else if (cur_tok->type == SPACES)
 		return (ASSIGN_SPACE);
