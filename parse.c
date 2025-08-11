@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/11 22:20:11 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/11 22:43:10 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -341,13 +341,24 @@ int	process_redirect_string(t_list **list, t_token *cur_tok, t_ast_node **curren
 			return (COMMAND_SPACE);
 	}
 	else if (next_tok->type == DOUBLE_QUOTE_STRING || next_tok->type == SINGLE_QUOTE_STRING
-		|| next_tok->type == ASSIGNMENT)
+		|| next_tok->type == ASSIGNMENT || next_tok->type == VARIABLE)
 	{
 		if (current_state == ASSIGN_REDIRECT_STRING)
 			return (ASSIGN_REDIRECT_STRING);
 		else if (current_state == COMMAND_REDIRECT_STRING)
 			return (COMMAND_REDIRECT_STRING);
 	}
+	else if (next_tok->type == REDIRECT_INPUT || next_tok->type == REDIRECT_OUTPUT
+		|| next_tok->type == REDIRECT_APPEND || next_tok->type == HERE_DOC)
+	{
+		if (current_state == ASSIGN_REDIRECT_STRING)
+			return (ASSIGN_REDIRECT);
+		else if (current_state == COMMAND_REDIRECT_STRING)
+			return (COMMAND_REDIRECT);
+	}
+	else if (next_tok->type == LOGICAL_OR || next_tok->type == LOGICAL_AND
+		|| next_tok->type == CLOSE_BRACKET || next_tok->type == PIPE)
+		return (EXIT);
 	else
 	{
 		free_command(current);
