@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/11 22:43:10 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/11 22:47:01 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -341,7 +341,7 @@ int	process_redirect_string(t_list **list, t_token *cur_tok, t_ast_node **curren
 			return (COMMAND_SPACE);
 	}
 	else if (next_tok->type == DOUBLE_QUOTE_STRING || next_tok->type == SINGLE_QUOTE_STRING
-		|| next_tok->type == ASSIGNMENT || next_tok->type == VARIABLE)
+		|| next_tok->type == STRING || next_tok->type == ASSIGNMENT || next_tok->type == VARIABLE)
 	{
 		if (current_state == ASSIGN_REDIRECT_STRING)
 			return (ASSIGN_REDIRECT_STRING);
