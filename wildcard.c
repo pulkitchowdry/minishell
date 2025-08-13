@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 12:55:19 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/13 21:37:15 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/13 21:51:03 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,8 +162,20 @@ char	test_for_tail(char **list_of_strings, char *filename)
 
 char	test_for_head(char **list_of_strings, char *filename)
 {
-	printf("testing for head\n");
-	return (0);
+	int	index;
+	int	str_index;
+
+	if (ft_strncmp(filename, list_of_strings[0], ft_strlen(list_of_strings[0])) != 0)
+		return (0);
+	index = 1;
+	str_index = ft_strlen(list_of_strings[0]);
+	while (index < ft_size(list_of_strings) && str_index < ft_strlen(filename))
+	{
+		index += ft_strncmp(filename + str_index, list_of_strings[index],
+			ft_strlen(list_of_strings[index])) == 0;
+		str_index++;
+	}
+	return (index == ft_size(list_of_strings));
 }
 
 char	test_for_no_ends(char **list_of_strings, char *filename)
