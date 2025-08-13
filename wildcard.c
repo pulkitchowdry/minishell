@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 12:55:19 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/13 20:07:59 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/13 20:26:40 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	free_string_array(char **string_array)
 	while (*string_array)
 	{
 		free(*string_array);
-		(*string_array)++;
+		string_array++;
 	}
 	free(array_start);
 }
@@ -231,11 +231,11 @@ t_list	*find_match_string(char *string_with_wildcard)
 		head_string = ft_strncmp(string_with_wildcard,
 				list_of_strings[0], ft_strlen(list_of_strings[0])) == 0;
 		tail_string = ft_strncmp(string_with_wildcard + ft_strlen(string_with_wildcard)
-				- ft_size(list_of_strings) - 1,
+				- ft_strlen(list_of_strings[ft_size(list_of_strings) - 1]),
 				list_of_strings[ft_size(list_of_strings) - 1],
 				ft_strlen(list_of_strings[ft_size(list_of_strings) - 1])) == 0;
+		list_of_matches = find_matches(head_string, tail_string, list_of_strings);
+		free_string_array(list_of_strings);
 	}
-	list_of_matches = find_matches(head_string, tail_string, list_of_strings);
-	//free_string_array(list_of_strings);
 	return (list_of_matches);
 }
