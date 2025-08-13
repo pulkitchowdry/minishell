@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/12 22:48:08 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/13 14:45:13 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,6 +226,8 @@ int	process_redirect(t_list **list, t_token *cur_tok,
 		return (determine_next_redirect_if_space(current_state));
 	else if (is_command_string(next_tok->type))
 		return (determine_next_redirect_if_command_string(current_state));
+	else if (is_redirect(next_tok->type))
+		return (determine_next_redirect_string_if_redirect(current_state));
 	else
 	{
 		free_command(current);
