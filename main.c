@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/12 20:33:24 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/13 15:47:24 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -222,6 +222,7 @@ int	main(int argc, char **argv, char **envp)
 	{
 		while (1)
 		{
+			find_match_string("");
 			data.input = readline("->");
 			if (data.input)
 			{
