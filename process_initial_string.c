@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 19:09:37 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/12 19:47:09 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/13 14:38:48 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	process_initial_quotes_or_variable(t_token *cur_tok, t_ast_node **current)
 
 int	process_initial_redirection(t_token *cur_tok, t_ast_node **current)
 {
-	ft_lstadd_back(&((*current)->redirection),
+	ft_lstadd_back(&((*current)->command),
 		ft_lstnew(ft_strdup(cur_tok->string)));
 	return (COMMAND_REDIRECT);
 }
