@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/13 14:45:13 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/13 22:19:26 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ char	*process_variable(char *string)
 
 char	*process_wildcard(t_ast_node *current_node, char *string, t_list *list)
 {
+	(void)current_node;
+	(void)list;
 	return (string);
 }
 

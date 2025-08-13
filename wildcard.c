@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 12:55:19 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/13 21:55:04 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/13 22:30:56 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@
 #include "minishell.h"
 #include "libft/libft.h"
 
-int	ft_size(char **string_array)
+size_t	ft_size(char **string_array)
 {
-	int	count;
+	size_t	count;
 
 	count = 0;
 	while (*string_array)
@@ -44,9 +44,9 @@ void	free_string_array(char **string_array)
 	free(array_start);
 }
 
-int	max_string_len(char **string)
+size_t	max_string_len(char **string)
 {
-	int	count;
+	size_t	count;
 
 	count = 0;
 	while (*string)
@@ -60,9 +60,9 @@ int	max_string_len(char **string)
 
 void	sort_string_ascii(char **string)
 {
-	int	i;
-	int	j;
-	char	*temp;
+	size_t		i;
+	size_t		j;
+	char		*temp;
 
 	i = 0;
 	while (i < ft_size(string))
@@ -71,7 +71,7 @@ void	sort_string_ascii(char **string)
 		while (j < ft_size(string))
 		{
 			if (strncmp(string[i], string[j],
-				max_string_len(string)) > 0)
+					max_string_len(string)) > 0)
 			{
 				temp = string[j];
 				string[j] = string[i];
@@ -85,10 +85,10 @@ void	sort_string_ascii(char **string)
 
 char	**get_sorted_filenames(int dir_num)
 {
-	DIR	*cur_dir;
+	DIR				*cur_dir;
 	struct dirent	*file;
-	char	**filenames;
-	int	index;
+	char			**filenames;
+	int				index;
 
 	cur_dir = opendir("./");
 	if (cur_dir == 0)
@@ -132,23 +132,25 @@ void	compact_filenames(int max_files, char **filenames)
 
 char	test_for_both_ends(char **list_of_strings, char *filename)
 {
-	int	index;
-	int	str_index;
+	size_t	index;
+	size_t	str_index;
 
-	if ((ft_strncmp(filename, list_of_strings[0], ft_strlen(list_of_strings[0])) != 0)
+	if ((ft_strncmp(filename, list_of_strings[0],
+				ft_strlen(list_of_strings[0])) != 0)
 		|| ft_strncmp(filename + ft_strlen(filename)
-				- ft_strlen(list_of_strings[ft_size(list_of_strings) - 1]),
+			- ft_strlen(list_of_strings[ft_size(list_of_strings) - 1]),
 			list_of_strings[ft_size(list_of_strings) - 1],
 			ft_strlen(list_of_strings[ft_size(list_of_strings) - 1])) != 0
 		|| ft_strlen(filename) == 1)
 		return (0);
 	index = 1;
 	str_index = ft_strlen(list_of_strings[0]);
-	while (index < (ft_size(list_of_strings) - 1) && str_index < (ft_strlen(filename)
-		- ft_strlen(list_of_strings[ft_size(list_of_strings) - 1])))
+	while (index < (ft_size(list_of_strings) - 1)
+		&& str_index < (ft_strlen(filename)
+			- ft_strlen(list_of_strings[ft_size(list_of_strings) - 1])))
 	{
 		index += ft_strncmp(filename + str_index, list_of_strings[index],
-			ft_strlen(list_of_strings[index])) == 0;
+				ft_strlen(list_of_strings[index])) == 0;
 		str_index++;
 	}
 	return (index == (ft_size(list_of_strings) - 1));
@@ -156,21 +158,22 @@ char	test_for_both_ends(char **list_of_strings, char *filename)
 
 char	test_for_tail(char **list_of_strings, char *filename)
 {
-	int	index;
-	int	str_index;
+	size_t	index;
+	size_t	str_index;
 
 	if (ft_strncmp(filename + ft_strlen(filename)
-		- ft_strlen(list_of_strings[ft_size(list_of_strings) - 1]),
-		list_of_strings[ft_size(list_of_strings) - 1],
-		ft_strlen(list_of_strings[ft_size(list_of_strings) - 1])) != 0)
+			- ft_strlen(list_of_strings[ft_size(list_of_strings) - 1]),
+			list_of_strings[ft_size(list_of_strings) - 1],
+			ft_strlen(list_of_strings[ft_size(list_of_strings) - 1])) != 0)
 		return (0);
 	index = 0;
 	str_index = 0;
-	while (index < (ft_size(list_of_strings) - 1) && str_index < ft_strlen(filename)
-			- ft_strlen(list_of_strings[ft_size(list_of_strings) - 1]))
+	while (index < (ft_size(list_of_strings) - 1)
+		&& str_index < ft_strlen(filename)
+		- ft_strlen(list_of_strings[ft_size(list_of_strings) - 1]))
 	{
 		index += ft_strncmp(filename + str_index, list_of_strings[index],
-			ft_strlen(list_of_strings[index])) == 0;
+				ft_strlen(list_of_strings[index])) == 0;
 		str_index++;
 	}
 	return (index == (ft_size(list_of_strings) - 1));
@@ -178,17 +181,18 @@ char	test_for_tail(char **list_of_strings, char *filename)
 
 char	test_for_head(char **list_of_strings, char *filename)
 {
-	int	index;
-	int	str_index;
+	size_t	index;
+	size_t	str_index;
 
-	if (ft_strncmp(filename, list_of_strings[0], ft_strlen(list_of_strings[0])) != 0)
+	if (ft_strncmp(filename, list_of_strings[0],
+			ft_strlen(list_of_strings[0])) != 0)
 		return (0);
 	index = 1;
 	str_index = ft_strlen(list_of_strings[0]);
 	while (index < ft_size(list_of_strings) && str_index < ft_strlen(filename))
 	{
 		index += ft_strncmp(filename + str_index, list_of_strings[index],
-			ft_strlen(list_of_strings[index])) == 0;
+				ft_strlen(list_of_strings[index])) == 0;
 		str_index++;
 	}
 	return (index == ft_size(list_of_strings));
@@ -196,8 +200,8 @@ char	test_for_head(char **list_of_strings, char *filename)
 
 char	test_for_no_ends(char **list_of_strings, char *filename)
 {
-	int	index;
-	int	str_index;
+	size_t	index;
+	size_t	str_index;
 
 	if (filename[0] == '.')
 		return (0);
@@ -205,21 +209,18 @@ char	test_for_no_ends(char **list_of_strings, char *filename)
 		return (1);
 	index = 0;
 	str_index = 0;
-	while (index < ft_size(list_of_strings) && str_index < (ft_strlen(filename)
-		- ft_strlen(list_of_strings[ft_size(list_of_strings) - 1])))
+	while (index < ft_size(list_of_strings) && str_index < ft_strlen(filename))
 	{
 		index += ft_strncmp(filename + str_index, list_of_strings[index],
-			ft_strlen(list_of_strings[index])) == 0;
+				ft_strlen(list_of_strings[index])) == 0;
 		str_index++;
 	}
 	return (index == ft_size(list_of_strings));
 }
 
-char	is_match(char head_flag, char tail_flag, char **list_of_strings, char *filename)
+char	is_match(char head_flag, char tail_flag,
+		char **list_of_strings, char *filename)
 {
-	char	cur_char;
-	char	nxt_char;
-
 	if (head_flag && tail_flag)
 		return (test_for_both_ends(list_of_strings, filename));
 	else if (!head_flag && tail_flag)
@@ -228,10 +229,10 @@ char	is_match(char head_flag, char tail_flag, char **list_of_strings, char *file
 		return (test_for_head(list_of_strings, filename));
 	else
 		return (test_for_no_ends(list_of_strings, filename));
-	
 }
 
-void	filter_on_wildcard(char head_flag, char tail_flag, char **list_of_strings, char **filenames)
+void	filter_on_wildcard(char head_flag, char tail_flag,
+		char **list_of_strings, char **filenames)
 {
 	int	filter_idx;
 	int	max_files;
@@ -240,7 +241,8 @@ void	filter_on_wildcard(char head_flag, char tail_flag, char **list_of_strings, 
 	max_files = ft_size(filenames);
 	while (filter_idx < max_files)
 	{
-		if (!is_match(head_flag, tail_flag, list_of_strings, filenames[filter_idx]))
+		if (!is_match(head_flag, tail_flag,
+				list_of_strings, filenames[filter_idx]))
 		{
 			printf("rejecting filename %s\n", filenames[filter_idx]);
 			free(filenames[filter_idx]);
@@ -255,10 +257,10 @@ void	filter_on_wildcard(char head_flag, char tail_flag, char **list_of_strings, 
 
 t_list	*find_matches(char head_flag, char tail_flag, char **list_of_strings)
 {
-	DIR	*cur_dir;
+	DIR				*cur_dir;
 	struct dirent	*file;
-	int	dir_num;
-	char	**filenames;
+	int				dir_num;
+	char			**filenames;
 
 	cur_dir = opendir("./");
 	if (cur_dir == 0)
@@ -280,8 +282,6 @@ t_list	*find_matches(char head_flag, char tail_flag, char **list_of_strings)
 t_list	*find_match_string(char *string_with_wildcard)
 {
 	char	**list_of_strings;
-	char	head_string;
-	char	tail_string;
 	t_list	*list_of_matches;
 
 	if (string_with_wildcard == 0)
@@ -291,17 +291,17 @@ t_list	*find_match_string(char *string_with_wildcard)
 		return (0);
 	list_of_matches = 0;
 	if (ft_size(list_of_strings) != 0)
-	{
-		head_string = ft_strncmp(string_with_wildcard, list_of_strings[0],
-				ft_strlen(list_of_strings[0])) == 0;
-		tail_string = ft_strncmp(string_with_wildcard + ft_strlen(string_with_wildcard)
-				- ft_strlen(list_of_strings[ft_size(list_of_strings) - 1]),
-				list_of_strings[ft_size(list_of_strings) - 1],
-				ft_strlen(list_of_strings[ft_size(list_of_strings) - 1])) == 0;
-		list_of_matches = find_matches(head_string, tail_string, list_of_strings);
-		free_string_array(list_of_strings);
-	}
+		list_of_matches = find_matches(ft_strncmp(string_with_wildcard,
+					list_of_strings[0],
+					ft_strlen(list_of_strings[0])) == 0,
+				ft_strncmp(string_with_wildcard
+					+ ft_strlen(string_with_wildcard)
+					- ft_strlen(list_of_strings[ft_size(list_of_strings)
+						- 1]), list_of_strings[ft_size(list_of_strings) - 1],
+					ft_strlen(list_of_strings[ft_size(list_of_strings)
+						- 1])) == 0, list_of_strings);
 	else if (ft_strncmp("*", string_with_wildcard, 1) == 0)
 		list_of_matches = find_matches(0, 0, list_of_strings);
+	free_string_array(list_of_strings);
 	return (list_of_matches);
 }
