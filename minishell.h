@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/13 15:50:47 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/13 15:53:58 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,4 +167,9 @@ char		*process_single_quote(char *string);
 char		*process_variable(char *string);
 char		*process_wildcard(t_ast_node *current_node,
 				char *string, t_list *list);
+t_list		*find_match_string(char *string_with_wildcard);
+t_list		*find_matches(char head_flag, char tail_flag,
+				char **list_of_strings);
+void		free_string_array(char **string_array);
+int			ft_size(char **string_array);
 #endif
