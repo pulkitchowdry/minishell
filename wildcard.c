@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 12:55:19 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/13 20:26:40 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/13 21:12:21 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,8 +132,26 @@ void	compact_filenames(int max_files, char **filenames)
 
 char	test_for_both_ends(char **list_of_strings, char *filename)
 {
-	printf("testing both ends\n");
-	return (0);
+	int	index;
+	int	str_index;
+
+	if ((ft_strncmp(filename, list_of_strings[0], ft_strlen(list_of_strings[0])) != 0)
+		|| ft_strncmp(filename + ft_strlen(filename)
+				- ft_strlen(list_of_strings[ft_size(list_of_strings) - 1]),
+			list_of_strings[ft_size(list_of_strings) - 1],
+			ft_strlen(list_of_strings[ft_size(list_of_strings) - 1])) != 0
+		|| ft_strlen(filename) == 1)
+		return (0);
+	index = 1;
+	str_index = ft_strlen(list_of_strings[0]);
+	while (index < (ft_size(list_of_strings) - 1) && str_index < (ft_strlen(filename)
+		- ft_strlen(list_of_strings[ft_size(list_of_strings) - 1])))
+	{
+		index += ft_strncmp(filename + str_index, list_of_strings[index],
+			ft_strlen(list_of_strings[index])) == 0;
+		str_index++;
+	}
+	return (index == (ft_size(list_of_strings) - 1));
 }
 
 char	test_for_tail(char **list_of_strings, char *filename)
@@ -179,11 +197,14 @@ void	filter_on_wildcard(char head_flag, char tail_flag, char **list_of_strings, 
 	max_files = ft_size(filenames);
 	while (filter_idx < max_files)
 	{
-		if (!is_match(head_flag, tail_flag, list_of_strings, filenames[filter_idx]));
+		if (!is_match(head_flag, tail_flag, list_of_strings, filenames[filter_idx]))
 		{
+			printf("rejecting filename %s\n", filenames[filter_idx]);
 			free(filenames[filter_idx]);
 			filenames[filter_idx] = 0;
 		}
+		else
+			printf("accepting filename %s\n", filenames[filter_idx]);
 		filter_idx++;
 	}
 	compact_filenames(max_files, filenames);
