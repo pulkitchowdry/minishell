@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 12:55:19 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/13 21:12:21 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/13 21:37:15 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,8 +168,23 @@ char	test_for_head(char **list_of_strings, char *filename)
 
 char	test_for_no_ends(char **list_of_strings, char *filename)
 {
-	printf("testing no ends\n");
-	return (0);
+	int	index;
+	int	str_index;
+
+	if (filename[0] == '.')
+		return (0);
+	else if (ft_size(list_of_strings) == 0 && filename[0] != '.')
+		return (1);
+	index = 0;
+	str_index = 0;
+	while (index < ft_size(list_of_strings) && str_index < (ft_strlen(filename)
+		- ft_strlen(list_of_strings[ft_size(list_of_strings) - 1])))
+	{
+		index += ft_strncmp(filename + str_index, list_of_strings[index],
+			ft_strlen(list_of_strings[index])) == 0;
+		str_index++;
+	}
+	return (index == ft_size(list_of_strings));
 }
 
 char	is_match(char head_flag, char tail_flag, char **list_of_strings, char *filename)
@@ -249,8 +264,8 @@ t_list	*find_match_string(char *string_with_wildcard)
 	list_of_matches = 0;
 	if (ft_size(list_of_strings) != 0)
 	{
-		head_string = ft_strncmp(string_with_wildcard,
-				list_of_strings[0], ft_strlen(list_of_strings[0])) == 0;
+		head_string = ft_strncmp(string_with_wildcard, list_of_strings[0],
+				ft_strlen(list_of_strings[0])) == 0;
 		tail_string = ft_strncmp(string_with_wildcard + ft_strlen(string_with_wildcard)
 				- ft_strlen(list_of_strings[ft_size(list_of_strings) - 1]),
 				list_of_strings[ft_size(list_of_strings) - 1],
@@ -258,5 +273,7 @@ t_list	*find_match_string(char *string_with_wildcard)
 		list_of_matches = find_matches(head_string, tail_string, list_of_strings);
 		free_string_array(list_of_strings);
 	}
+	else if (ft_strncmp("*", string_with_wildcard, 1) == 0)
+		list_of_matches = find_matches(0, 0, list_of_strings);
 	return (list_of_matches);
 }
