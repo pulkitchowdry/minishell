@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 17:56:58 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/14 21:39:37 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/14 22:40:10 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,31 +73,31 @@ t_ast_node	*parse_bracket(t_list **list)
 }
 
 int	process_state(int current_state, t_list **list,
-		t_token *cur_tok, t_ast_node *current)
+		t_token *cur_tok, t_ast_node **current)
 {
 	if (current_state == ASSIGN_STRING_VAL)
-		return (process_assign_string_val(list, cur_tok, &current));
+		return (process_assign_string_val(list, cur_tok, current));
 	else if (current_state == ASSIGN_SPACE)
-		return (process_assign_space(list, &current));
+		return (process_assign_space(list, current));
 	else if (current_state == ASSIGN_OP)
-		return (process_assign_op(list, &current));
+		return (process_assign_op(list, current));
 	else if (current_state == INITIAL_COMMAND_STRING)
-		return (process_initial_command_string(list, cur_tok, &current));
+		return (process_initial_command_string(list, cur_tok, current));
 	else if (current_state == COMMAND_SPACE)
-		return (process_command_space(list, &current));
+		return (process_command_space(list, current));
 	else if (current_state == COMMAND_REDIRECT
 		|| current_state == ASSIGN_REDIRECT)
-		return (process_redirect(list, cur_tok, &current, current_state));
+		return (process_redirect(list, cur_tok, current, current_state));
 	else if (current_state == COMMAND_REDIRECT_SPACE
 		|| current_state == ASSIGN_REDIRECT_SPACE)
-		return (process_redirect_space(list, &current, current_state));
+		return (process_redirect_space(list, current, current_state));
 	else if (current_state == COMMAND_REDIRECT_STRING
 		|| current_state == ASSIGN_REDIRECT_STRING)
 		return (process_redirect_string(list, cur_tok,
-				&current, current_state));
+				current, current_state));
 	else if (current_state == COMMAND_QUOTES
 		|| current_state == COMMAND_STRING)
-		return (process_command_string(list, cur_tok, &current));
+		return (process_command_string(list, cur_tok, current));
 	return (EXIT);
 }
 

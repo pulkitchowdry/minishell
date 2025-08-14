@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/14 22:31:10 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/14 22:40:39 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -331,7 +331,7 @@ t_ast_node	*extract_command(t_list **list)
 		cur_tok = (t_token *)(*list)->content;
 		*list = (*list)->next;
 		current_state = process_state(current_state, list,
-				cur_tok, current);
+				cur_tok, &current);
 	}
 	return (current);
 }

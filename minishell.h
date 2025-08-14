@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/14 19:54:33 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/14 22:40:27 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,7 @@ char		is_command_string(int type);
 void		append_string_to_current_node(t_ast_node *current,
 				t_token *cur_tok, t_list *list);
 int			process_state(int current_state, t_list **list,
-				t_token *cur_tok, t_ast_node *current);
+				t_token *cur_tok, t_ast_node **current);
 t_ast_node	*parse_bracket(t_list **list);
 t_ast_node	*free_and_return_zero(t_ast_node *current);
 t_token		*advance_new_node(t_list **list);
