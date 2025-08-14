@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/13 22:19:26 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/14 22:31:10 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -345,11 +345,11 @@ t_ast_node	*parse_command(t_list **list)
 		return (0);
 	current = 0;
 	cur_tok = (t_token *)(*list)->content;
-	while (cur_tok->type == SPACES)
+	while (cur_tok != 0 && cur_tok->type == SPACES)
 		cur_tok = advance_new_node(list);
-	if (cur_tok->type == OPEN_BRACKET)
+	if (cur_tok != 0 && cur_tok->type == OPEN_BRACKET)
 		return (parse_bracket(list));
-	else if (is_extractable(cur_tok->type))
+	else if (cur_tok != 0 && is_extractable(cur_tok->type))
 		current = extract_command(list);
 	return (current);
 }
@@ -365,13 +365,12 @@ t_ast_node	*parse_pipeline(t_list **list)
 	if (*list == 0)
 		return (left_node);
 	cur_tok = (t_token *)(*list)->content;
-	while (cur_tok->type == SPACES || cur_tok->type == PIPE)
+	while (cur_tok != 0 && (cur_tok->type == SPACES || cur_tok->type == PIPE))
 	{
-		while (cur_tok->type == SPACES)
-		{
-			*list = (*list)->next;
-			cur_tok = (t_token *)(*list)->content;
-		}
+		while (cur_tok != 0 && cur_tok->type == SPACES)
+			cur_tok = advance_new_node(list);
+		if (cur_tok == 0)
+			return (0);
 		if (cur_tok->type == PIPE)
 			left_node = parse_new_node(left_node, cur_tok, list, parse_command);
 		if (*list == 0)
@@ -395,11 +394,10 @@ t_ast_node	*parse_list(t_list **list)
 	while (cur_tok->type == SPACES || cur_tok->type == LOGICAL_OR
 		|| cur_tok->type == LOGICAL_AND)
 	{
-		while (cur_tok->type == SPACES)
-		{
-			*list = (*list)->next;
-			cur_tok = (t_token *)(*list)->content;
-		}
+		while (cur_tok != 0 && cur_tok->type == SPACES)
+			cur_tok = advance_new_node(list);
+		if (cur_tok == 0)
+			return (0);
 		if (cur_tok->type == LOGICAL_AND || cur_tok->type == LOGICAL_OR)
 			left_node = parse_new_node(left_node, cur_tok,
 					list, parse_pipeline);

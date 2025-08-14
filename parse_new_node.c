@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 17:56:58 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/12 22:32:48 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/14 21:39:37 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,10 @@ char	is_extractable(int type)
 t_token	*advance_new_node(t_list **list)
 {
 	*list = (*list)->next;
-	return ((t_token *)(*list)->content);
+	if (*list != 0)
+		return ((t_token *)(*list)->content);
+	else
+		return (0);
 }
 
 t_ast_node	*free_and_return_zero(t_ast_node *current)
