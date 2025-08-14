@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/10 15:16:49 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/12 20:33:24 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include "libft/libft.h"
 
-void	print_signal(int signal)
+void	print_signal()
 {
 	rl_on_new_line();
 	printf("\n");
@@ -197,12 +197,12 @@ void	print_ast(t_ast_node *node)
 	}
 	if (node->redirection != 0)
 	{
-		printf(" redirection: ");
+		printf("redirection: ");
 		print_string_list(node->redirection);
 	}
 	if (node->assignment != 0)
 	{
-		printf(" assignment: ");
+		printf("assignment: ");
 		print_string_list(node->assignment);
 	}
 	print_ast(node->right);
@@ -211,14 +211,13 @@ void	print_ast(t_ast_node *node)
 
 int	main(int argc, char **argv, char **envp)
 {
+	(void)envp;
 	signal(SIGQUIT, SIG_IGN);
 	signal(SIGINT, print_signal);
 	t_data	data;
-	int		i;
 	t_list	*list_start;
 	t_list	*list;
 
-	i = 0;
 	if(argc > 0 && argv[0])
 	{
 		while (1)
@@ -237,7 +236,14 @@ int	main(int argc, char **argv, char **envp)
 					printf("%s\n", tok->string);
 					list = list->next;
 				}
-				ft_lstclear(&list_start, free);
+				free_command(&root);
+				ft_lstclear(&list_start, free_token);
+				free(data.input);
+			}
+			else
+			{
+				free(data.input);
+				break ;
 			}
 			//data.pipes = ft_pipe_count(data.input);
 			//if (data.pipes > 0)
@@ -273,6 +279,7 @@ int	main(int argc, char **argv, char **envp)
 			// 		ft_error();	
 			// }
 		}
+		rl_clear_history();
 	}
 	return (0);
 }
