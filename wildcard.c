@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 12:55:19 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/13 22:30:56 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/14 19:32:59 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,12 +244,9 @@ void	filter_on_wildcard(char head_flag, char tail_flag,
 		if (!is_match(head_flag, tail_flag,
 				list_of_strings, filenames[filter_idx]))
 		{
-			printf("rejecting filename %s\n", filenames[filter_idx]);
 			free(filenames[filter_idx]);
 			filenames[filter_idx] = 0;
 		}
-		else
-			printf("accepting filename %s\n", filenames[filter_idx]);
 		filter_idx++;
 	}
 	compact_filenames(max_files, filenames);
