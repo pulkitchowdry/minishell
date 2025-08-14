@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/13 22:31:17 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/14 19:54:33 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,4 +172,5 @@ t_list		*find_matches(char head_flag, char tail_flag,
 				char **list_of_strings);
 void		free_string_array(char **string_array);
 size_t		ft_size(char **string_array);
+char		is_safe_to_execute(t_ast_node *node);
 #endif

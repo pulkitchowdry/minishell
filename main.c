@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/13 19:56:27 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/14 19:55:50 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,6 +230,10 @@ int	main(int argc, char **argv, char **envp)
 				list = create_tokens(data.input);
 				list_start = list;
 				t_ast_node *root = parse_list(&list);
+				if (is_safe_to_execute(root) && list == 0)
+					printf("The command is valid\n");
+				else
+					printf("The command cannot execute\n");
 				print_ast(root);
 				while (list)
 				{
