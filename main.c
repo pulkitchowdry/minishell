@@ -21,6 +21,7 @@ void	print_signal()
 {
 	rl_on_new_line();
 	printf("\n");
+	rl_replace_line("", 0);
 	rl_redisplay();
 }
 
@@ -230,7 +231,7 @@ int	main(int argc, char **argv, char **envp)
 				list = create_tokens(data.input);
 				list_start = list;
 				t_ast_node *root = parse_list(&list);
-				if (is_safe_to_execute(root) && list == 0)
+				if (root != 0 && is_safe_to_execute(root) && list == 0)
 					printf("The command is valid\n");
 				else
 					printf("The command cannot execute\n");
