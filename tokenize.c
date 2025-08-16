@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 16:09:08 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/12 22:09:17 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/16 22:06:46 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ t_list	*construct_string(char **string)
 	while ((**string != '\'') && (**string != '"') && (**string != '>')
 		&& (**string != '<') && (**string != '|') && (**string != '&')
 		&& (**string != ' ') && (**string != '$') && (**string != ')')
-		&& (**string != '=') && (**string != ')') && **string)
+		&& (**string != '=') && (**string != '(') && **string)
 		(*string)++;
 	result->string = (char *)ft_calloc(sizeof(char),
 			*string - string_start + 1);
