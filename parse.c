@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/14 22:40:39 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/16 22:07:38 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,10 +207,7 @@ int	process_command_space(t_list **list, t_ast_node **current)
 	else if (is_pipe_or_logical(next_tok->type))
 		return (EXIT);
 	else
-	{
-		free_command(current);
 		return (EXIT);
-	}
 }
 
 int	process_redirect(t_list **list, t_token *cur_tok,
@@ -283,10 +280,7 @@ int	process_redirect_string(t_list **list, t_token *cur_tok,
 		|| next_tok->type == CLOSE_BRACKET)
 		return (EXIT);
 	else
-	{
-		free_command(current);
 		return (EXIT);
-	}
 }
 
 int	process_redirect_space(t_list **list,

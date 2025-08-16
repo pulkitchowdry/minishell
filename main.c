@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/14 19:55:50 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/16 22:08:27 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,6 +236,7 @@ int	main(int argc, char **argv, char **envp)
 				else
 					printf("The command cannot execute\n");
 				print_ast(root);
+				execute_heredoc(root);
 				while (list)
 				{
 					t_token *tok = (t_token *)list->content;
