@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/16 22:59:27 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/17 17:40:31 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void	open_temp_files(t_list *list)
 			filename = ft_itoa(index++);
 			filename_tmp = ft_strjoin(filename, ".tmp");
 			free(filename);
-			fd = open(filename_tmp, O_WRONLY | O_CREAT, 0777);
+			fd = open(filename_tmp, O_WRONLY | O_CREAT | O_TRUNC, 0777);
 			write_temp_files((char *)list->next->content, fd);
 			close(fd);
 			free(list->next->content);

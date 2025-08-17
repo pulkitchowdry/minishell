@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/16 22:00:48 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/17 17:50:51 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,6 +161,8 @@ int			determine_next_redirect_string_if_command(int current_state);
 int			determine_next_redirect_string_if_redirect(int current_state);
 int			determine_next_redirect_if_command_string(int current_state);
 int			determine_next_redirect_if_space(int current_state);
+int			determine_next_redirect_space_if_space(int current_state);
+int			determine_next_redirect_space_if_string(int current_state);
 void		process_additional_tokens(t_list **result, char **string);
 char		*process_double_quote(char *string);
 char		*process_single_quote(char *string);
@@ -174,4 +176,5 @@ void		free_string_array(char **string_array);
 size_t		ft_size(char **string_array);
 char		is_safe_to_execute(t_ast_node *node);
 void		execute_heredoc(t_ast_node *node);
+void		unlink_files(t_ast_node *node);
 #endif

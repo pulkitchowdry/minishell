@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/16 22:07:38 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/17 17:57:04 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,7 +219,10 @@ int	process_redirect(t_list **list, t_token *cur_tok,
 		ft_lstnew(ft_strdup(cur_tok->string)));
 	ft_lstadd_back(&((*current)->redirection), ft_lstnew(ft_strdup("")));
 	if (*list == 0)
+	{
+		free_command(current);
 		return (EXIT);
+	}
 	next_tok = (t_token *)(*list)->content;
 	if (next_tok->type == SPACES)
 		return (determine_next_redirect_if_space(current_state));
@@ -287,23 +290,14 @@ int	process_redirect_space(t_list **list,
 		t_ast_node **current, int current_state)
 {
 	if (*list == 0)
+	{
+		free_command(current);
 		return (EXIT);
+	}
 	if (((t_token *)(*list)->content)->type == SPACES)
-	{
-		if (current_state == ASSIGN_REDIRECT_SPACE)
-			return (ASSIGN_REDIRECT_SPACE);
-		else if (current_state == COMMAND_REDIRECT_SPACE)
-			return (COMMAND_REDIRECT_SPACE);
-		return (EXIT);
-	}
+		return (determine_next_redirect_space_if_space(current_state));
 	else if (is_command_string(((t_token *)(*list)->content)->type))
-	{
-		if (current_state == ASSIGN_REDIRECT_SPACE)
-			return (ASSIGN_REDIRECT_STRING);
-		else if (current_state == COMMAND_REDIRECT_SPACE)
-			return (COMMAND_REDIRECT_STRING);
-		return (EXIT);
-	}
+		return (determine_next_redirect_space_if_string(current_state));
 	else
 	{
 		free_command(current);
