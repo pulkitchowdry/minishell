@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/19 16:50:14 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/19 17:12:28 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ char	execute_logical_or(t_ast_node *node)
 
 	pid = fork();
 	if (pid == 0)
-		execute_command(node->left);
+		execute_command_ast(node->left);
 	else
 		waitpid(pid, &ret_code, 0);
 	if (WIFEXITED(ret_code))
@@ -105,7 +105,7 @@ char	execute_logical_or(t_ast_node *node)
 			return (WEXITSTATUS(ret_code));
 		pid = fork();
 		if (pid == 0)
-			execute_command(node->right);
+			execute_command_ast(node->right);
 		else
 			waitpid(pid, &ret_code, 0);
 		if (WIFEXITED(ret_code))
@@ -125,7 +125,7 @@ char	execute_logical_and(t_ast_node *node)
 
 	pid = fork();
 	if (pid == 0)
-		execute_command(node->left);
+		execute_command_ast(node->left);
 	else
 		waitpid(pid, &ret_code, 0);
 	if (WIFEXITED(ret_code))
@@ -134,7 +134,7 @@ char	execute_logical_and(t_ast_node *node)
 			return (WEXITSTATUS(ret_code));
 		pid = fork();
 		if (pid == 0)
-			execute_command(node->right);
+			execute_command_ast(node->right);
 		else
 			waitpid(pid, &ret_code, 0);
 		if (WIFEXITED(ret_code))
@@ -155,11 +155,11 @@ char	execute_pipe(t_ast_node *node)
 
 	pid[0] = fork();
 	if (pid[0] == 0)
-		execute_command(node->left);
+		execute_command_ast(node->left);
 	else
 		pid[1] = fork();
 	if (pid[1] == 0)
-		execute_command(node->left);
+		execute_command_ast(node->left);
 	proc_count = 0;
 	while (proc_count < 2)
 	{
