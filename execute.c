@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/19 16:17:21 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/19 16:50:14 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,8 @@ void	open_temp_files(t_list *list)
 
 void	execute_command(t_ast_node *node)
 {
+	signal(SIGQUIT, SIG_DFL);
+	signal(SIGINT, SIG_DFL);
 	if (node == 0)
 		exit(0);
 	exit(0);
@@ -156,6 +158,8 @@ char	execute_pipe(t_ast_node *node)
 		execute_command(node->left);
 	else
 		pid[1] = fork();
+	if (pid[1] == 0)
+		execute_command(node->left);
 	proc_count = 0;
 	while (proc_count < 2)
 	{
