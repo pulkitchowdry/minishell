@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/17 22:21:10 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/19 16:17:21 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,13 @@ void	open_temp_files(t_list *list)
 	}
 }
 
+void	execute_command(t_ast_node *node)
+{
+	if (node == 0)
+		exit(0);
+	exit(0);
+}
+
 void	execute_heredoc(t_ast_node *node)
 {
 	if (node == 0)
@@ -89,7 +96,7 @@ char	execute_logical_or(t_ast_node *node)
 	if (pid == 0)
 		execute_command(node->left);
 	else
-		wait_pid(pid, &ret_code, 0);
+		waitpid(pid, &ret_code, 0);
 	if (WIFEXITED(ret_code))
 	{
 		if (WEXITSTATUS(ret_code) == 0)
@@ -98,7 +105,7 @@ char	execute_logical_or(t_ast_node *node)
 		if (pid == 0)
 			execute_command(node->right);
 		else
-			wait_pid(pid, &ret_code, 0);
+			waitpid(pid, &ret_code, 0);
 		if (WIFEXITED(ret_code))
 			return (WEXITSTATUS(ret_code));
 		else if (WIFSIGNALED(ret_code))
@@ -118,7 +125,7 @@ char	execute_logical_and(t_ast_node *node)
 	if (pid == 0)
 		execute_command(node->left);
 	else
-		wait_pid(pid, &ret_code, 0);
+		waitpid(pid, &ret_code, 0);
 	if (WIFEXITED(ret_code))
 	{
 		if (WEXITSTATUS(ret_code) != 0)
@@ -127,7 +134,7 @@ char	execute_logical_and(t_ast_node *node)
 		if (pid == 0)
 			execute_command(node->right);
 		else
-			wait_pid(pid, &ret_code, 0);
+			waitpid(pid, &ret_code, 0);
 		if (WIFEXITED(ret_code))
 			return (WEXITSTATUS(ret_code));
 		else if (WIFSIGNALED(ret_code))
@@ -152,7 +159,7 @@ char	execute_pipe(t_ast_node *node)
 	proc_count = 0;
 	while (proc_count < 2)
 	{
-		wait_pid(pid[proc_count], &ret_code, 0);
+		waitpid(pid[proc_count], &ret_code, 0);
 		proc_count++;
 	}
 	if (WIFEXITED(ret_code))
@@ -173,6 +180,7 @@ void	execute_command_ast(t_ast_node *node)
 	else if (node->node->type == LOGICAL_AND)
 		execute_logical_and(node);
 	else if (node->node->type == PIPE)
+		execute_pipe(node);
 }
 
 void	unlink_temp_files(t_list *list)
