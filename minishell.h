@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/17 17:50:51 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/19 17:15:09 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,5 +176,6 @@ void		free_string_array(char **string_array);
 size_t		ft_size(char **string_array);
 char		is_safe_to_execute(t_ast_node *node);
 void		execute_heredoc(t_ast_node *node);
+void		execute_command_ast(t_ast_node *node);
 void		unlink_files(t_ast_node *node);
 #endif
