@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/19 17:12:28 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/21 16:40:14 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,25 +89,38 @@ void	execute_heredoc(t_ast_node *node)
 		open_temp_files(node->redirection);
 }
 
-char	execute_logical_or(t_ast_node *node)
+char	execute_command_ast_child(t_ast_node *node, t_variable_context *context)
+{
+	signal(SIGQUIT, SIG_DFL);
+	signal(SIGINT, SIG_DFL);
+	return (execute_command_ast(node, context));
+}
+
+int	execute_and_wait_child(t_ast_node *node, t_variable_context *context)
 {
 	int	pid;
 	int	ret_code;
 
+	ret_code = -1;
 	pid = fork();
 	if (pid == 0)
-		execute_command_ast(node->left);
+		execute_command_ast_child(node, context);
 	else
 		waitpid(pid, &ret_code, 0);
+	return (ret_code);
+}
+
+unsigned char	execute_logical_or(t_ast_node *node,
+		t_variable_context *context)
+{
+	int	ret_code;
+
+	ret_code = execute_and_wait_child(node->left, context);
 	if (WIFEXITED(ret_code))
 	{
 		if (WEXITSTATUS(ret_code) == 0)
 			return (WEXITSTATUS(ret_code));
-		pid = fork();
-		if (pid == 0)
-			execute_command_ast(node->right);
-		else
-			waitpid(pid, &ret_code, 0);
+		ret_code = execute_and_wait_child(node->right, context);
 		if (WIFEXITED(ret_code))
 			return (WEXITSTATUS(ret_code));
 		else if (WIFSIGNALED(ret_code))
@@ -115,28 +128,20 @@ char	execute_logical_or(t_ast_node *node)
 	}
 	else if (WIFSIGNALED(ret_code))
 		return (128 + WTERMSIG(ret_code));
-	return (255);
+	return ((unsigned char)255);
 }
 
-char	execute_logical_and(t_ast_node *node)
+unsigned char	execute_logical_and(t_ast_node *node,
+		t_variable_context *context)
 {
-	int	pid;
 	int	ret_code;
 
-	pid = fork();
-	if (pid == 0)
-		execute_command_ast(node->left);
-	else
-		waitpid(pid, &ret_code, 0);
+	ret_code = execute_and_wait_child(node->left, context);
 	if (WIFEXITED(ret_code))
 	{
 		if (WEXITSTATUS(ret_code) != 0)
 			return (WEXITSTATUS(ret_code));
-		pid = fork();
-		if (pid == 0)
-			execute_command_ast(node->right);
-		else
-			waitpid(pid, &ret_code, 0);
+		ret_code = execute_and_wait_child(node->right, context);
 		if (WIFEXITED(ret_code))
 			return (WEXITSTATUS(ret_code));
 		else if (WIFSIGNALED(ret_code))
@@ -147,44 +152,74 @@ char	execute_logical_and(t_ast_node *node)
 	return (255);
 }
 
-char	execute_pipe(t_ast_node *node)
+void	exec_pipe_left_child(int *fd, t_ast_node *node, t_variable_context *context)
+{
+		close(fd[0]);
+		close(1);
+		dup2(fd[1], 1);
+		close(fd[1]);
+		execute_command_ast_child(node->left, context);
+}
+
+void	exec_pipe_right_child(int *fd, t_ast_node *node, t_variable_context *context)
+{
+		close(fd[1]);
+		close(0);
+		dup2(fd[0], 0);
+		close(fd[0]);
+		execute_command_ast_child(node->right, context);
+}
+
+void	close_all_pipes(int *fd)
+{
+	close(fd[0]);
+	close(fd[1]);
+}
+
+unsigned char	execute_pipe(t_ast_node *node, t_variable_context *context)
 {
 	int	pid[2];
 	int	ret_code;
 	int	proc_count;
+	int	fd[2];
 
+	pipe(fd);
 	pid[0] = fork();
 	if (pid[0] == 0)
-		execute_command_ast(node->left);
+		exec_pipe_left_child(fd, node, context);
 	else
 		pid[1] = fork();
 	if (pid[1] == 0)
-		execute_command_ast(node->left);
+		exec_pipe_right_child(fd, node, context);
+	else
+		close_all_pipes(fd);
 	proc_count = 0;
 	while (proc_count < 2)
-	{
-		waitpid(pid[proc_count], &ret_code, 0);
-		proc_count++;
-	}
+		waitpid(pid[proc_count++], &ret_code, 0);
 	if (WIFEXITED(ret_code))
 		return (WEXITSTATUS(ret_code));
 	else if (WIFSIGNALED(ret_code))
 		return (128 + WTERMSIG(ret_code));
-	return (255);
+	return ((unsigned char)255);
 }
 
-void	execute_command_ast(t_ast_node *node)
+unsigned char	execute_command_ast(t_ast_node *node,
+	t_variable_context *context)
 {
+	int	ret_code;
+
+	ret_code = 255;
 	if (node == 0)
-		return ;
+		return (0);
 	if (node->node != 0)
 		execute_command(node);
 	else if (node->node->type == LOGICAL_OR)
-		execute_logical_or(node);
+		ret_code = execute_logical_or(node, context);
 	else if (node->node->type == LOGICAL_AND)
-		execute_logical_and(node);
+		ret_code = execute_logical_and(node, context);
 	else if (node->node->type == PIPE)
-		execute_pipe(node);
+		ret_code = execute_pipe(node, context);
+	return (ret_code);
 }
 
 void	unlink_temp_files(t_list *list)

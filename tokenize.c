@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 16:09:08 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/16 22:06:46 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/21 17:44:00 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,7 +221,7 @@ void	process_additional_tokens(t_list **result, char **string)
 	else if (**string == '=')
 		ft_lstadd_back(result, construct_1_character(string));
 	else if (**string == '$' && (ft_isalnum(*(*string + 1))
-			|| *(*string + 1) == '_'))
+			|| *(*string + 1) == '_' || *(*string + 1) == '{'))
 		ft_lstadd_back(result, construct_variable(string));
 	else
 		ft_lstadd_back(result, construct_string(string));
