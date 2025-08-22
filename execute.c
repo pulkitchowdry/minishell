@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/23 00:14:18 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/23 00:16:35 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,9 @@ void	close_heredoc_pipes()
 void	write_temp_files(t_ast_node *root, t_list *tokens, char *delimiter_string, int* fd)
 {
 	char	*line_string;
-	char	delimiter[ft_strlen(delimiter_string) + 1];
+	char	delimiter[1000];
 
-	ft_memcpy(delimiter, delimiter_string, ft_strlen(delimiter_string) + 1);
+	ft_memcpy(delimiter, delimiter_string, 1000);
 	free(delimiter_string);
 	free_command(&root);
 	ft_lstclear(&tokens, free_token);
