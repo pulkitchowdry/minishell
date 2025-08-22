@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/23 00:09:59 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/23 00:23:57 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,7 +225,6 @@ int	main(int argc, char **argv, char **envp)
 	state_context.current = 0;
 	context.environment_variables = envp;
 	context.local_variables = 0;
-	rl_catch_signals = 0;
 	if(argc > 0 && argv[0])
 	{
 		while (1)
