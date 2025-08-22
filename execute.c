@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/23 00:09:58 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/23 00:14:18 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ int	fork_heredoc(t_ast_node *root, t_list *tokens, t_list *list)
 {
 	int		ret_code;
 	int		fd[2];
-	int		pid;	
+	int		pid;
 	char		*line;
 
 	ret_code = 0;
