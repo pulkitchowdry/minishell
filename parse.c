@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/21 17:46:32 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/22 21:19:50 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -418,7 +418,7 @@ int	process_redirect_string(t_list **list, t_token *cur_tok,
 
 	if (is_command_string(cur_tok->type))
 		append_string_to_current_node(cur_tok,
-			(*state_context->current)->redirection, state_context->context);
+			(*state_context->current).redirection, state_context->context);
 	if (*list == 0)
 		return (EXIT);
 	next_tok = (t_token *)(*list)->content;
@@ -462,7 +462,7 @@ t_ast_node	*extract_command(t_list **list, t_state_context *context)
 
 	cur_tok = (t_token *)(*list)->content;
 	current = (t_ast_node *)ft_calloc(sizeof(t_ast_node), 1);
-	context->current = &current;
+	context->current = current;
 	current_state = initialize_command_state(cur_tok, &current);
 	while (current_state != EXIT)
 	{
@@ -496,11 +496,11 @@ t_ast_node	*parse_pipeline(t_list **list, t_state_context *context)
 {
 	t_token		*cur_tok;
 
-	*context->current = parse_command(list, context);
-	if (*context->current == 0)
+	context->current = parse_command(list, context);
+	if (context->current == 0)
 		return (0);
 	if (*list == 0)
-		return (*context->current);
+		return (context->current);
 	cur_tok = (t_token *)(*list)->content;
 	while (cur_tok != 0 && (cur_tok->type == SPACES || cur_tok->type == PIPE))
 	{
@@ -509,13 +509,13 @@ t_ast_node	*parse_pipeline(t_list **list, t_state_context *context)
 		if (cur_tok == 0)
 			return (0);
 		if (cur_tok->type == PIPE)
-			*context->current = parse_new_node(context,
+			context->current = parse_new_node(context,
 				cur_tok, list, parse_command);
 		if (*list == 0)
 			break ;
 		cur_tok = (t_token *)(*list)->content;
 	}
-	return (*context->current);
+	return (context->current);
 }
 
 char	is_space_or_logical(t_token *cur_tok)
@@ -528,11 +528,11 @@ t_ast_node	*parse_list(t_list **list, t_state_context *context)
 {
 	t_token		*cur_tok;
 
-	*context->current = parse_pipeline(list, context);
-	if (*context->current == 0)
+	context->current = parse_pipeline(list, context);
+	if (context->current == 0)
 		return (0);
 	if (*list == 0)
-		return (*context->current);
+		return (context->current);
 	cur_tok = (t_token *)(*list)->content;
 	while (cur_tok->type == SPACES || cur_tok->type == LOGICAL_OR
 		|| cur_tok->type == LOGICAL_AND)
@@ -542,11 +542,11 @@ t_ast_node	*parse_list(t_list **list, t_state_context *context)
 		if (cur_tok == 0)
 			return (0);
 		if (cur_tok->type == LOGICAL_AND || cur_tok->type == LOGICAL_OR)
-			*context->current = parse_new_node(context, cur_tok,
+			context->current = parse_new_node(context, cur_tok,
 					list, parse_pipeline);
 		if (*list == 0)
 			break ;
 		cur_tok = (t_token *)(*list)->content;
 	}
-	return (*context->current);
+	return (context->current);
 }

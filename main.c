@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/21 17:36:39 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/23 00:09:59 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,18 @@
 #include <readline/history.h>
 #include <signal.h>
 #include <stdio.h>
-#include "libft/libft.h"
 
-void	print_signal()
+#include "libft/libft.h"
+#include "minishell.h"
+
+void	print_signal(int signal)
 {
+	(void)signal;
 	rl_on_new_line();
 	printf("\n");
 	rl_replace_line("", 0);
 	rl_redisplay();
 }
-
-#include "minishell.h"
 
 void	ft_error(void)
 {
@@ -221,8 +222,10 @@ int	main(int argc, char **argv, char **envp)
 	t_state_context		state_context;
 
 	state_context.context = &context;
+	state_context.current = 0;
 	context.environment_variables = envp;
 	context.local_variables = 0;
+	rl_catch_signals = 0;
 	if(argc > 0 && argv[0])
 	{
 		while (1)
@@ -239,7 +242,8 @@ int	main(int argc, char **argv, char **envp)
 					printf("The command is valid\n");
 				else
 					printf("The command cannot execute\n");
-				execute_heredoc(root);
+				execute_heredoc(root, list_start, root, 0);
+				//execute_and_wait_child(root, &state_context.context);
 				print_ast(root);
 				while (list)
 				{

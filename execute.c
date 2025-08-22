@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/21 16:40:14 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/23 00:09:58 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,53 +18,100 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-void	write_temp_files(char *delimiter, int fd)
+void	close_heredoc_pipes()
+{
+	close(1023);
+	exit(2);
+}
+
+void	write_temp_files(t_ast_node *root, t_list *tokens, char *delimiter_string, int* fd)
 {
 	char	*line_string;
-	char	*delimiter_with_newline;
+	char	delimiter[ft_strlen(delimiter_string) + 1];
 
-	delimiter_with_newline = ft_strjoin(delimiter, "\n");
+	ft_memcpy(delimiter, delimiter_string, ft_strlen(delimiter_string) + 1);
+	free(delimiter_string);
+	free_command(&root);
+	ft_lstclear(&tokens, free_token);
+	close(fd[0]);
+	dup2(fd[1], 1023);
+	close(fd[1]);
 	ft_putstr_fd("> ", 1);
 	line_string = get_next_line(0);
-	while (line_string != 0 && ft_strncmp(line_string, delimiter_with_newline,
-			ft_strlen(delimiter_with_newline) + 1) != 0)
+	while (line_string != 0 && ft_strncmp(line_string, delimiter_string,
+			ft_strlen(delimiter_string) + 1) != 0)
 	{
-		write(fd, line_string, ft_strlen(line_string));
+		ft_putstr_fd(line_string, 1023);
 		free(line_string);
 		ft_putstr_fd("> ", 1);
 		line_string = get_next_line(0);
 	}
 	if ((line_string == 0 || ft_strncmp(line_string, "", 1) == 0)
-		&& ft_strncmp(delimiter, "", 1) != 0)
+		&& ft_strncmp(delimiter_string, "\n", 2) != 0)
 		ft_putstr_fd("here-document delimited by end-of-file", 2);
 	free(line_string);
-	free(delimiter_with_newline);
+	close(1023);
+	exit(0);
 }
 
-void	open_temp_files(t_list *list)
+int	wait_for_heredoc_to_finish(t_list *redirection_delimiter, int *fd, int pid)
 {
-	char					*redirect_type;
-	char					*filename;
-	char					*filename_tmp;
-	int						fd;
-	static unsigned int		index = 0;
+	int	ret_code;
 
-	while (list != 0)
+	signal(SIGINT, SIG_IGN);
+	close(fd[1]);
+	waitpid(pid, &ret_code, 0);
+	signal(SIGINT, print_signal);
+	if (WIFEXITED(ret_code) && WEXITSTATUS(ret_code) == 2)
+	{
+		close(fd[0]);
+		return (ret_code);
+	}
+	free(redirection_delimiter->content);
+	redirection_delimiter->content = ft_itoa(fd[0]);
+	return (ret_code);
+}
+
+int	fork_heredoc(t_ast_node *root, t_list *tokens, t_list *list)
+{
+	int		ret_code;
+	int		fd[2];
+	int		pid;	
+	char		*line;
+
+	ret_code = 0;
+	pipe(fd);
+	pid = fork();
+	if (pid == 0)
+	{
+		signal(SIGQUIT, SIG_DFL);
+		signal(SIGINT, close_heredoc_pipes);
+		line = ft_strjoin((char *)list->next->content, "\n");
+		write_temp_files(root, tokens, line, fd);
+	}
+	else
+		ret_code = wait_for_heredoc_to_finish(list->next, fd, pid);
+	return (ret_code);
+}
+
+int	open_temp_files(t_ast_node *root, t_list *tokens, t_list *list)
+{
+	char	*redirect_type;
+	int		ret_code;
+
+	ret_code = 0;
+	while (list != 0 && ret_code == 0)
 	{
 		redirect_type = (char *)list->content;
 		if (ft_strncmp("<<", redirect_type, 3) == 0)
 		{
-			filename = ft_itoa(index++);
-			filename_tmp = ft_strjoin(filename, ".tmp");
-			free(filename);
-			fd = open(filename_tmp, O_WRONLY | O_CREAT | O_TRUNC, 0777);
-			write_temp_files((char *)list->next->content, fd);
-			close(fd);
-			free(list->next->content);
-			list->next->content = filename_tmp;
+			ret_code = fork_heredoc(root, tokens, list);
+			if (WIFEXITED(ret_code) && WEXITSTATUS(ret_code) == 2)
+				return (ret_code);
 		}
 		list = list->next->next;
 	}
+	return (ret_code);
 }
 
 void	execute_command(t_ast_node *node)
@@ -76,17 +123,19 @@ void	execute_command(t_ast_node *node)
 	exit(0);
 }
 
-void	execute_heredoc(t_ast_node *node)
+
+int	execute_heredoc(t_ast_node *root, t_list* tokens, t_ast_node *node, int ret_code)
 {
-	if (node == 0)
-		return ;
+	if (node == 0 || (WIFEXITED(ret_code) && WEXITSTATUS(ret_code) == 2))
+		return (ret_code);
 	if (node->node != 0)
 	{
-		execute_heredoc(node->left);
-		execute_heredoc(node->right);
+		ret_code = execute_heredoc(root, tokens, node->left, ret_code);
+		ret_code = execute_heredoc(root, tokens, node->right, ret_code);
 	}
 	if (node->redirection != 0)
-		open_temp_files(node->redirection);
+		ret_code = open_temp_files(root, tokens, node->redirection);
+	return (ret_code);
 }
 
 char	execute_command_ast_child(t_ast_node *node, t_variable_context *context)
@@ -229,8 +278,8 @@ void	unlink_temp_files(t_list *list)
 	while (list != 0)
 	{
 		redirect_type = (char *)list->content;
-		if (ft_strncmp("<<", redirect_type, 3) == 0)
-			unlink((char *)list->next->content);
+		if (ft_strncmp("<<", redirect_type, 3) == 0 && ft_atoi((char *)list->next->content) != 0)
+			close(ft_atoi(((char *)list->next->content)));
 		list = list->next->next;
 	}
 }
