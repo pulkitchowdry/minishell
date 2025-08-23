@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/23 00:23:57 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/23 22:10:47 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,6 +220,7 @@ int	main(int argc, char **argv, char **envp)
 	t_list	*list;
 	t_variable_context	context;
 	t_state_context		state_context;
+	int	ret_code;
 
 	state_context.context = &context;
 	state_context.current = 0;
@@ -241,8 +242,14 @@ int	main(int argc, char **argv, char **envp)
 					printf("The command is valid\n");
 				else
 					printf("The command cannot execute\n");
-				execute_heredoc(root, list_start, root, 0);
-				//execute_and_wait_child(root, &state_context.context);
+				ret_code = execute_heredoc(root, list_start, root, 0);
+				if (ret_code == 0 || (WIFEXITED(ret_code) && WEXITSTATUS(ret_code) != 2))
+				{
+					printf("heredoc is valid\n");
+					ret_code = execute_command_ast(root, state_context.context);
+				}
+				else
+					printf("heredoc is invalid\n");
 				print_ast(root);
 				while (list)
 				{

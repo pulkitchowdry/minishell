@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/22 23:40:26 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/23 18:03:24 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,6 +188,9 @@ size_t		ft_size(char **string_array);
 char		is_safe_to_execute(t_ast_node *node);
 int		execute_heredoc(t_ast_node *root, t_list *tokens, t_ast_node *node, int ret_code);
 unsigned char		execute_command_ast(t_ast_node *node, t_variable_context *context);
+int			execute_and_wait_child(t_ast_node *node, t_variable_context *context);
 void		unlink_files(t_ast_node *node);
 void		print_signal(int);
+char		*get_variable_key(char *string);
+char		*get_variable_value(char *string);
 #endif

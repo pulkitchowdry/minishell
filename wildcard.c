@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 12:55:19 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/14 19:32:59 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/23 23:04:07 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ size_t	ft_size(char **string_array)
 {
 	size_t	count;
 
+	if (string_array == 0)
+		return (0);
 	count = 0;
 	while (*string_array)
 	{
@@ -35,6 +37,8 @@ void	free_string_array(char **string_array)
 {
 	char	**array_start;
 
+	if (string_array == 0)
+		return ;
 	array_start = string_array;
 	while (*string_array)
 	{
