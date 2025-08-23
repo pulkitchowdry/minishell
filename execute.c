@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/23 15:41:14 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/23 16:36:40 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,22 +24,19 @@ void	close_heredoc_pipes()
 	exit(2);
 }
 
-void	write_temp_files(t_ast_node *root, t_list *tokens, char *delimiter_string, int* fd)
+void	write_temp_files(char *delimiter_string, int* fd)
 {
 	char	*line_string;
 	char	delimiter[1000];
 
 	ft_strlcpy(delimiter, delimiter_string, 1000);
 	free(delimiter_string);
-	free_command(&root);
-	ft_lstclear(&tokens, free_token);
-	close(fd[0]);
 	dup2(fd[1], 1023);
 	close(fd[1]);
 	ft_putstr_fd("> ", 1);
 	line_string = get_next_line(0);
-	while (line_string != 0 && ft_strncmp(line_string, delimiter_string,
-			ft_strlen(delimiter_string) + 1) != 0)
+	while (line_string != 0 && ft_strncmp(line_string, delimiter,
+			ft_strlen(delimiter) + 1) != 0)
 	{
 		ft_putstr_fd(line_string, 1023);
 		free(line_string);
@@ -47,7 +44,7 @@ void	write_temp_files(t_ast_node *root, t_list *tokens, char *delimiter_string, 
 		line_string = get_next_line(0);
 	}
 	if ((line_string == 0 || ft_strncmp(line_string, "", 1) == 0)
-		&& ft_strncmp(delimiter_string, "\n", 2) != 0)
+		&& ft_strncmp(delimiter, "\n", 2) != 0)
 		ft_putstr_fd("here-document delimited by end-of-file", 2);
 	free(line_string);
 	close(1023);
@@ -86,11 +83,15 @@ int	fork_heredoc(t_ast_node *root, t_list *tokens, t_list *list)
 	{
 		signal(SIGQUIT, SIG_DFL);
 		signal(SIGINT, close_heredoc_pipes);
+		close(fd[0]);
+		unlink_files(root);
 		line = ft_strjoin((char *)list->next->content, "\n");
-		write_temp_files(root, tokens, line, fd);
+		free_command(&root);
+		ft_lstclear(&tokens, free_token);
+		write_temp_files(line, fd);
 	}
 	else
-		ret_code = wait_for_heredoc_to_finish(list->next, fd, pid);
+		ret_code = wait_for_heredoc_to_finish(list, fd, pid);
 	return (ret_code);
 }
 
@@ -273,13 +274,10 @@ unsigned char	execute_command_ast(t_ast_node *node,
 
 void	unlink_temp_files(t_list *list)
 {
-	char	*redirect_type;
-
 	while (list != 0)
 	{
-		redirect_type = (char *)list->content;
-		if (ft_strncmp("<<", redirect_type, 3) == 0 && ft_atoi((char *)list->next->content) != 0)
-			close(ft_atoi(((char *)list->next->content)));
+		if (ft_atoi((char *)list->content) != 0)
+			close(ft_atoi((char *)list->content));
 		list = list->next->next;
 	}
 }
