@@ -6,21 +6,21 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 19:09:37 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/13 14:38:48 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/21 16:23:44 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "libft/libft.h"
 
-int	process_initial_quotes_or_variable(t_token *cur_tok, t_ast_node **current)
+int	process_initial_quotes_or_variable(t_token *cur_tok, t_ast_node **current, t_variable_context *context)
 {
 	if (cur_tok->type == DOUBLE_QUOTE_STRING)
-		process_double_quote(cur_tok->string);
+		cur_tok->string = process_double_quote(cur_tok->string, context);
 	else if (cur_tok->type == SINGLE_QUOTE_STRING)
-		process_single_quote(cur_tok->string);
+		cur_tok->string = process_single_quote(cur_tok->string);
 	else if (cur_tok->type == VARIABLE)
-		process_variable(cur_tok->string);
+		cur_tok->string = process_variable(cur_tok->string, context);
 	ft_lstadd_back(&((*current)->command),
 		ft_lstnew(ft_strdup(cur_tok->string)));
 	return (COMMAND_STRING);

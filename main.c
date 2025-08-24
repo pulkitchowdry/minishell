@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/17 17:40:33 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/23 22:10:47 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,18 @@
 #include <readline/history.h>
 #include <signal.h>
 #include <stdio.h>
-#include "libft/libft.h"
 
-void	print_signal()
+#include "libft/libft.h"
+#include "minishell.h"
+
+void	print_signal(int signal)
 {
+	(void)signal;
 	rl_on_new_line();
 	printf("\n");
 	rl_replace_line("", 0);
 	rl_redisplay();
 }
-
-#include "minishell.h"
 
 void	ft_error(void)
 {
@@ -212,13 +213,19 @@ void	print_ast(t_ast_node *node)
 
 int	main(int argc, char **argv, char **envp)
 {
-	(void)envp;
 	signal(SIGQUIT, SIG_IGN);
 	signal(SIGINT, print_signal);
 	t_data	data;
 	t_list	*list_start;
 	t_list	*list;
+	t_variable_context	context;
+	t_state_context		state_context;
+	int	ret_code;
 
+	state_context.context = &context;
+	state_context.current = 0;
+	context.environment_variables = envp;
+	context.local_variables = 0;
 	if(argc > 0 && argv[0])
 	{
 		while (1)
@@ -230,12 +237,19 @@ int	main(int argc, char **argv, char **envp)
 				add_history(data.input);
 				list = create_tokens(data.input);
 				list_start = list;
-				t_ast_node *root = parse_list(&list);
+				t_ast_node *root = parse_list(&list, &state_context);
 				if (root != 0 && is_safe_to_execute(root) && list == 0)
 					printf("The command is valid\n");
 				else
 					printf("The command cannot execute\n");
-				execute_heredoc(root);
+				ret_code = execute_heredoc(root, list_start, root, 0);
+				if (ret_code == 0 || (WIFEXITED(ret_code) && WEXITSTATUS(ret_code) != 2))
+				{
+					printf("heredoc is valid\n");
+					ret_code = execute_command_ast(root, state_context.context);
+				}
+				else
+					printf("heredoc is invalid\n");
 				print_ast(root);
 				while (list)
 				{

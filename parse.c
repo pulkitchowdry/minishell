@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/17 17:57:04 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/22 21:19:50 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,19 +15,167 @@
 
 #include <stdlib.h>
 
-char	*process_double_quote(char *string)
+char	*extract_variable_name(char *string, char *start, char *end)
 {
+	if (*start == '{')
+	{
+		start++;
+		end--;
+		end += *end != '}';
+	}
+	return (ft_substr(string, start - string, end - start));
+}
+
+char	*get_variable_key(char *string)
+{
+	char	*equal_sign;
+
+	equal_sign = ft_strchr(string, '=');
+	if (equal_sign == 0)
+		return (ft_strdup(""));
+	return (ft_substr(string, 0, equal_sign - string));
+}
+
+char	*get_variable_value(char *string)
+{
+	char	*equal_sign;
+
+	equal_sign = ft_strchr(string, '=');
+	if (equal_sign == 0)
+		return (ft_strdup(""));
+	return (ft_substr(string, equal_sign - string + 1,
+			ft_strlen(equal_sign + 1)));
+}
+
+char	*get_special_variable(char *variable)
+{
+	if (ft_strncmp(variable, "?", 2) == 0)
+		return (ft_itoa(0));
+	return (ft_strdup(""));
+}
+
+char	is_variable_match(char *string, char *variable)
+{
+	char	*variable_key;
+	char	match;
+
+	variable_key = get_variable_key(string);
+	match = ft_strncmp(variable_key, variable,
+		ft_strlen(variable_key) + 1) == 0;
+	free(variable_key);
+	return (match);
+}
+
+char	*get_value(t_variable_context *context, char *variable)
+{
+	int		seek;
+
+	seek = 0;
+	while (context->environment_variables[seek])
+	{
+		if (is_variable_match(context->environment_variables[seek], variable))
+			return (get_variable_value(context->environment_variables[seek]));
+		seek++;
+	}
+	seek = 0;
+	while (context->local_variables[seek])
+	{
+		if (is_variable_match(context->local_variables[seek], variable))
+			return (get_variable_value(context->local_variables[seek]));
+		seek++;
+	}
+	return (get_special_variable(variable));
+}
+
+char	*free_and_return_original_string(char *string, char *head, char *tail)
+{
+	free(head);
+	free(tail);
 	return (string);
+}
+
+char	*substitute_variable(char *string, char *start,
+	char *end, t_variable_context *context)
+{
+	char	*result;
+	char	*head;
+	char	*variable;
+	char	*value;
+	char	*tail;
+
+	head = ft_substr(string, 0, start - string - 1);
+	tail = ft_substr(string, end - string, ft_strlen(string) - (end - string));
+	variable = extract_variable_name(string, start, end);
+	if (variable == 0)
+		return (free_and_return_original_string(string, head, tail));
+	value = get_value(context, variable);
+	free(variable);
+	result = (char *)ft_calloc(sizeof(char), ft_strlen(head) + ft_strlen(value)
+			+ ft_strlen(tail) + 1);
+	ft_strlcat(result, head, ft_strlen(head) + 1);
+	ft_strlcat(result, value, ft_strlen(head) + ft_strlen(value) + 1);
+	ft_strlcat(result, tail, ft_strlen(head)
+		+ ft_strlen(value) + ft_strlen(tail) + 1);
+	free(head);
+	free(value);
+	free(tail);
+	free(string);
+	return (result);
+}
+
+char	*process_double_quote(char *string, t_variable_context *context)
+{
+	char	*end;
+	char	*start;
+	char	curly_brackets;
+	char	*result;
+
+	result = ft_strtrim(string, "\"");
+	free(string);
+	start = ft_strchr(result, '$');
+	while (start)
+	{
+		end = start + 1;
+		curly_brackets = *end == '{';
+		end += curly_brackets;
+		while ((ft_isalnum(*end) || *end == '_'
+			|| (curly_brackets && *end == '}')) && *end)
+		{
+			end++;
+			if (curly_brackets && *end == '}')
+				break ;
+		}
+		result = substitute_variable(result, start + 1,
+				end + (curly_brackets && *end == '}'), context);
+		start = ft_strchr(end, '$');
+	}
+	return (result);
 }
 
 char	*process_single_quote(char *string)
 {
-	return (string);
+	return (ft_strtrim(string, "'"));
 }
 
-char	*process_variable(char *string)
+char	*process_variable(char *string, t_variable_context *context)
 {
-	return (string);
+	char	*end;
+	char	*start;
+	char	curly_brackets;
+
+	start = ft_strchr(string, '$');
+	end = start + 1;
+	curly_brackets = *end == '{';
+	end += curly_brackets;
+	while ((ft_isalnum(*end) || *end == '_'
+			|| (curly_brackets && *end == '}')) && *end)
+	{
+		end++;
+		if (curly_brackets && *end == '}')
+			break ;
+	}
+	return (substitute_variable(string, start + 1,
+			end + (curly_brackets && *end == '}'), context));
 }
 
 char	*process_wildcard(t_ast_node *current_node, char *string, t_list *list)
@@ -79,13 +227,13 @@ int	initialize_command_state(t_token *cur_tok, t_ast_node **current)
 }
 
 int	process_assign_string_val(t_list **list, t_token *cur_tok,
-	t_ast_node **current)
+	t_ast_node **current, t_variable_context *context)
 {
 	t_token	*next_tok;
 
 	if (is_command_string(cur_tok->type))
-		append_string_to_current_node(*current,
-			cur_tok, (*current)->assignment);
+		append_string_to_current_node(cur_tok,
+				(*current)->assignment, context);
 	if (*list == 0)
 		return (EXIT);
 	next_tok = (t_token *)(*list)->content;
@@ -158,8 +306,8 @@ int	process_assign_op(t_list **list, t_ast_node **current)
 	}
 }
 
-int	process_initial_command_string(t_list **list,
-		t_token *cur_tok, t_ast_node **current)
+int	process_initial_command_string(t_list **list, t_token *cur_tok,
+		t_ast_node **current, t_variable_context *context)
 {
 	t_token	*next_tok;
 
@@ -175,7 +323,7 @@ int	process_initial_command_string(t_list **list,
 	else if (next_tok->type == DOUBLE_QUOTE_STRING
 		|| next_tok->type == SINGLE_QUOTE_STRING
 		|| next_tok->type == VARIABLE)
-		return (process_initial_quotes_or_variable(cur_tok, current));
+		return (process_initial_quotes_or_variable(cur_tok, current, context));
 	else if (is_redirect(next_tok->type))
 		return (process_initial_redirection(cur_tok, current));
 	else if (next_tok->type == SPACES)
@@ -237,13 +385,14 @@ int	process_redirect(t_list **list, t_token *cur_tok,
 	}
 }
 
-int	process_command_string(t_list **list,
-		t_token *cur_tok, t_ast_node **current)
+int	process_command_string(t_list **list, t_token *cur_tok,
+		t_ast_node **current, t_variable_context *context)
 {
 	t_token	*next_tok;
 
 	if (is_command_string(cur_tok->type))
-		append_string_to_current_node(*current, cur_tok, (*current)->command);
+		append_string_to_current_node(cur_tok, (*current)->command,
+				context);
 	if (*list == 0)
 		return (EXIT);
 	next_tok = (t_token *)(*list)->content;
@@ -263,13 +412,13 @@ int	process_command_string(t_list **list,
 }
 
 int	process_redirect_string(t_list **list, t_token *cur_tok,
-		t_ast_node **current, int current_state)
+		int current_state, t_state_context *state_context)
 {
 	t_token	*next_tok;
 
 	if (is_command_string(cur_tok->type))
-		append_string_to_current_node(*current,
-			cur_tok, (*current)->redirection);
+		append_string_to_current_node(cur_tok,
+			(*state_context->current).redirection, state_context->context);
 	if (*list == 0)
 		return (EXIT);
 	next_tok = (t_token *)(*list)->content;
@@ -305,7 +454,7 @@ int	process_redirect_space(t_list **list,
 	}
 }
 
-t_ast_node	*extract_command(t_list **list)
+t_ast_node	*extract_command(t_list **list, t_state_context *context)
 {
 	t_ast_node	*current;
 	t_token		*cur_tok;
@@ -313,18 +462,19 @@ t_ast_node	*extract_command(t_list **list)
 
 	cur_tok = (t_token *)(*list)->content;
 	current = (t_ast_node *)ft_calloc(sizeof(t_ast_node), 1);
+	context->current = current;
 	current_state = initialize_command_state(cur_tok, &current);
 	while (current_state != EXIT)
 	{
 		cur_tok = (t_token *)(*list)->content;
 		*list = (*list)->next;
 		current_state = process_state(current_state, list,
-				cur_tok, &current);
+				cur_tok, context);
 	}
 	return (current);
 }
 
-t_ast_node	*parse_command(t_list **list)
+t_ast_node	*parse_command(t_list **list, t_state_context *context)
 {
 	t_ast_node	*current;
 	t_token		*cur_tok;
@@ -336,22 +486,21 @@ t_ast_node	*parse_command(t_list **list)
 	while (cur_tok != 0 && cur_tok->type == SPACES)
 		cur_tok = advance_new_node(list);
 	if (cur_tok != 0 && cur_tok->type == OPEN_BRACKET)
-		return (parse_bracket(list));
+		return (parse_bracket(list, context));
 	else if (cur_tok != 0 && is_extractable(cur_tok->type))
-		current = extract_command(list);
+		current = extract_command(list, context);
 	return (current);
 }
 
-t_ast_node	*parse_pipeline(t_list **list)
+t_ast_node	*parse_pipeline(t_list **list, t_state_context *context)
 {
-	t_ast_node	*left_node;
 	t_token		*cur_tok;
 
-	left_node = parse_command(list);
-	if (left_node == 0)
+	context->current = parse_command(list, context);
+	if (context->current == 0)
 		return (0);
 	if (*list == 0)
-		return (left_node);
+		return (context->current);
 	cur_tok = (t_token *)(*list)->content;
 	while (cur_tok != 0 && (cur_tok->type == SPACES || cur_tok->type == PIPE))
 	{
@@ -360,24 +509,30 @@ t_ast_node	*parse_pipeline(t_list **list)
 		if (cur_tok == 0)
 			return (0);
 		if (cur_tok->type == PIPE)
-			left_node = parse_new_node(left_node, cur_tok, list, parse_command);
+			context->current = parse_new_node(context,
+				cur_tok, list, parse_command);
 		if (*list == 0)
 			break ;
 		cur_tok = (t_token *)(*list)->content;
 	}
-	return (left_node);
+	return (context->current);
 }
 
-t_ast_node	*parse_list(t_list **list)
+char	is_space_or_logical(t_token *cur_tok)
 {
-	t_ast_node	*left_node;
+	return (cur_tok->type == SPACES || cur_tok->type == LOGICAL_OR
+		|| cur_tok->type == LOGICAL_AND);
+}
+
+t_ast_node	*parse_list(t_list **list, t_state_context *context)
+{
 	t_token		*cur_tok;
 
-	left_node = parse_pipeline(list);
-	if (left_node == 0)
+	context->current = parse_pipeline(list, context);
+	if (context->current == 0)
 		return (0);
 	if (*list == 0)
-		return (left_node);
+		return (context->current);
 	cur_tok = (t_token *)(*list)->content;
 	while (cur_tok->type == SPACES || cur_tok->type == LOGICAL_OR
 		|| cur_tok->type == LOGICAL_AND)
@@ -387,11 +542,11 @@ t_ast_node	*parse_list(t_list **list)
 		if (cur_tok == 0)
 			return (0);
 		if (cur_tok->type == LOGICAL_AND || cur_tok->type == LOGICAL_OR)
-			left_node = parse_new_node(left_node, cur_tok,
+			context->current = parse_new_node(context, cur_tok,
 					list, parse_pipeline);
 		if (*list == 0)
 			break ;
 		cur_tok = (t_token *)(*list)->content;
 	}
-	return (left_node);
+	return (context->current);
 }
