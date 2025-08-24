@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/24 23:11:17 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/24 23:23:13 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -443,26 +443,30 @@ unsigned char	execute_logical_and(t_ast_node *root,
 
 void	exec_pipe_left_child(t_list *tokens, int *fd, t_ast_node *node, t_variable_context *context)
 {
+	int	ret_code;
+
 	close(fd[0]);
 	close(1);
 	dup2(fd[1], 1);
 	close(fd[1]);
-	execute_command_ast(node, tokens, node->left, context);
+	ret_code = execute_command_ast(node, tokens, node->left, context);
 	free_command(&node);
 	ft_lstclear(&tokens, free_token);
-	exit(0);
+	exit(ret_code);
 }
 
 void	exec_pipe_right_child(t_list *tokens, int *fd, t_ast_node *node, t_variable_context *context)
 {
+	int	ret_code;
+
 	close(fd[1]);
 	close(0);
 	dup2(fd[0], 0);
 	close(fd[0]);
-	execute_command_ast(node, tokens, node->right, context);
+	ret_code = execute_command_ast(node, tokens, node->right, context);
 	free_command(&node);
 	ft_lstclear(&tokens, free_token);
-	exit(0);
+	exit(ret_code);
 }
 
 void	close_all_pipes(int *fd)
