@@ -74,7 +74,7 @@ void	sort_string_ascii(char **string)
 		j = i + 1;
 		while (j < ft_size(string))
 		{
-			if (strncmp(string[i], string[j],
+			if (ft_strncmp(string[i], string[j],
 					max_string_len(string)) > 0)
 			{
 				temp = string[j];
