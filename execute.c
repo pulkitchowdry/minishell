@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/24 21:42:53 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/24 23:11:17 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -241,7 +241,8 @@ void	print_no_file_or_directory(char *command, t_ast_node *node, t_list *tokens)
 	ft_putstr_fd(command, 2);
 	ft_putstr_fd(": No such file or directory\n", 2);
 	free(command);
-	free_command(&node);
+	ft_lstclear(&node->command, free);
+	free(node);
 	ft_lstclear(&tokens, free_token);
 	close(0);
 	close(1);
@@ -285,6 +286,8 @@ int	fork_and_wait(t_ast_node *root, t_list *tokens, t_ast_node *node, t_variable
 	pid = fork();
 	if (pid == 0)
 	{
+		ft_lstclear(&tokens, free_token);
+		ft_lstclear(&node->assignment, free);
 		free_command_except_self(&root, node);
 		search_and_exec(tokens, node, context);
 	}
@@ -362,17 +365,20 @@ int	execute_buildin_command(t_list *command, t_list *redirection, t_variable_con
 
 int	execute_command(t_ast_node *root, t_list *token, t_ast_node *node, t_variable_context *context)
 {
+	int	ret_code;
+
 	if (node == 0)
 		exit(0);
+	ret_code = 0;
 	if (node->command == 0 && node->assignment != 0)
-		return (append_local_variables(node->assignment, node->redirection, context));
+		ret_code = append_local_variables(node->assignment, node->redirection, context);
 	else if (node->command != 0 && is_builtin_command((char *)node->command->content))
-		return (execute_buildin_command(node->command, node->redirection, context));
+		ret_code = execute_buildin_command(node->command, node->redirection, context);
 	else if (node->command != 0 && !is_builtin_command((char *)node->command->content))
-		return (fork_and_wait(root, token, node, context));
+		ret_code = fork_and_wait(root, token, node, context);
 	else if (node->command == 0 && node->assignment == 0 && node->redirection != 0)
-		return (open_files(node->redirection));
-	exit(0);
+		ret_code = open_files(node->redirection);
+	return (ret_code);
 }
 
 int	execute_heredoc(t_ast_node *root, t_list* tokens, t_ast_node *node, int ret_code)
@@ -442,6 +448,9 @@ void	exec_pipe_left_child(t_list *tokens, int *fd, t_ast_node *node, t_variable_
 	dup2(fd[1], 1);
 	close(fd[1]);
 	execute_command_ast(node, tokens, node->left, context);
+	free_command(&node);
+	ft_lstclear(&tokens, free_token);
+	exit(0);
 }
 
 void	exec_pipe_right_child(t_list *tokens, int *fd, t_ast_node *node, t_variable_context *context)
@@ -451,6 +460,9 @@ void	exec_pipe_right_child(t_list *tokens, int *fd, t_ast_node *node, t_variable
 	dup2(fd[0], 0);
 	close(fd[0]);
 	execute_command_ast(node, tokens, node->right, context);
+	free_command(&node);
+	ft_lstclear(&tokens, free_token);
+	exit(0);
 }
 
 void	close_all_pipes(int *fd)
@@ -459,27 +471,43 @@ void	close_all_pipes(int *fd)
 	close(fd[1]);
 }
 
-unsigned char	execute_pipe(t_ast_node *root, t_list *tokens, t_ast_node *node, t_variable_context *context)
+int	*prepare_pipe_fd(t_ast_node *root, t_ast_node *node, t_list *tokens, t_variable_context *context)
 {
-	int	pid[2];
-	int	ret_code;
-	int	proc_count;
+	int	*pid;
 	int	fd[2];
 
 	pipe(fd);
 	free_command_except_self(&root, node);
+	pid = (int *)ft_calloc(sizeof(int), 2);
 	pid[0] = fork();
 	if (pid[0] == 0)
+	{
+		free(pid);
 		exec_pipe_left_child(tokens, fd, node, context);
+	}
 	else
 		pid[1] = fork();
 	if (pid[1] == 0)
+	{
+		free(pid);
 		exec_pipe_right_child(tokens, fd, node, context);
+	}
 	else
 		close_all_pipes(fd);
+	return (pid);
+}
+
+unsigned char	execute_pipe(t_ast_node *root, t_list *tokens, t_ast_node *node, t_variable_context *context)
+{
+	int	*pid;
+	int	ret_code;
+	int	proc_count;
+
+	pid = prepare_pipe_fd(root, node, tokens, context);
 	proc_count = 0;
 	while (proc_count < 2)
 		waitpid(pid[proc_count++], &ret_code, 0);
+	free(pid);
 	if (WIFEXITED(ret_code))
 		return (WEXITSTATUS(ret_code));
 	else if (WIFSIGNALED(ret_code))
@@ -494,8 +522,6 @@ unsigned char	execute_command_ast(t_ast_node *root,
 {
 	int	ret_code;
 
-	signal(SIGQUIT, SIG_DFL);
-	signal(SIGINT, SIG_DFL);
 	ret_code = 255;
 	if (node == 0)
 		return (0);
