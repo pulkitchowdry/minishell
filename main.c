@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/23 22:10:47 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/24 21:39:21 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -233,7 +233,6 @@ int	main(int argc, char **argv, char **envp)
 			data.input = readline("->");
 			if (data.input)
 			{
-				find_match_string(data.input);
 				add_history(data.input);
 				list = create_tokens(data.input);
 				list_start = list;
@@ -246,7 +245,7 @@ int	main(int argc, char **argv, char **envp)
 				if (ret_code == 0 || (WIFEXITED(ret_code) && WEXITSTATUS(ret_code) != 2))
 				{
 					printf("heredoc is valid\n");
-					ret_code = execute_command_ast(root, state_context.context);
+					ret_code = execute_command_ast(root, list_start, root, state_context.context);
 				}
 				else
 					printf("heredoc is invalid\n");

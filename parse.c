@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/22 21:19:50 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/24 21:37:58 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,34 @@ char	*get_variable_key(char *string)
 	if (equal_sign == 0)
 		return (ft_strdup(""));
 	return (ft_substr(string, 0, equal_sign - string));
+}
+
+char	**set_variable_string(char **variable_list, char *string)
+{
+	char	*key;
+	char	*new_key;
+	int	seek;
+	char	match;
+
+	seek = 0;
+	while (variable_list[seek])
+	{
+		key = get_variable_key(variable_list[seek]);
+		new_key = get_variable_key(string);
+		match = ft_strncmp(key, new_key, ft_strlen(new_key) + 1) == 0;
+		free(key);
+		free(new_key);
+		if (match)
+		{
+			free(variable_list[seek]);
+			variable_list[seek] = string;
+			return (variable_list);
+		}
+		else
+			return (append_string_array(variable_list, string));
+		seek++;
+	}
+	return (variable_list);
 }
 
 char	*get_variable_value(char *string)
@@ -195,6 +223,20 @@ void	free_command(t_ast_node **current)
 	ft_lstclear(&(*current)->assignment, free);
 	free_command(&(*current)->left);
 	free_command(&(*current)->right);
+	free(*current);
+	*current = 0;
+}
+
+void	free_command_except_self(t_ast_node **current, t_ast_node *self)
+{
+	if (*current == 0 || *current == self)
+		return ;
+	(*current)->node = 0;
+	ft_lstclear(&(*current)->command, free);
+	ft_lstclear(&(*current)->redirection, free);
+	ft_lstclear(&(*current)->assignment, free);
+	free_command_except_self(&(*current)->left, self);
+	free_command_except_self(&(*current)->right, self);
 	free(*current);
 	*current = 0;
 }
