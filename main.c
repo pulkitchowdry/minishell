@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/14 19:55:50 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/17 17:40:33 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,6 +235,7 @@ int	main(int argc, char **argv, char **envp)
 					printf("The command is valid\n");
 				else
 					printf("The command cannot execute\n");
+				execute_heredoc(root);
 				print_ast(root);
 				while (list)
 				{
@@ -242,6 +243,7 @@ int	main(int argc, char **argv, char **envp)
 					printf("%s\n", tok->string);
 					list = list->next;
 				}
+				unlink_files(root);
 				free_command(&root);
 				ft_lstclear(&list_start, free_token);
 				free(data.input);

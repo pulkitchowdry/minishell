@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 18:43:25 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/13 14:51:08 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/17 17:50:52 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,5 +56,23 @@ int	determine_next_redirect_if_space(int current_state)
 		return (ASSIGN_REDIRECT_SPACE);
 	else if (current_state == COMMAND_REDIRECT)
 		return (COMMAND_REDIRECT_SPACE);
+	return (EXIT);
+}
+
+int	determine_next_redirect_space_if_space(int current_state)
+{
+	if (current_state == ASSIGN_REDIRECT_SPACE)
+		return (ASSIGN_REDIRECT_SPACE);
+	else if (current_state == COMMAND_REDIRECT_SPACE)
+		return (COMMAND_REDIRECT_SPACE);
+	return (EXIT);
+}
+
+int	determine_next_redirect_space_if_string(int current_state)
+{
+	if (current_state == ASSIGN_REDIRECT_SPACE)
+		return (ASSIGN_REDIRECT_STRING);
+	else if (current_state == COMMAND_REDIRECT_SPACE)
+		return (COMMAND_REDIRECT_STRING);
 	return (EXIT);
 }
