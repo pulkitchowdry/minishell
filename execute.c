@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/23 23:15:31 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/24 17:59:23 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -487,7 +487,7 @@ unsigned char	execute_command_ast(t_ast_node *node,
 	ret_code = 255;
 	if (node == 0)
 		return (0);
-	if (node->node != 0)
+	if (node->node == 0)
 		execute_command(node, context);
 	else if (node->node->type == LOGICAL_OR)
 		ret_code = execute_logical_or(node, context);
