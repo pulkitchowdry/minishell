@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 12:55:19 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/24 21:38:18 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/25 19:56:24 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ size_t	ft_size(char **string_array)
 
 char	**append_string_array(char **string_array, char *string)
 {
-	int	seek;
+	int		seek;
 	char	**result;
 
 	result = (char **)ft_calloc(sizeof(char *), ft_size(string_array) + 1);
@@ -275,7 +275,7 @@ void	filter_on_wildcard(char head_flag, char tail_flag,
 
 t_list	*create_list_of_matches(char **filenames)
 {
-	int	seek;
+	int		seek;
 	t_list	*result;
 
 	result = 0;

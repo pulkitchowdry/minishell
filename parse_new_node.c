@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 17:56:58 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/22 21:18:11 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/25 19:55:24 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,33 +89,34 @@ char	is_command_redirect(int current_state)
 	return (current_state == COMMAND_REDIRECT
 		|| current_state == ASSIGN_REDIRECT);
 }
+
 int	process_state(int current_state, t_list **list,
 		t_token *cur_tok, t_state_context *state_context)
 {
 	if (current_state == ASSIGN_STRING_VAL)
 		return (process_assign_string_val(list, cur_tok,
-			&state_context->current, state_context->context));
+				&state_context->current, state_context->context));
 	else if (current_state == ASSIGN_SPACE)
 		return (process_assign_space(list, &state_context->current));
 	else if (current_state == ASSIGN_OP)
 		return (process_assign_op(list, &state_context->current));
 	else if (current_state == INITIAL_COMMAND_STRING)
 		return (process_initial_command_string(list, cur_tok,
-			&state_context->current, state_context->context));
+				&state_context->current, state_context->context));
 	else if (current_state == COMMAND_SPACE)
 		return (process_command_space(list, &state_context->current));
 	else if (is_command_redirect(current_state))
 		return (process_redirect(list, cur_tok,
-			&state_context->current, current_state));
+				&state_context->current, current_state));
 	else if (is_command_redirect_space(current_state))
 		return (process_redirect_space(list,
-			&state_context->current, current_state));
+				&state_context->current, current_state));
 	else if (is_command_redirect_string(current_state))
 		return (process_redirect_string(list,
-			cur_tok, current_state, state_context));
+				cur_tok, current_state, state_context));
 	else if (current_state == COMMAND_QUOTES || current_state == COMMAND_STRING)
 		return (process_command_string(list, cur_tok,
-		&state_context->current, state_context->context));
+				&state_context->current, state_context->context));
 	return (EXIT);
 }
 
