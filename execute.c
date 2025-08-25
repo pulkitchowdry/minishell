@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/25 16:04:50 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/25 19:44:48 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ int	wait_for_heredoc_to_finish(t_list *redirection_delimiter, int *fd, int pid)
 	}
 	free(redirection_delimiter->content);
 	redirection_delimiter->content = ft_itoa(fd[0]);
+	close(fd[0]);
 	return (ret_code);
 }
 
@@ -236,13 +237,12 @@ void	execute_with_execve(t_list *command, char **envp)
 	exit(127);
 }
 
-void	print_no_file_or_directory(char *command, t_ast_node *node, t_list *tokens)
+void	print_no_file_or_directory(char *command, t_list *tokens, t_ast_node *root)
 {
 	ft_putstr_fd(command, 2);
 	ft_putstr_fd(": No such file or directory\n", 2);
 	free(command);
-	ft_lstclear(&node->command, free);
-	free_command(&node);
+	free_command(&root);
 	ft_lstclear(&tokens, free_token);
 	close(0);
 	close(1);
@@ -250,7 +250,7 @@ void	print_no_file_or_directory(char *command, t_ast_node *node, t_list *tokens)
 	exit(127);
 }
 
-void	search_and_exec(t_list *tokens, t_ast_node *node, t_variable_context *context)
+void	search_and_exec(t_ast_node *root, t_list *tokens, t_ast_node *node, t_variable_context *context)
 {
 	char	**path_values;
 	char	*path;
@@ -263,7 +263,7 @@ void	search_and_exec(t_list *tokens, t_ast_node *node, t_variable_context *conte
 	command_name = ft_strdup((char *)node->command->content);
 	path_values = extract_path_variable(context->environment_variables);
 	if (path_values == 0)
-		print_no_file_or_directory(command_name, node, tokens);
+		print_no_file_or_directory(command_name, tokens, root);
 	search = 0;
 	while (path_values[search])
 	{
@@ -274,7 +274,7 @@ void	search_and_exec(t_list *tokens, t_ast_node *node, t_variable_context *conte
 			execute_with_execve(node->command, context->environment_variables);
 	}
 	free_string_array(path_values);
-	print_no_file_or_directory(command_name, node, tokens);
+	print_no_file_or_directory(command_name, tokens, root);
 }
 
 int	fork_and_wait(t_ast_node *root, t_list *tokens, t_ast_node *node, t_variable_context *context)
@@ -285,12 +285,7 @@ int	fork_and_wait(t_ast_node *root, t_list *tokens, t_ast_node *node, t_variable
 	ret_code = 0;
 	pid = fork();
 	if (pid == 0)
-	{
-		ft_lstclear(&tokens, free_token);
-		ft_lstclear(&node->assignment, free);
-		free_command_except_self(&root, node);
-		search_and_exec(tokens, node, context);
-	}
+		search_and_exec(root, tokens, node, context);
 	else
 		waitpid(pid, &ret_code, 0);
 	return (ret_code);
@@ -441,7 +436,7 @@ unsigned char	execute_logical_and(t_ast_node *root,
 	return (255);
 }
 
-void	exec_pipe_left_child(t_list *tokens, int *fd, t_ast_node *node, t_variable_context *context)
+void	exec_pipe_left_child(t_parse_context *parse_context, int *fd, t_ast_node *node, t_variable_context *context)
 {
 	int	ret_code;
 
@@ -449,13 +444,17 @@ void	exec_pipe_left_child(t_list *tokens, int *fd, t_ast_node *node, t_variable_
 	close(1);
 	dup2(fd[1], 1);
 	close(fd[1]);
-	ret_code = execute_command_ast(node, tokens, node->left, context);
-	free_command(&node);
-	ft_lstclear(&tokens, free_token);
+	ret_code = execute_command_ast(parse_context->root, parse_context->tokens, node->left, context);
+	unlink_files(parse_context->root);
+	free_command(&parse_context->root);
+	ft_lstclear(&parse_context->tokens, free_token);
+	close(2);
+	close(1);
+	close(0);
 	exit(ret_code);
 }
 
-void	exec_pipe_right_child(t_list *tokens, int *fd, t_ast_node *node, t_variable_context *context)
+void	exec_pipe_right_child(t_parse_context *parse_context, int *fd, t_ast_node *node, t_variable_context *context)
 {
 	int	ret_code;
 
@@ -463,9 +462,13 @@ void	exec_pipe_right_child(t_list *tokens, int *fd, t_ast_node *node, t_variable
 	close(0);
 	dup2(fd[0], 0);
 	close(fd[0]);
-	ret_code = execute_command_ast(node, tokens, node->right, context);
-	free_command(&node);
-	ft_lstclear(&tokens, free_token);
+	ret_code = execute_command_ast(parse_context->root, parse_context->tokens, node->right, context);
+	unlink_files(parse_context->root);
+	free_command(&parse_context->root);
+	ft_lstclear(&parse_context->tokens, free_token);
+	close(2);
+	close(1);
+	close(0);
 	exit(ret_code);
 }
 
@@ -479,22 +482,24 @@ int	*prepare_pipe_fd(t_ast_node *root, t_ast_node *node, t_list *tokens, t_varia
 {
 	int	*pid;
 	int	fd[2];
+	t_parse_context		parse_context;
 
+	parse_context.root = root;
+	parse_context.tokens = tokens;
 	pipe(fd);
-	free_command_except_self(&root, node);
 	pid = (int *)ft_calloc(sizeof(int), 2);
 	pid[0] = fork();
 	if (pid[0] == 0)
 	{
 		free(pid);
-		exec_pipe_left_child(tokens, fd, node, context);
+		exec_pipe_left_child(&parse_context, fd, node, context);
 	}
 	else
 		pid[1] = fork();
 	if (pid[1] == 0)
 	{
 		free(pid);
-		exec_pipe_right_child(tokens, fd, node, context);
+		exec_pipe_right_child(&parse_context, fd, node, context);
 	}
 	else
 		close_all_pipes(fd);

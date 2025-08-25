@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/24 18:45:32 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/25 19:28:04 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,12 @@ typedef struct s_state_context
 	t_ast_node		*current;
 	t_variable_context	*context;
 }	t_state_context;
+
+typedef struct s_parse_context
+{
+	t_ast_node	*root;
+	t_list		*tokens;
+}	t_parse_context;
 
 typedef struct s_data
 {

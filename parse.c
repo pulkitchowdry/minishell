@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/25 16:56:55 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/25 19:47:06 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,20 +220,6 @@ void	free_command(t_ast_node **current)
 	ft_lstclear(&(*current)->assignment, free);
 	free_command(&(*current)->left);
 	free_command(&(*current)->right);
-	free(*current);
-	*current = 0;
-}
-
-void	free_command_except_self(t_ast_node **current, t_ast_node *self)
-{
-	if (*current == 0 || *current == self)
-		return ;
-	(*current)->node = 0;
-	ft_lstclear(&(*current)->command, free);
-	ft_lstclear(&(*current)->redirection, free);
-	ft_lstclear(&(*current)->assignment, free);
-	free_command_except_self(&(*current)->left, self);
-	free_command_except_self(&(*current)->right, self);
 	free(*current);
 	*current = 0;
 }
