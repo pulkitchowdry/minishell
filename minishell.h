@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/25 19:28:04 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/25 22:55:01 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,5 +200,4 @@ void		print_signal(int);
 char		*get_variable_key(char *string);
 char		*get_variable_value(char *string);
 char		**append_string_array(char **string_array, char *string);
-void		free_command_except_self(t_ast_node **current, t_ast_node *self);
 #endif
