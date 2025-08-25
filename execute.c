@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/24 23:23:13 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/25 16:04:50 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -242,7 +242,7 @@ void	print_no_file_or_directory(char *command, t_ast_node *node, t_list *tokens)
 	ft_putstr_fd(": No such file or directory\n", 2);
 	free(command);
 	ft_lstclear(&node->command, free);
-	free(node);
+	free_command(&node);
 	ft_lstclear(&tokens, free_token);
 	close(0);
 	close(1);

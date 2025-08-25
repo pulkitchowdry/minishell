@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/24 21:37:58 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/25 16:56:55 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,11 +57,8 @@ char	**set_variable_string(char **variable_list, char *string)
 			variable_list[seek] = string;
 			return (variable_list);
 		}
-		else
-			return (append_string_array(variable_list, string));
-		seek++;
 	}
-	return (variable_list);
+	return (append_string_array(variable_list, string));
 }
 
 char	*get_variable_value(char *string)
