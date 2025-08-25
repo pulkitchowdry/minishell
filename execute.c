@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/25 20:11:54 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/25 20:54:57 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ int	wait_for_heredoc_to_finish(t_list *redirection_delimiter, int *fd, int pid)
 	}
 	free(redirection_delimiter->content);
 	redirection_delimiter->content = ft_itoa(fd[0]);
-	close(fd[0]);
 	return (ret_code);
 }
 
@@ -248,6 +247,7 @@ void	print_no_file_or_directory(char *command,
 	ft_putstr_fd(command, 2);
 	ft_putstr_fd(": No such file or directory\n", 2);
 	free(command);
+	unlink_files(root);
 	free_command(&root);
 	ft_lstclear(&tokens, free_token);
 	close(0);
@@ -565,7 +565,7 @@ unsigned char	execute_command_ast(t_ast_node *root,
 	if (node == 0)
 		return (0);
 	if (node->node == 0)
-		execute_command(root, tokens, node, context);
+		ret_code = execute_command(root, tokens, node, context);
 	else if (node->node->type == LOGICAL_OR)
 		ret_code = execute_logical_or(root, tokens, node, context);
 	else if (node->node->type == LOGICAL_AND)
