@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/25 19:54:27 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/26 16:25:02 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -370,7 +370,10 @@ int	process_command_space(t_list **list, t_ast_node **current)
 		return (COMMAND_SPACE);
 	else if (next_tok->type == DOUBLE_QUOTE_STRING
 		|| next_tok->type == SINGLE_QUOTE_STRING)
+	{
+		ft_lstadd_back(&((*current)->command), ft_lstnew(ft_strdup("")));
 		return (COMMAND_QUOTES);
+	}
 	else if (next_tok->type == STRING || next_tok->type == ASSIGNMENT
 		|| next_tok->type == VARIABLE)
 	{
