@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/24 17:59:23 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/26 16:03:11 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,8 +143,8 @@ char	**extract_path_variable(char **environment_variable)
 	while (environment_variable[i] && value == 0)
 	{
 		key = get_variable_key(environment_variable[i]);
-		if (ft_strncmp("PATH", key, ft_strlen(key) + 1))
-			value = get_variable_value(environment_variable[i]);
+		if (!ft_strncmp("PATH", key, ft_strlen(key) + 1))
+			value = get_variable_value(environment_variable[i]);	
 		free(key);
 		i++;
 	}
@@ -232,6 +232,7 @@ void	execute_with_execve(t_list *command, char **envp)
 		argv[i++] = (char *)command->content;
 		command = command->next;
 	}
+	argv[i] = NULL;
 	execve(argv[0], argv, envp);
 	exit(127);
 }
@@ -295,7 +296,7 @@ char	is_builtin_command(char *command)
 		|| ft_strncmp("pwd", command, ft_strlen("pwd") + 1) == 0
 		|| ft_strncmp("export", command, ft_strlen("export") + 1) == 0
 		|| ft_strncmp("unset", command, ft_strlen("unset") + 1) == 0
-		|| ft_strncmp("env", command, ft_strlen("env") + 1) == 0
+		// || ft_strncmp("env", command, ft_strlen("env") + 1) == 0
 		|| ft_strncmp("exit", command, ft_strlen("exit") + 1) == 0);
 }
 
@@ -330,7 +331,7 @@ int	append_local_variables(t_list *assignment, t_list *redirection, t_variable_c
 	new_array = (char **)ft_calloc(sizeof(char *), ft_size(context->local_variables)
 			+ (ft_lstsize(assignment) >> 1) + 1);
 	seek = 0;
-	while (context->local_variables[seek])
+	while (context->local_variables && context->local_variables[seek])
 	{
 		new_array[seek] = context->local_variables[seek];
 		seek++;
@@ -352,6 +353,15 @@ int	execute_buildin_command(t_list *command, t_list *redirection, t_variable_con
 	(void)command;
 	(void)redirection;
 	(void)context;
+	
+	if (ft_strncmp(command->content, "echo", ft_strlen(command->content)) == 0)
+		ft_echo(command, redirection, context);
+	if (ft_strncmp(command->content, "cd", ft_strlen(command->content)) == 0)
+		ft_cd(command, redirection, context);
+	if (ft_strncmp(command->content, "export", ft_strlen(command->content)) == 0)
+		ft_export(command, redirection, context);
+	if (ft_strncmp(command->content, "unset", ft_strlen(command->content)) == 0)
+		ft_unset(command, redirection, context);
 	return (0);
 }
 

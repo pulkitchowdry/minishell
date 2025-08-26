@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_new_node.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 17:56:58 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/22 21:18:11 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/26 14:19:05 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,11 +126,20 @@ void	append_string_to_current_node(t_token *cur_tok,
 	t_list	*last_node;
 
 	if (cur_tok->type == DOUBLE_QUOTE_STRING)
+	{
+		printf("1. %s\n", cur_tok->string);
 		cur_tok->string = process_double_quote(cur_tok->string, context);
+	}
 	else if (cur_tok->type == SINGLE_QUOTE_STRING)
+	{
+		printf("2. %s\n", cur_tok->string);
 		cur_tok->string = process_single_quote(cur_tok->string);
+	}
 	else if (cur_tok->type == VARIABLE)
+	{
+		printf("3. %s\n", cur_tok->string);
 		cur_tok->string = process_variable(cur_tok->string, context);
+	}
 	last_node = ft_lstlast(list);
 	string = (char *)last_node->content;
 	last_node->content = ft_strjoin(string, cur_tok->string);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/22 21:19:50 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/26 16:31:40 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,6 +149,7 @@ char	*process_double_quote(char *string, t_variable_context *context)
 				end + (curly_brackets && *end == '}'), context);
 		start = ft_strchr(end, '$');
 	}
+	printf("res: %s\n", result);
 	return (result);
 }
 
@@ -345,7 +346,10 @@ int	process_command_space(t_list **list, t_ast_node **current)
 		return (COMMAND_SPACE);
 	else if (next_tok->type == DOUBLE_QUOTE_STRING
 		|| next_tok->type == SINGLE_QUOTE_STRING)
+	{
+		ft_lstadd_back(&((*current)->command), ft_lstnew(ft_strdup("")));
 		return (COMMAND_QUOTES);
+	}
 	else if (next_tok->type == STRING || next_tok->type == ASSIGNMENT
 		|| next_tok->type == VARIABLE)
 	{

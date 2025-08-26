@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/23 18:03:24 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/26 15:26:10 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,7 @@ typedef struct s_variable_context
 {
 	char	**environment_variables;
 	char	**local_variables;
+	char	**dup_environment_variables;
 }	t_variable_context;
 
 typedef struct s_state_context
@@ -96,6 +97,17 @@ typedef struct s_state_context
 	t_ast_node		*current;
 	t_variable_context	*context;
 }	t_state_context;
+
+typedef struct s_env
+{
+	char	*oldpwd; //For cd
+	char	*pwd; //For cd
+	char	**new_env; //For export to store both key and value
+	char	*new_env_key; //For export
+	char	*new_env_value; //For export
+	char	*char_unset; //For unset
+	int		no_new_line_flag; //For echo
+}	t_env;
 
 typedef struct s_data
 {
@@ -111,6 +123,7 @@ typedef struct s_data
 	int		pipe_status;
 	int		pipe_fd[2];
 	int		prevfd;
+	char	**myenvp; //For export to duplicate envp
 }	t_data;
 
 char		**ft_split(char const *s, char c);
@@ -193,4 +206,16 @@ void		unlink_files(t_ast_node *node);
 void		print_signal(int);
 char		*get_variable_key(char *string);
 char		*get_variable_value(char *string);
+size_t	ft_env_length(char **envp);
+char	**ft_copy_envp(char **myenvp, char *new);
+char	**ft_dup_envp(char **envp);
+void	ft_add_to_myenvp(t_variable_context *context, t_env *temp_env);
+void	ft_update_envp(t_env *temp_envp, t_list *command, t_variable_context *context);
+char	*ft_extract_envp(char **envp, char *str);
+char	**ft_remove_from_myenvp(t_variable_context *context, t_env *temp_envp);
+void	ft_echo(t_list *command, t_list *redirection, t_variable_context *context);
+void	ft_cd(t_list *command, t_list *redirection, t_variable_context *context);
+void	ft_export(t_list *command, t_list *redirection, t_variable_context *context);
+void	ft_unset(t_list *command, t_list *redirection, t_variable_context *context);
+
 #endif

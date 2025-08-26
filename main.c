@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/24 16:50:46 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/26 15:31:48 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,6 +226,7 @@ int	main(int argc, char **argv, char **envp)
 	state_context.current = 0;
 	context.environment_variables = envp;
 	context.local_variables = 0;
+	context.dup_environment_variables = ft_dup_envp(envp);
 	if(argc > 0 && argv[0])
 	{
 		while (1)
