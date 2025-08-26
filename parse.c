@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/26 16:31:40 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/26 17:59:34 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,31 @@ char	*get_variable_key(char *string)
 	if (equal_sign == 0)
 		return (ft_strdup(""));
 	return (ft_substr(string, 0, equal_sign - string));
+}
+
+char	**set_variable_string(char **variable_list, char *string)
+{
+	char	*key;
+	char	*new_key;
+	int		seek;
+	char	match;
+
+	seek = 0;
+	while (variable_list[seek])
+	{
+		key = get_variable_key(variable_list[seek]);
+		new_key = get_variable_key(string);
+		match = ft_strncmp(key, new_key, ft_strlen(new_key) + 1) == 0;
+		free(key);
+		free(new_key);
+		if (match)
+		{
+			free(variable_list[seek]);
+			variable_list[seek] = string;
+			return (variable_list);
+		}
+	}
+	return (append_string_array(variable_list, string));
 }
 
 char	*get_variable_value(char *string)
@@ -149,7 +174,6 @@ char	*process_double_quote(char *string, t_variable_context *context)
 				end + (curly_brackets && *end == '}'), context);
 		start = ft_strchr(end, '$');
 	}
-	printf("res: %s\n", result);
 	return (result);
 }
 

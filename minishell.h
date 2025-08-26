@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/26 15:26:10 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/26 17:57:16 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,9 +94,15 @@ typedef struct s_variable_context
 
 typedef struct s_state_context
 {
-	t_ast_node		*current;
+	t_ast_node			*current;
 	t_variable_context	*context;
 }	t_state_context;
+
+typedef struct s_parse_context
+{
+	t_ast_node	*root;
+	t_list		*tokens;
+}	t_parse_context;
 
 typedef struct s_env
 {
@@ -200,12 +206,13 @@ void		free_string_array(char **string_array);
 size_t		ft_size(char **string_array);
 char		is_safe_to_execute(t_ast_node *node);
 int		execute_heredoc(t_ast_node *root, t_list *tokens, t_ast_node *node, int ret_code);
-unsigned char		execute_command_ast(t_ast_node *node, t_variable_context *context);
+unsigned char		execute_command_ast(t_ast_node *root, t_list *tokens, t_ast_node *node, t_variable_context *context);
 int			execute_and_wait_child(t_ast_node *node, t_variable_context *context);
 void		unlink_files(t_ast_node *node);
 void		print_signal(int);
 char		*get_variable_key(char *string);
 char		*get_variable_value(char *string);
+char		**append_string_array(char **string_array, char *string);
 size_t	ft_env_length(char **envp);
 char	**ft_copy_envp(char **myenvp, char *new);
 char	**ft_dup_envp(char **envp);

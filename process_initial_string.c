@@ -6,14 +6,15 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 19:09:37 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/26 13:25:02 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/26 18:07:47 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "libft/libft.h"
 
-int	process_initial_quotes_or_variable(t_token *cur_tok, t_ast_node **current, t_variable_context *context)
+int	process_initial_quotes_or_variable(t_token *cur_tok,
+	t_ast_node **current, t_variable_context *context)
 {
 	if (cur_tok->type == DOUBLE_QUOTE_STRING)
 		cur_tok->string = process_double_quote(cur_tok->string, context);
