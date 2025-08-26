@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/26 17:59:34 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/26 18:25:13 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ char	*get_value(t_variable_context *context, char *variable)
 		seek++;
 	}
 	seek = 0;
-	while (context->local_variables[seek])
+	while (context->local_variables && context->local_variables[seek])
 	{
 		if (is_variable_match(context->local_variables[seek], variable))
 			return (get_variable_value(context->local_variables[seek]));
