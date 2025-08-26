@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/26 15:31:48 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/26 18:18:13 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -247,7 +247,7 @@ int	main(int argc, char **argv, char **envp)
 				if (ret_code == 0 || (WIFEXITED(ret_code) && WEXITSTATUS(ret_code) != 2))
 				{
 					printf("heredoc is valid\n");
-					ret_code = execute_command_ast(root, state_context.context);
+					ret_code = execute_command_ast(root, list_start, root, state_context.context);
 				}
 				else
 					printf("heredoc is invalid\n");
