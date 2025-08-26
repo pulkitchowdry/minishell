@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   built_in.c                                         :+:      :+:    :+:   */
+/*   built_in_helper.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 11:57:59 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/25 17:28:09 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/26 22:23:14 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ char	**ft_dup_envp(char **envp)
 	int		i;
 	t_env	temp;
 	int		j;
+	char	*temp_string;
 	
 	i = 0;
 	envp_len = ft_env_length(envp);
@@ -60,16 +61,27 @@ char	**ft_dup_envp(char **envp)
 		temp.new_env_key = temp.new_env[0];
 		temp.new_env_value = temp.new_env[1];
 		copy[i] = ft_strjoin("declare -x ", temp.new_env_key);
-		copy[i] = ft_strjoin(copy[i], "=\"");
-		copy[i] = ft_strjoin(copy[i], temp.new_env_value);
+		temp_string = ft_strjoin(copy[i], "=\"");
+		free(copy[i]);
+		copy[i] = temp_string;
+		temp_string = ft_strjoin(copy[i], temp.new_env_value);
+		free(copy[i]);
+		copy[i] = temp_string;
 		j = 2;
 		while (temp.new_env[j] != NULL)
 		{
-			copy[i] = ft_strjoin(copy[i], "=");
-			copy[i] = ft_strjoin(copy[i], temp.new_env[j]);
+			temp_string = ft_strjoin(copy[i], "=");
+			free(copy[i]);
+			copy[i] = temp_string;
+			temp_string = ft_strjoin(copy[i], temp.new_env[j]);
+			free(copy[i]);
+			copy[i] = temp_string;
 			j++;
 		}
-		copy[i] = ft_strjoin(copy[i], "\"");
+		temp_string = ft_strjoin(copy[i], "\"");
+		free(copy[i]);
+		copy[i] = temp_string;
+		free_string_array(temp.new_env);
 		i++;
 	}
 	copy[i] = NULL;
