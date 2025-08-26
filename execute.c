@@ -366,6 +366,10 @@ int	fork_and_wait(t_ast_node *root,
 		search_and_exec(root, tokens, node, context);
 	else
 		waitpid(pid, &ret_code, 0);
+	if (WIFEXITED(ret_code))
+		return (WEXITSTATUS(ret_code));
+	if (WIFSIGNALED(ret_code))
+		return (128 + WTERMSIG(ret_code));
 	return (ret_code);
 }
 
@@ -509,19 +513,14 @@ unsigned char	execute_logical_or(t_ast_node *root,
 	int	ret_code;
 
 	ret_code = execute_command_ast(root, tokens, node->left, context);
-	if (WIFEXITED(ret_code))
+	if (ret_code < 128)
 	{
-		if (WEXITSTATUS(ret_code) == 0)
-			return (WEXITSTATUS(ret_code));
+		if (ret_code == 0)
+			return (ret_code);
 		ret_code = execute_command_ast(root, tokens, node->right, context);
-		if (WIFEXITED(ret_code))
-			return (WEXITSTATUS(ret_code));
-		else if (WIFSIGNALED(ret_code))
-			return (128 + WTERMSIG(ret_code));
+		return (ret_code);
 	}
-	else if (WIFSIGNALED(ret_code))
-		return (128 + WTERMSIG(ret_code));
-	return ((unsigned char)255);
+	return (ret_code);
 }
 
 unsigned char	execute_logical_and(t_ast_node *root,
@@ -532,19 +531,14 @@ unsigned char	execute_logical_and(t_ast_node *root,
 	int	ret_code;
 
 	ret_code = execute_command_ast(root, tokens, node->left, context);
-	if (WIFEXITED(ret_code))
+	if (ret_code < 128)
 	{
-		if (WEXITSTATUS(ret_code) != 0)
-			return (WEXITSTATUS(ret_code));
+		if (ret_code != 0)
+			return (ret_code);
 		ret_code = execute_command_ast(root, tokens, node->right, context);
-		if (WIFEXITED(ret_code))
-			return (WEXITSTATUS(ret_code));
-		else if (WIFSIGNALED(ret_code))
-			return (128 + WTERMSIG(ret_code));
+		return (ret_code);
 	}
-	else if (WIFSIGNALED(ret_code))
-		return (128 + WTERMSIG(ret_code));
-	return (255);
+	return (ret_code);
 }
 
 void	exec_pipe_left_child(t_parse_context *parse_context,
@@ -642,7 +636,7 @@ unsigned char	execute_pipe(t_ast_node *root,
 	return ((unsigned char)255);
 }
 
-unsigned char	execute_command_ast(t_ast_node *root,
+int	execute_command_ast(t_ast_node *root,
 	t_list *tokens,
 	t_ast_node *node,
 	t_variable_context *context)
