@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/26 17:59:34 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/26 18:29:25 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ char	is_variable_match(char *string, char *variable)
 
 	variable_key = get_variable_key(string);
 	match = ft_strncmp(variable_key, variable,
-		ft_strlen(variable_key) + 1) == 0;
+			ft_strlen(variable_key) + 1) == 0;
 	free(variable_key);
 	return (match);
 }
@@ -103,7 +103,7 @@ char	*get_value(t_variable_context *context, char *variable)
 		seek++;
 	}
 	seek = 0;
-	while (context->local_variables[seek])
+	while (context->local_variables && context->local_variables[seek])
 	{
 		if (is_variable_match(context->local_variables[seek], variable))
 			return (get_variable_value(context->local_variables[seek]));
@@ -164,7 +164,7 @@ char	*process_double_quote(char *string, t_variable_context *context)
 		curly_brackets = *end == '{';
 		end += curly_brackets;
 		while ((ft_isalnum(*end) || *end == '_'
-			|| (curly_brackets && *end == '}')) && *end)
+				|| (curly_brackets && *end == '}')) && *end)
 		{
 			end++;
 			if (curly_brackets && *end == '}')
@@ -258,7 +258,7 @@ int	process_assign_string_val(t_list **list, t_token *cur_tok,
 
 	if (is_command_string(cur_tok->type))
 		append_string_to_current_node(cur_tok,
-				(*current)->assignment, context);
+			(*current)->assignment, context);
 	if (*list == 0)
 		return (EXIT);
 	next_tok = (t_token *)(*list)->content;
@@ -420,7 +420,7 @@ int	process_command_string(t_list **list, t_token *cur_tok,
 
 	if (is_command_string(cur_tok->type))
 		append_string_to_current_node(cur_tok, (*current)->command,
-				context);
+			context);
 	if (*list == 0)
 		return (EXIT);
 	next_tok = (t_token *)(*list)->content;
@@ -538,7 +538,7 @@ t_ast_node	*parse_pipeline(t_list **list, t_state_context *context)
 			return (0);
 		if (cur_tok->type == PIPE)
 			context->current = parse_new_node(context,
-				cur_tok, list, parse_command);
+					cur_tok, list, parse_command);
 		if (*list == 0)
 			break ;
 		cur_tok = (t_token *)(*list)->content;
