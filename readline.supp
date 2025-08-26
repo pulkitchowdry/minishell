@@ -26,6 +26,6 @@
 	<readline_internal>
 	Memcheck:Leak
 	...
-	fun:readline_internal_teardown
+	fun:readline
 }
 

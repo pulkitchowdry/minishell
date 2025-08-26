@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/26 18:18:13 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/26 18:28:52 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,7 +234,6 @@ int	main(int argc, char **argv, char **envp)
 			data.input = readline("->");
 			if (data.input)
 			{
-				find_match_string(data.input);
 				add_history(data.input);
 				list = create_tokens(data.input);
 				list_start = list;

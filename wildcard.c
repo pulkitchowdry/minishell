@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 12:55:19 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/26 18:12:39 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/26 18:30:07 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -311,7 +311,7 @@ t_list	*find_matches(char head_flag, char tail_flag, char **list_of_strings)
 	filter_on_wildcard(head_flag, tail_flag, list_of_strings, filenames);
 	result = create_list_of_matches(filenames);
 	free_string_array(filenames);
-	return (0);
+	return (result);
 }
 
 t_list	*find_match_string(char *string_with_wildcard)

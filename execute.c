@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/26 18:25:25 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/26 18:28:43 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 
 void	close_heredoc_pipes(int sig)
 {
-	(void) sig;
+	(void)sig;
 	close(1023);
 	close(0);
 	close(1);
@@ -28,7 +28,7 @@ void	close_heredoc_pipes(int sig)
 	exit(2);
 }
 
-void	write_temp_files(char *delimiter_string, int* fd)
+void	write_temp_files(char *delimiter_string, int *fd)
 {
 	char	*line_string;
 	char	delimiter[1000];
@@ -78,7 +78,7 @@ int	fork_heredoc(t_ast_node *root, t_list *tokens, t_list *list)
 	int		ret_code;
 	int		fd[2];
 	int		pid;
-	char		*line;
+	char	*line;
 
 	ret_code = 0;
 	pipe(fd);
@@ -148,7 +148,7 @@ char	**extract_path_variable(char **environment_variable)
 	{
 		key = get_variable_key(environment_variable[i]);
 		if (ft_strncmp("PATH", key, ft_strlen(key) + 1) == 0)
-			value = get_variable_value(environment_variable[i]);	
+			value = get_variable_value(environment_variable[i]);
 		free(key);
 		i++;
 	}
@@ -169,7 +169,7 @@ int	print_permission_denied(char *string)
 	close(2);
 	exit(1);
 }
- 
+
 void	compare_redirect_input(t_list *redirection)
 {
 	int	fd;
@@ -199,7 +199,8 @@ void	process_other_redirect(t_list *redirection)
 
 	if (ft_strncmp(">>", (char *)redirection->content, 3) == 0)
 	{
-		fd = open((char *)redirection->next->content, O_CREAT | O_APPEND | O_WRONLY);
+		fd = open((char *)redirection->next->content,
+				O_CREAT | O_APPEND | O_WRONLY);
 		if (fd == -1)
 			print_permission_denied((char *)redirection->next->content);
 		else
@@ -207,7 +208,8 @@ void	process_other_redirect(t_list *redirection)
 	}
 	else if (ft_strncmp(">", (char *)redirection->content, 2) == 0)
 	{
-		fd = open((char *)redirection->next->content, O_CREAT | O_TRUNC | O_WRONLY);
+		fd = open((char *)redirection->next->content,
+				O_CREAT | O_TRUNC | O_WRONLY);
 		if (fd == -1)
 			print_permission_denied((char *)redirection->next->content);
 		else
@@ -276,7 +278,7 @@ void	print_no_file_or_directory(char *command,
 }
 
 void	substitute_node_with_list(t_list **result,
-	t_list **prev, t_list **command)
+		t_list **prev, t_list **command)
 {
 	if (*prev == 0)
 	{
@@ -314,8 +316,8 @@ t_list	*expand_command_wildcard(t_list *command)
 	return (result);
 }
 
-void	search_and_exec(t_ast_node *root, 
-		t_list *tokens, t_ast_node *node, 
+void	search_and_exec(t_ast_node *root,
+		t_list *tokens, t_ast_node *node,
 		t_variable_context *context)
 {
 	char	**path_values;
@@ -345,8 +347,8 @@ void	search_and_exec(t_ast_node *root,
 }
 
 int	fork_and_wait(t_ast_node *root,
-	t_list *tokens, t_ast_node *node,
-	t_variable_context *context)
+		t_list *tokens, t_ast_node *node,
+		t_variable_context *context)
 {
 	int	pid;
 	int	ret_code;
@@ -388,7 +390,8 @@ int	open_files(t_list *redirection)
 			|| ft_strncmp(">", (char *)redirection->content, 2) == 0)
 		{
 			if (is_wildcard_present((char *)redirection->next->content))
-				return(ambigous_redirect_error((char *)redirection->next->content));
+				return (ambigous_redirect_error((char *)
+						redirection->next->content));
 			fd = open((char *)redirection->next->content, O_CREAT | O_WRONLY);
 			if (fd == -1)
 			{
@@ -397,21 +400,24 @@ int	open_files(t_list *redirection)
 			}
 			close(fd);
 		}
-		else if (ft_strncmp("<", (char *) redirection->content, 2) == 0
-			&& is_wildcard_present((char *)redirection->content))
-			return (ambigous_redirect_error((char *)redirection->next->content));
+		else if (ft_strncmp("<", (char *)redirection->content, 2) == 0
+			&& is_wildcard_present((char *)redirection->next->content))
+			return (ambigous_redirect_error((char *)
+					redirection->next->content));
 		redirection = redirection->next->next;
 	}
 	return (0);
 }
 
-int	append_local_variables(t_list *assignment, t_list *redirection, t_variable_context *context)
+int	append_local_variables(t_list *assignment,
+		t_list *redirection, t_variable_context *context)
 {
-	int	seek;
+	int		seek;
 	char	**new_array;
 	char	*string;
 
-	new_array = (char **)ft_calloc(sizeof(char *), ft_size(context->local_variables)
+	new_array = (char **)ft_calloc(sizeof(char *),
+			ft_size(context->local_variables)
 			+ (ft_lstsize(assignment) >> 1) + 1);
 	seek = 0;
 	while (context->local_variables && context->local_variables[seek])
@@ -431,7 +437,9 @@ int	append_local_variables(t_list *assignment, t_list *redirection, t_variable_c
 	return (open_files(redirection));
 }
 
-int	execute_buildin_command(t_list *command, t_list *redirection, t_variable_context *context)
+int	execute_buildin_command(t_list *command,
+		t_list *redirection,
+		t_variable_context *context)
 {
 	(void)command;
 	(void)redirection;
@@ -448,25 +456,34 @@ int	execute_buildin_command(t_list *command, t_list *redirection, t_variable_con
 	return (0);
 }
 
-int	execute_command(t_ast_node *root, t_list *token,
-				t_ast_node *node, t_variable_context *context)
+int	execute_command(t_ast_node *root,
+		t_list *token, t_ast_node *node,
+		t_variable_context *context)
 {
 	int	ret_code;
-	
+
 	if (node == 0)
 		exit(0);
+	ret_code = 0;
 	if (node->command == 0 && node->assignment != 0)
-		ret_code = append_local_variables(node->assignment, node->redirection, context);
-	else if (node->command != 0 && is_builtin_command((char *)node->command->content))
-		ret_code = execute_buildin_command(node->command, node->redirection, context);
-	else if (node->command != 0 && !is_builtin_command((char *)node->command->content))
-		ret_code = fork_and_wait(root, token, node, context);
-	else if (node->command == 0 && node->assignment == 0 && node->redirection != 0)
-		ret_code =open_files(node->redirection);
+		ret_code = append_local_variables(node->assignment,
+				node->redirection, context);
+	else if (node->command != 0
+		&& is_builtin_command((char *)node->command->content))
+		ret_code = execute_buildin_command(node->command,
+				node->redirection, context);
+	else if (node->command != 0
+		&& !is_builtin_command((char *)node->command->content))
+		ret_code = fork_and_wait(root,
+				token, node, context);
+	else if (node->command == 0
+		&& node->assignment == 0 && node->redirection != 0)
+		ret_code = open_files(node->redirection);
 	return (ret_code);
 }
 
-int	execute_heredoc(t_ast_node *root, t_list* tokens, t_ast_node *node, int ret_code)
+int	execute_heredoc(t_ast_node *root, t_list *tokens,
+		t_ast_node *node, int ret_code)
 {
 	if (node == 0 || (WIFEXITED(ret_code) && WEXITSTATUS(ret_code) == 2))
 		return (ret_code);
@@ -504,9 +521,9 @@ unsigned char	execute_logical_or(t_ast_node *root,
 }
 
 unsigned char	execute_logical_and(t_ast_node *root,
-	t_list *tokens,
-	t_ast_node *node,
-	t_variable_context *context)
+		t_list *tokens,
+		t_ast_node *node,
+		t_variable_context *context)
 {
 	int	ret_code;
 
@@ -526,15 +543,17 @@ unsigned char	execute_logical_and(t_ast_node *root,
 	return (255);
 }
 
-void	exec_pipe_left_child(t_parse_context *parse_context, int *fd, t_ast_node *node, t_variable_context *context)
+void	exec_pipe_left_child(t_parse_context *parse_context,
+		int *fd, t_ast_node *node, t_variable_context *context)
 {
 	int	ret_code;
-	
+
 	close(fd[0]);
 	close(1);
 	dup2(fd[1], 1);
 	close(fd[1]);
-	ret_code = execute_command_ast(parse_context->root, parse_context->tokens, node->left, context);
+	ret_code = execute_command_ast(parse_context->root,
+			parse_context->tokens, node->left, context);
 	unlink_files(parse_context->root);
 	free_command(&parse_context->root);
 	ft_lstclear(&parse_context->tokens, free_token);
@@ -544,15 +563,17 @@ void	exec_pipe_left_child(t_parse_context *parse_context, int *fd, t_ast_node *n
 	exit(ret_code);
 }
 
-void	exec_pipe_right_child(t_parse_context *parse_context, int *fd, t_ast_node *node, t_variable_context *context)
+void	exec_pipe_right_child(t_parse_context *parse_context,
+		int *fd, t_ast_node *node, t_variable_context *context)
 {
 	int	ret_code;
-	
+
 	close(fd[1]);
 	close(0);
 	dup2(fd[0], 0);
 	close(fd[0]);
-	ret_code = execute_command_ast(parse_context->root, parse_context->tokens, node->right, context);
+	ret_code = execute_command_ast(parse_context->root,
+			parse_context->tokens, node->right, context);
 	unlink_files(parse_context->root);
 	free_command(&parse_context->root);
 	ft_lstclear(&parse_context->tokens, free_token);
@@ -569,7 +590,7 @@ void	close_all_pipes(int *fd)
 }
 
 int	*prepare_pipe_fd(t_ast_node *root, t_ast_node *node,
-	t_list *tokens, t_variable_context *context)
+		t_list *tokens, t_variable_context *context)
 {
 	int					*pid;
 	int					fd[2];
@@ -598,8 +619,8 @@ int	*prepare_pipe_fd(t_ast_node *root, t_ast_node *node,
 }
 
 unsigned char	execute_pipe(t_ast_node *root,
-	t_list *tokens, t_ast_node *node,
-	t_variable_context *context)
+		t_list *tokens, t_ast_node *node,
+		t_variable_context *context)
 {
 	int	*pid;
 	int	ret_code;
@@ -609,6 +630,7 @@ unsigned char	execute_pipe(t_ast_node *root,
 	proc_count = 0;
 	while (proc_count < 2)
 		waitpid(pid[proc_count++], &ret_code, 0);
+	free(pid);
 	if (WIFEXITED(ret_code))
 		return (WEXITSTATUS(ret_code));
 	else if (WIFSIGNALED(ret_code))
