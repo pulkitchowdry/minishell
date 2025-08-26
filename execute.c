@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/25 20:54:57 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/25 22:48:04 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,9 @@ void	close_heredoc_pipes(int sig)
 {
 	(void)sig;
 	close(1023);
+	close(0);
+	close(1);
+	close(2);
 	exit(2);
 }
 
@@ -48,7 +51,7 @@ void	write_temp_files(char *delimiter_string, int *fd)
 		&& ft_strncmp(delimiter, "\n", 2) != 0)
 		ft_putstr_fd("here-document delimited by end-of-file", 2);
 	free(line_string);
-	close(1023);
+	close_heredoc_pipes(0);
 	exit(0);
 }
 
@@ -176,9 +179,18 @@ void	compare_redirect_input(t_list *redirection)
 		fd = open((char *)redirection->next->content, O_RDONLY);
 		if (fd == -1)
 			print_permission_denied((char *)redirection->next->content);
-		dup2(fd, 0);
-		close(fd);
+		else
+		{
+			dup2(fd, 0);
+			close(fd);
+		}
 	}
+}
+
+void	dup_fd_to_stdout(int fd)
+{
+	dup2(fd, 1);
+	close(fd);
 }
 
 void	process_other_redirect(t_list *redirection)
@@ -191,8 +203,8 @@ void	process_other_redirect(t_list *redirection)
 				O_CREAT | O_APPEND | O_WRONLY);
 		if (fd == -1)
 			print_permission_denied((char *)redirection->next->content);
-		dup2(fd, 1);
-		close(fd);
+		else
+			dup_fd_to_stdout(fd);
 	}
 	else if (ft_strncmp(">", (char *)redirection->content, 2) == 0)
 	{
@@ -200,8 +212,8 @@ void	process_other_redirect(t_list *redirection)
 				O_CREAT | O_TRUNC | O_WRONLY);
 		if (fd == -1)
 			print_permission_denied((char *)redirection->next->content);
-		dup2(fd, 1);
-		close(fd);
+		else
+			dup_fd_to_stdout(fd);
 	}
 	else
 		compare_redirect_input(redirection);
@@ -219,8 +231,17 @@ void	configure_redirection(t_list *redirection)
 			dup2(heredoc, 0);
 			close(heredoc);
 		}
-		else
+		else if (!is_wildcard_present((char *)redirection->next->content))
 			process_other_redirect(redirection);
+		else if (is_wildcard_present((char *)redirection->next->content))
+		{
+			close(2);
+			close(1);
+			close(0);
+			ft_putstr_fd((char *)redirection->next->content, 2);
+			ft_putstr_fd(": ambiguous redirect\n", 2);
+			exit(1);
+		}
 		redirection = redirection->next->next;
 	}
 }
@@ -256,6 +277,45 @@ void	print_no_file_or_directory(char *command,
 	exit(127);
 }
 
+void	substitute_node_with_list(t_list **result,
+		t_list **prev, t_list **command)
+{
+	if (*prev == 0)
+	{
+		*prev = find_match_string((char *)(*command)->content);
+		*result = *prev;
+		*prev = ft_lstlast(*prev);
+	}
+	else
+	{
+		(*prev)->next = find_match_string((char *)(*command)->content);
+		*prev = ft_lstlast(*prev);
+	}
+	(*prev)->next = (*command)->next;
+	ft_lstdelone(*command, free);
+	*command = (*prev)->next;
+}
+
+t_list	*expand_command_wildcard(t_list *command)
+{
+	t_list	*result;
+	t_list	*prev;
+
+	prev = 0;
+	result = command;
+	while (command)
+	{
+		if (is_wildcard_present((char *)command->content))
+			substitute_node_with_list(&result, &prev, &command);
+		else
+		{
+			prev = command;
+			command = command->next;
+		}
+	}
+	return (result);
+}
+
 void	search_and_exec(t_ast_node *root,
 		t_list *tokens, t_ast_node *node,
 		t_variable_context *context)
@@ -266,6 +326,7 @@ void	search_and_exec(t_ast_node *root,
 	int		search;
 
 	configure_redirection(node->redirection);
+	node->command = expand_command_wildcard(node->command);
 	if (access((char *)node->command->content, X_OK) == 0)
 		execute_with_execve(node->command, context->environment_variables);
 	command_name = ft_strdup((char *)node->command->content);
@@ -312,6 +373,13 @@ char	is_builtin_command(char *command)
 		|| ft_strncmp("exit", command, ft_strlen("exit") + 1) == 0);
 }
 
+int	ambigous_redirect_error(char *string)
+{
+	ft_putstr_fd(string, 2);
+	ft_putstr_fd(": ambiguous redirect\n", 2);
+	return (1);
+}
+
 int	open_files(t_list *redirection)
 {
 	int	fd;
@@ -321,6 +389,9 @@ int	open_files(t_list *redirection)
 		if (ft_strncmp(">>", (char *)redirection->content, 3) == 0
 			|| ft_strncmp(">", (char *)redirection->content, 2) == 0)
 		{
+			if (is_wildcard_present((char *)redirection->next->content))
+				return (ambigous_redirect_error((char *)
+						redirection->next->content));
 			fd = open((char *)redirection->next->content, O_CREAT | O_WRONLY);
 			if (fd == -1)
 			{
@@ -329,6 +400,10 @@ int	open_files(t_list *redirection)
 			}
 			close(fd);
 		}
+		else if (ft_strncmp("<", (char *)redirection->content, 2) == 0
+			&& is_wildcard_present((char *)redirection->next->content))
+			return (ambigous_redirect_error((char *)
+					redirection->next->content));
 		redirection = redirection->next->next;
 	}
 	return (0);
