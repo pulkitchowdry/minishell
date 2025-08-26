@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 12:55:19 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/23 23:04:07 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/25 19:56:24 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,23 @@ size_t	ft_size(char **string_array)
 		string_array++;
 	}
 	return (count);
+}
+
+char	**append_string_array(char **string_array, char *string)
+{
+	int		seek;
+	char	**result;
+
+	result = (char **)ft_calloc(sizeof(char *), ft_size(string_array) + 1);
+	seek = 0;
+	while (string_array[seek])
+	{
+		result[seek] = string_array[seek];
+		seek++;
+	}
+	result[seek] = string;
+	free_string_array(string_array);
+	return (result);
 }
 
 void	free_string_array(char **string_array)
@@ -256,12 +273,28 @@ void	filter_on_wildcard(char head_flag, char tail_flag,
 	compact_filenames(max_files, filenames);
 }
 
+t_list	*create_list_of_matches(char **filenames)
+{
+	int		seek;
+	t_list	*result;
+
+	result = 0;
+	seek = 0;
+	while (filenames[seek])
+	{
+		ft_lstadd_back(&result, ft_lstnew(ft_strdup(filenames[seek])));
+		seek++;
+	}
+	return (result);
+}
+
 t_list	*find_matches(char head_flag, char tail_flag, char **list_of_strings)
 {
 	DIR				*cur_dir;
 	struct dirent	*file;
 	int				dir_num;
 	char			**filenames;
+	t_list			*result;
 
 	cur_dir = opendir("./");
 	if (cur_dir == 0)
@@ -276,8 +309,9 @@ t_list	*find_matches(char head_flag, char tail_flag, char **list_of_strings)
 	closedir(cur_dir);
 	filenames = get_sorted_filenames(dir_num);
 	filter_on_wildcard(head_flag, tail_flag, list_of_strings, filenames);
+	result = create_list_of_matches(filenames);
 	free_string_array(filenames);
-	return (0);
+	return (result);
 }
 
 t_list	*find_match_string(char *string_with_wildcard)
