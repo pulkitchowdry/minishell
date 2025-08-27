@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/27 16:07:13 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/27 16:49:35 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,6 +224,7 @@ char	**ft_remove_from_myenvp(t_variable_context *context, t_env *temp_envp);
 char	**ft_remove_from_local(t_variable_context *context, t_env *temp_envp);
 void	ft_echo(t_list *command, t_list *redirection, t_variable_context *context);
 void	ft_cd(t_list *command, t_list *redirection, t_variable_context *context);
+void	ft_pwd(t_list *command, t_list *redirection, t_variable_context *context);
 void	ft_export(t_list *command, t_list *redirection, t_variable_context *context);
 void	ft_unset(t_list *command, t_list *redirection, t_variable_context *context);
 int	append_local_variables(t_list *assignment, t_list *redirection, t_variable_context *context);

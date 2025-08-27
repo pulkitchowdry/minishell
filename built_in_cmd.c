@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 15:11:34 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/27 16:07:35 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/27 16:56:51 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,19 @@ void	ft_cd(t_list *command, t_list *redirection, t_variable_context *context)
 	}
 	else
 		perror("cd");
+}
+void	ft_pwd(t_list *command, t_list *redirection, t_variable_context *context)
+{
+	char	*string;
+
+	string = ft_calloc(sizeof(char), ft_strlen(getcwd(NULL, 0)));
+	if (!string)
+		perror("malloc failed");
+	string = ft_strdup(getcwd(NULL, 0));
+	if (string)
+		printf("%s\n", string);
+	else
+		perror("pwd");
 }
 
 void	ft_export(t_list *command, t_list *redirection, t_variable_context *context)
