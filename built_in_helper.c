@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/08/27 11:48:14 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/27 13:43:56 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -222,31 +222,38 @@ char	**ft_remove_from_myenvp(t_variable_context *context, t_env *temp_envp)
 	return (new);
 }
 
-char	**ft_add_to_local(t_env *temp_env, t_variable_context *context)
-{
-	int		i;
-	char	**new_arr;
-	char	*key_value;
+// char	**ft_add_to_local(t_env *temp_env, t_variable_context *context)
+// {
+// 	int		i;
+// 	char	**new_arr;
+// 	char	*key_value;
 	
-	i = 0;
-	new_arr = ft_calloc(sizeof(char *),
-		ft_size(context->local_variables) + 2);
-	if (temp_env->new_env_key && temp_env->new_env_value)
-	{
-		key_value = ft_strjoin(temp_env->new_env_key, "=");
-		key_value = ft_strjoin(key_value, temp_env->new_env_value);
-		while (context->local_variables && context->local_variables[i])
-		{
-			new_arr[i] = context->local_variables[i];
-			i++;
-		}
-		new_arr[i] = key_value;
-		free(key_value);
-		return(new_arr);
-	}
-	else
-		return (context->local_variables);
-}
+// 	i = 0;
+// 	new_arr = ft_calloc(sizeof(char *), ft_size(context->local_variables) + 2);
+// 	if (temp_env->new_env_key)
+// 	{
+// 		key_value = ft_strjoin(temp_env->new_env_key, "=");
+// 		while (context->local_variables && context->local_variables[i])
+// 		{
+// 			if (ft_strncmp(key_value, context->local_variables[i], ft_strlen(key_value)) != 0)
+// 				new_arr[i] = context->local_variables[i];
+// 			else if (ft_strncmp(key_value, context->local_variables[i], ft_strlen(key_value)) == 0
+// 					&& !temp_env->new_env_value)
+// 				new_arr[i] = context->local_variables[i];
+// 			i++;
+// 		}
+// 		if (temp_env->new_env_value)
+// 		{
+// 			printf("ENtered: %s\n", temp_env->new_env_value);
+// 			key_value = ft_strjoin(key_value, temp_env->new_env_value);
+// 			new_arr[i] = key_value;
+// 		}
+// 		free(key_value);
+// 		return(new_arr);
+// 	}
+// 	else
+// 		return (context->local_variables);
+// }
 
 // //To execute builtin func, likely to be split into two or more functions later
 // void	ft_builtin_exec(t_data *data, char **envp)
