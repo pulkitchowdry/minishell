@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/27 17:58:11 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/27 18:58:14 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,11 +215,13 @@ char		*get_variable_value(char *string);
 char		**append_string_array(char **string_array, char *string);
 size_t	ft_env_length(char **envp);
 char	**ft_copy_envp(char **myenvp, char *new);
+char	**ft_dup_str_array(char **envp);
 char	**ft_dup_envp(char **envp);
 void	ft_add_to_myenvp(t_variable_context *context, t_env *temp_env);
-char	**ft_add_to_local(t_env *temp_env, t_variable_context *context);
+// char	**ft_add_to_local(t_env *temp_env, t_variable_context *context);
 void	ft_update_envp(t_env *temp_envp, t_list *command, t_variable_context *context);
 char	*ft_extract_envp(char **envp, char *str);
+char	**ft_remove_from_dup_envp(t_variable_context *context, t_env *temp_envp);
 char	**ft_remove_from_myenvp(t_variable_context *context, t_env *temp_envp);
 char	**ft_remove_from_local(t_variable_context *context, t_env *temp_envp);
 void	ft_echo(t_list *command, t_list *redirection, t_variable_context *context);

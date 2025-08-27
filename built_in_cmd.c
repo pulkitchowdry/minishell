@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 15:11:34 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/27 18:01:37 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/27 18:58:55 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,10 +186,10 @@ void	ft_unset(t_list *command, t_list *redirection, t_variable_context *context)
 		while (temp_cmd)
 		{
 			temp_envp.char_unset = ft_strjoin(temp_cmd->content, "=");
-			while (context->environment_variables[i])
+			while (context->environment_variables && context->environment_variables[i])
 			{
 				if (ft_strncmp(context->environment_variables[i], temp_envp.char_unset, ft_strlen(temp_envp.char_unset)) == 0)
-					context->environment_variables[i] = NULL;
+					context->environment_variables = ft_remove_from_dup_envp(context, &temp_envp);
 				i++;
 			}
 			i = 0;
@@ -203,7 +203,7 @@ void	ft_unset(t_list *command, t_list *redirection, t_variable_context *context)
 			temp_envp.char_unset = ft_strdup(temp_cmd->content);
 			temp_envp.char_unset = ft_strjoin("declare -x ", temp_envp.char_unset);
 			temp_envp.char_unset = ft_strjoin(temp_envp.char_unset, "=");
-			while (context->dup_environment_variables[i])
+			while (context->dup_environment_variables && context->dup_environment_variables[i])
 			{
 				if (ft_strncmp(context->dup_environment_variables[i], temp_envp.char_unset, ft_strlen(temp_envp.char_unset)) == 0)
 					context->dup_environment_variables = ft_remove_from_myenvp(context, &temp_envp);
@@ -216,5 +216,13 @@ void	ft_unset(t_list *command, t_list *redirection, t_variable_context *context)
 
 void	ft_env(t_list *command, t_list *redirection, t_variable_context *context)
 {
-	
+	int	i;
+
+	i = 0;
+	while (context->environment_variables[i])
+	{
+		write(1, context->environment_variables[i], ft_strlen(context->environment_variables[i]));
+		write(1, "\n", 1);
+		i++;
+	}
 }

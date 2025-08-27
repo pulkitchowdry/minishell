@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/08/27 16:06:33 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/27 18:57:07 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,24 @@ char	**ft_copy_envp(char **myenvp, char *new)
 	}
 	copy[i] = ft_strdup(new);
 	i++;
+	copy[i] = NULL;
+	return (copy);
+}
+
+char	**ft_dup_str_array(char **envp)
+{
+	size_t	envp_len;
+	char	**copy;
+	int		i;
+	
+	i = 0;
+	envp_len = ft_env_length(envp);
+	copy = malloc((envp_len + 1) * sizeof(char *));
+	while (envp[i])
+	{
+		copy[i] = ft_strdup(envp[i]);
+		i++;
+	}
 	copy[i] = NULL;
 	return (copy);
 }
@@ -200,15 +218,37 @@ char	*ft_extract_envp(char **envp, char *str)
 	}
 	return (value);
 }
-char	**ft_remove_from_myenvp(t_variable_context *context, t_env *temp_envp)
+
+char	**ft_remove_from_dup_envp(t_variable_context *context, t_env *temp_envp)
 {
-	int			i;
-	int			j;
+	int		i;
+	int		j;
 	char	**new;
 
 	i = 0;
 	j = 0;
-	new = malloc(ft_env_length(context->dup_environment_variables) * sizeof(char *));
+	new = ft_calloc(sizeof(char *), ft_env_length(context->environment_variables) + 1);
+	while (context->environment_variables[i])
+	{
+		if (ft_strncmp(context->environment_variables[i], temp_envp->char_unset, ft_strlen(temp_envp->char_unset)) != 0)
+		{
+			new[j] = context->environment_variables[i];
+			j++;
+		}
+		i++;
+	}
+	return (new);
+}
+
+char	**ft_remove_from_myenvp(t_variable_context *context, t_env *temp_envp)
+{
+	int		i;
+	int		j;
+	char	**new;
+
+	i = 0;
+	j = 0;
+	new = ft_calloc(sizeof(char *), ft_env_length(context->dup_environment_variables) + 1);
 	while (context->dup_environment_variables[i])
 	{
 		if (ft_strncmp(context->dup_environment_variables[i], temp_envp->char_unset, ft_strlen(temp_envp->char_unset)) != 0)
@@ -218,7 +258,6 @@ char	**ft_remove_from_myenvp(t_variable_context *context, t_env *temp_envp)
 		}
 		i++;
 	}
-	new[j] = NULL;
 	return (new);
 }
 
@@ -230,7 +269,7 @@ char	**ft_remove_from_local(t_variable_context *context, t_env *temp_envp)
 
 	i = 0;
 	j = 0;
-	new = malloc(ft_env_length(context->local_variables) * sizeof(char *));
+	new = ft_calloc(sizeof(char *), ft_env_length(context->local_variables) + 1);
 	while (context->local_variables[i])
 	{
 		if (ft_strncmp(context->local_variables[i], temp_envp->char_unset, ft_strlen(temp_envp->char_unset)) != 0)
@@ -240,7 +279,6 @@ char	**ft_remove_from_local(t_variable_context *context, t_env *temp_envp)
 		}
 		i++;
 	}
-	new[j] = NULL;
 	return (new);
 }
 
