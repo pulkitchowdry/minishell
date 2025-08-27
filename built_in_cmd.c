@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 15:11:34 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/27 18:58:55 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/27 19:58:30 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,4 +225,14 @@ void	ft_env(t_list *command, t_list *redirection, t_variable_context *context)
 		write(1, "\n", 1);
 		i++;
 	}
+}
+
+void	ft_exit(t_list *command, t_list *redirection, t_variable_context *context)
+{
+	rl_clear_history();
+	free_string_array(context->environment_variables);
+	free_string_array(context->dup_environment_variables);
+	free_string_array(context->local_variables);
+	printf("exit\n");
+	exit(0);
 }
