@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 12:55:19 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/26 18:30:07 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/27 22:56:47 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 
 #include "minishell.h"
 #include "libft/libft.h"
+
+extern int	g_ret_code;
 
 size_t	ft_size(char **string_array)
 {

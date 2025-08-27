@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/27 18:25:13 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/27 22:58:49 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 
 #include "libft/libft.h"
 #include "minishell.h"
+
+int		g_ret_code = 0;
 
 void	print_signal(int signal)
 {
@@ -220,8 +222,8 @@ int	main(int argc, char **argv, char **envp)
 	t_list	*list;
 	t_variable_context	context;
 	t_state_context		state_context;
-	int	ret_code;
-
+	
+	g_ret_code = 0;
 	state_context.context = &context;
 	state_context.current = 0;
 	context.environment_variables = ft_dup_str_array(envp);
@@ -242,11 +244,11 @@ int	main(int argc, char **argv, char **envp)
 					printf("The command is valid\n");
 				else
 					printf("The command cannot execute\n");
-				ret_code = execute_heredoc(root, list_start, root, 0);
-				if (ret_code == 0 || (WIFEXITED(ret_code) && WEXITSTATUS(ret_code) != 2))
+				g_ret_code = execute_heredoc(root, list_start, root, 0);
+				if (g_ret_code == 0)
 				{
 					printf("heredoc is valid\n");
-					ret_code = execute_command_ast(root, list_start, root, state_context.context);
+					g_ret_code = execute_command_ast(root, list_start, root, state_context.context);
 				}
 				else
 					printf("heredoc is invalid\n");

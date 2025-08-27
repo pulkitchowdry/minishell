@@ -3,15 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 16:09:08 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/21 17:44:00 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/27 23:08:54 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft/libft.h"
 #include "minishell.h"
+
+extern int	g_ret_code;
 
 t_list	*construct_single_quote(char **string)
 {
@@ -119,7 +121,7 @@ t_list	*construct_string(char **string)
 	string_start = *string;
 	while ((**string != '\'') && (**string != '"') && (**string != '>')
 		&& (**string != '<') && (**string != '|') && (**string != '&')
-		&& (**string != ' ') && (**string != '$') && (**string != ')')
+		&& (**string != ' ') && (**string != '$' || **string != '?') && (**string != ')')
 		&& (**string != '=') && (**string != '(') && **string)
 		(*string)++;
 	result->string = (char *)ft_calloc(sizeof(char),
@@ -156,14 +158,14 @@ t_list	*construct_variable(char **string)
 	result->type = VARIABLE;
 	string_start = *string;
 	(*string)++;
-	if (**string == '?')
-		(*string)++;
-	else
+	// if (**string == '?')
+	// 	(*string)++;
+	if (**string)
 	{
 		curly_brackets = **string == '{';
 		*string += curly_brackets;
 		while ((ft_isalnum(**string) || **string == '_'
-				|| (curly_brackets && **string == '}')) && **string)
+				|| (curly_brackets && **string == '}') || **string == '?') && **string)
 			(*string)++;
 	}
 	result->string = (char *)ft_calloc(sizeof(char),
@@ -221,7 +223,8 @@ void	process_additional_tokens(t_list **result, char **string)
 	else if (**string == '=')
 		ft_lstadd_back(result, construct_1_character(string));
 	else if (**string == '$' && (ft_isalnum(*(*string + 1))
-			|| *(*string + 1) == '_' || *(*string + 1) == '{'))
+			|| *(*string + 1) == '_' || *(*string + 1) == '{'
+			|| *(*string + 1) == '?'))
 		ft_lstadd_back(result, construct_variable(string));
 	else
 		ft_lstadd_back(result, construct_string(string));

@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/08/27 18:57:07 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/27 22:58:29 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include "minishell.h"
 
+extern int	g_ret_code;
 //To get length of the envp array
 size_t	ft_env_length(char **envp)
 {

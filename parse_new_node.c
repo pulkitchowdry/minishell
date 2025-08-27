@@ -6,12 +6,14 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 17:56:58 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/26 18:29:38 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/27 22:56:11 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft/libft.h"
 #include "minishell.h"
+
+extern int	g_ret_code;
 
 t_ast_node	*parse_new_node(t_state_context *state_context,
 		t_token *cur_tok, t_list **list,

@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/27 19:01:44 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/27 22:55:54 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
+
+extern int	g_ret_code;
 
 void	close_heredoc_pipes(int sig)
 {

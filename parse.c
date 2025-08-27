@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/26 18:29:25 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/27 22:56:17 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include "minishell.h"
 
 #include <stdlib.h>
+
+extern int	g_ret_code;
 
 char	*extract_variable_name(char *string, char *start, char *end)
 {
@@ -23,6 +25,7 @@ char	*extract_variable_name(char *string, char *start, char *end)
 		end--;
 		end += *end != '}';
 	}
+	printf("extracted this: %s for string: %s, start:%s, end: %s\n", ft_substr(string, start - string, end - start), string, start, end);
 	return (ft_substr(string, start - string, end - start));
 }
 
@@ -75,7 +78,7 @@ char	*get_variable_value(char *string)
 char	*get_special_variable(char *variable)
 {
 	if (ft_strncmp(variable, "?", 2) == 0)
-		return (ft_itoa(0));
+		return (ft_itoa(g_ret_code));
 	return (ft_strdup(""));
 }
 
@@ -164,7 +167,7 @@ char	*process_double_quote(char *string, t_variable_context *context)
 		curly_brackets = *end == '{';
 		end += curly_brackets;
 		while ((ft_isalnum(*end) || *end == '_'
-				|| (curly_brackets && *end == '}')) && *end)
+				|| (curly_brackets && *end == '}') || *end == '?') && *end)
 		{
 			end++;
 			if (curly_brackets && *end == '}')
@@ -193,7 +196,7 @@ char	*process_variable(char *string, t_variable_context *context)
 	curly_brackets = *end == '{';
 	end += curly_brackets;
 	while ((ft_isalnum(*end) || *end == '_'
-			|| (curly_brackets && *end == '}')) && *end)
+			|| (curly_brackets && *end == '}') || *end == '?') && *end)
 	{
 		end++;
 		if (curly_brackets && *end == '}')

@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   redirect_string_next_state.c                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 18:43:25 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/17 17:50:52 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/27 22:56:30 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+extern int	g_ret_code;
 
 int	determine_next_redirect_string_if_space(int current_state)
 {

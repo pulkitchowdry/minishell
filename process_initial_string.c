@@ -6,12 +6,14 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 19:09:37 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/26 18:29:55 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/27 22:56:23 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "libft/libft.h"
+
+extern int	g_ret_code;
 
 int	process_initial_quotes_or_variable(t_token *cur_tok,
 		t_ast_node **current, t_variable_context *context)

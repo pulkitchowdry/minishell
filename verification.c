@@ -3,15 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   verification.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 19:39:31 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/14 19:52:32 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/27 22:56:41 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft/libft.h"
 #include "minishell.h"
+
+extern int	g_ret_code;
 
 char	is_safe_to_execute(t_ast_node *node)
 {

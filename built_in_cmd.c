@@ -6,13 +6,15 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 15:11:34 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/27 19:58:30 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/27 22:58:55 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "libft/libft.h"
 #include "libft/get_next_line.h"
+
+extern int	g_ret_code;
 
 void	ft_echo(t_list *command, t_list *redirection, t_variable_context *context)
 {
@@ -234,5 +236,5 @@ void	ft_exit(t_list *command, t_list *redirection, t_variable_context *context)
 	free_string_array(context->dup_environment_variables);
 	free_string_array(context->local_variables);
 	printf("exit\n");
-	exit(0);
+	exit(g_ret_code);
 }
