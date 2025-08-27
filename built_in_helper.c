@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/08/27 13:43:56 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/27 16:06:33 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,6 +214,28 @@ char	**ft_remove_from_myenvp(t_variable_context *context, t_env *temp_envp)
 		if (ft_strncmp(context->dup_environment_variables[i], temp_envp->char_unset, ft_strlen(temp_envp->char_unset)) != 0)
 		{
 			new[j] = context->dup_environment_variables[i];
+			j++;
+		}
+		i++;
+	}
+	new[j] = NULL;
+	return (new);
+}
+
+char	**ft_remove_from_local(t_variable_context *context, t_env *temp_envp)
+{
+	int			i;
+	int			j;
+	char	**new;
+
+	i = 0;
+	j = 0;
+	new = malloc(ft_env_length(context->local_variables) * sizeof(char *));
+	while (context->local_variables[i])
+	{
+		if (ft_strncmp(context->local_variables[i], temp_envp->char_unset, ft_strlen(temp_envp->char_unset)) != 0)
+		{
+			new[j] = context->local_variables[i];
 			j++;
 		}
 		i++;
