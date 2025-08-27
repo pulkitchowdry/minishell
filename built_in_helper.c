@@ -5,10 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/04 11:57:59 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/26 22:23:14 by chikoh           ###   ########.fr       */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2025/08/27 11:48:14 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+
 
 #include "minishell.h"
 
@@ -218,6 +220,32 @@ char	**ft_remove_from_myenvp(t_variable_context *context, t_env *temp_envp)
 	}
 	new[j] = NULL;
 	return (new);
+}
+
+char	**ft_add_to_local(t_env *temp_env, t_variable_context *context)
+{
+	int		i;
+	char	**new_arr;
+	char	*key_value;
+	
+	i = 0;
+	new_arr = ft_calloc(sizeof(char *),
+		ft_size(context->local_variables) + 2);
+	if (temp_env->new_env_key && temp_env->new_env_value)
+	{
+		key_value = ft_strjoin(temp_env->new_env_key, "=");
+		key_value = ft_strjoin(key_value, temp_env->new_env_value);
+		while (context->local_variables && context->local_variables[i])
+		{
+			new_arr[i] = context->local_variables[i];
+			i++;
+		}
+		new_arr[i] = key_value;
+		free(key_value);
+		return(new_arr);
+	}
+	else
+		return (context->local_variables);
 }
 
 // //To execute builtin func, likely to be split into two or more functions later

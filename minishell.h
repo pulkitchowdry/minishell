@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/26 18:29:11 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/26 18:59:25 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,6 +217,7 @@ size_t	ft_env_length(char **envp);
 char	**ft_copy_envp(char **myenvp, char *new);
 char	**ft_dup_envp(char **envp);
 void	ft_add_to_myenvp(t_variable_context *context, t_env *temp_env);
+char	**ft_add_to_local(t_env *temp_env, t_variable_context *context);
 void	ft_update_envp(t_env *temp_envp, t_list *command, t_variable_context *context);
 char	*ft_extract_envp(char **envp, char *str);
 char	**ft_remove_from_myenvp(t_variable_context *context, t_env *temp_envp);

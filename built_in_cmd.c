@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 15:11:34 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/26 21:26:23 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/27 11:53:17 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,9 @@ void	ft_export(t_list *command, t_list *redirection, t_variable_context *context
 					i = 0;
 					while (context->local_variables && context->local_variables[i] != NULL)
 					{
+						printf("check: %s\n", context->local_variables[i]);
 						temp_envp.new_env = ft_split(context->local_variables[i], '=');
+						printf("0: %s, 1: %s\n", context->local_variables[0], context->local_variables[1]);
 						if (ft_strncmp(temp_envp.new_env_key, temp_envp.new_env[0], ft_strlen(temp_envp.new_env[0])) == 0
 							&& ft_strlen(temp_envp.new_env_key) == ft_strlen(temp_envp.new_env[0]))
 						{
@@ -124,6 +126,7 @@ void	ft_export(t_list *command, t_list *redirection, t_variable_context *context
 							printf("here\n");
 							while (temp_envp.new_env[j] != NULL)
 							{
+								printf("J: %d - %s\n", j, temp_envp.new_env[j]);
 								if (j == 1)
 									temp_envp.new_env_value = temp_envp.new_env[j];
 								else if (j > 1)
@@ -137,6 +140,7 @@ void	ft_export(t_list *command, t_list *redirection, t_variable_context *context
 						i++;
 					}
 				}
+				context->local_variables = ft_add_to_local(&temp_envp, context);
 				ft_update_envp(&temp_envp, command, context);
 				temp_cmd = temp_cmd->next;
 			}
