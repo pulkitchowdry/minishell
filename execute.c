@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/27 13:25:03 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/27 16:28:24 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -433,13 +433,14 @@ int	append_local_variables(t_list *assignment,
 	seek = 0;
 	while (context->local_variables && context->local_variables[seek])
 	{
-		new_array[seek] = context->local_variables[seek];
+		new_array[seek] = ft_strdup(context->local_variables[seek]);
 		seek++;
 	}
 	while (assignment)
 	{
 		string = ft_strjoin((char *)assignment->content, "=");
 		new_array[seek] = ft_strjoin(string, (char *)assignment->next->content);
+		free(string);
 		seek++;
 		assignment = assignment->next->next;
 	}
