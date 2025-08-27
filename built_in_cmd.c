@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 15:11:34 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/26 16:28:52 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/26 21:26:23 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@ void	ft_echo(t_list *command, t_list *redirection, t_variable_context *context)
 			while (temp_cmd)
 			{
 				write(1, temp_cmd->content, ft_strlen(temp_cmd->content));
+				if (temp_cmd->next)
+					write(1, " ", 1);
 				temp_cmd = temp_cmd->next;
 			}
 		}

@@ -206,7 +206,7 @@ void		free_string_array(char **string_array);
 size_t		ft_size(char **string_array);
 char		is_safe_to_execute(t_ast_node *node);
 int		execute_heredoc(t_ast_node *root, t_list *tokens, t_ast_node *node, int ret_code);
-unsigned char		execute_command_ast(t_ast_node *root, t_list *tokens, t_ast_node *node, t_variable_context *context);
+int		execute_command_ast(t_ast_node *root, t_list *tokens, t_ast_node *node, t_variable_context *context);
 int			execute_and_wait_child(t_ast_node *node, t_variable_context *context);
 void		unlink_files(t_ast_node *node);
 void		print_signal(int);

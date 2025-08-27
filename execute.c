@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/26 18:28:43 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/26 21:52:26 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -280,15 +280,23 @@ void	print_no_file_or_directory(char *command,
 void	substitute_node_with_list(t_list **result,
 		t_list **prev, t_list **command)
 {
+	t_list	*match;
+
+	match = find_match_string((char *)(*command)->content);
+	if (match == 0)
+	{
+		*prev = *command;
+		*command = (*command)->next;
+		return ;
+	}
 	if (*prev == 0)
 	{
-		*prev = find_match_string((char *)(*command)->content);
-		*result = *prev;
-		*prev = ft_lstlast(*prev);
+		*result = match;
+		*prev = ft_lstlast(match);
 	}
 	else
 	{
-		(*prev)->next = find_match_string((char *)(*command)->content);
+		(*prev)->next = match;
 		*prev = ft_lstlast(*prev);
 	}
 	(*prev)->next = (*command)->next;
@@ -326,7 +334,6 @@ void	search_and_exec(t_ast_node *root,
 	int		search;
 
 	configure_redirection(node->redirection);
-	node->command = expand_command_wildcard(node->command);
 	if (access((char *)node->command->content, X_OK) == 0)
 		execute_with_execve(node->command, context->environment_variables);
 	command_name = ft_strdup((char *)node->command->content);
@@ -359,6 +366,10 @@ int	fork_and_wait(t_ast_node *root,
 		search_and_exec(root, tokens, node, context);
 	else
 		waitpid(pid, &ret_code, 0);
+	if (WIFEXITED(ret_code))
+		return (WEXITSTATUS(ret_code));
+	if (WIFSIGNALED(ret_code))
+		return (128 + WTERMSIG(ret_code));
 	return (ret_code);
 }
 
@@ -437,22 +448,18 @@ int	append_local_variables(t_list *assignment,
 	return (open_files(redirection));
 }
 
-int	execute_buildin_command(t_list *command,
-		t_list *redirection,
+int	execute_buildin_command(t_ast_node *root,
+		t_list *token, t_ast_node *node,
 		t_variable_context *context)
 {
-	(void)command;
-	(void)redirection;
-	(void)context;
-	
-	if (ft_strncmp(command->content, "echo", ft_strlen(command->content)) == 0)
-		ft_echo(command, redirection, context);
-	if (ft_strncmp(command->content, "cd", ft_strlen(command->content)) == 0)
-		ft_cd(command, redirection, context);
-	if (ft_strncmp(command->content, "export", ft_strlen(command->content)) == 0)
-		ft_export(command, redirection, context);
-	if (ft_strncmp(command->content, "unset", ft_strlen(command->content)) == 0)
-		ft_unset(command, redirection, context);
+	if (ft_strncmp(node->command->content, "echo", ft_strlen(node->command->content) + 1) == 0)
+		ft_echo(node->command, node->redirection, context);
+	if (ft_strncmp(node->command->content, "cd", ft_strlen(node->command->content) + 1) == 0)
+		ft_cd(node->command, node->redirection, context);
+	if (ft_strncmp(node->command->content, "export", ft_strlen(node->command->content) + 1) == 0)
+		ft_export(node->command, node->redirection, context);
+	if (ft_strncmp(node->command->content, "unset", ft_strlen(node->command->content) + 1) == 0)
+		ft_unset(node->command, node->redirection, context);
 	return (0);
 }
 
@@ -464,14 +471,15 @@ int	execute_command(t_ast_node *root,
 
 	if (node == 0)
 		exit(0);
+	node->command = expand_command_wildcard(node->command);
 	ret_code = 0;
 	if (node->command == 0 && node->assignment != 0)
 		ret_code = append_local_variables(node->assignment,
 				node->redirection, context);
 	else if (node->command != 0
 		&& is_builtin_command((char *)node->command->content))
-		ret_code = execute_buildin_command(node->command,
-				node->redirection, context);
+		ret_code = execute_buildin_command(root,
+				token, node, context);
 	else if (node->command != 0
 		&& !is_builtin_command((char *)node->command->content))
 		ret_code = fork_and_wait(root,
@@ -505,19 +513,14 @@ unsigned char	execute_logical_or(t_ast_node *root,
 	int	ret_code;
 
 	ret_code = execute_command_ast(root, tokens, node->left, context);
-	if (WIFEXITED(ret_code))
+	if (ret_code < 128)
 	{
-		if (WEXITSTATUS(ret_code) == 0)
-			return (WEXITSTATUS(ret_code));
+		if (ret_code == 0)
+			return (ret_code);
 		ret_code = execute_command_ast(root, tokens, node->right, context);
-		if (WIFEXITED(ret_code))
-			return (WEXITSTATUS(ret_code));
-		else if (WIFSIGNALED(ret_code))
-			return (128 + WTERMSIG(ret_code));
+		return (ret_code);
 	}
-	else if (WIFSIGNALED(ret_code))
-		return (128 + WTERMSIG(ret_code));
-	return ((unsigned char)255);
+	return (ret_code);
 }
 
 unsigned char	execute_logical_and(t_ast_node *root,
@@ -528,19 +531,14 @@ unsigned char	execute_logical_and(t_ast_node *root,
 	int	ret_code;
 
 	ret_code = execute_command_ast(root, tokens, node->left, context);
-	if (WIFEXITED(ret_code))
+	if (ret_code < 128)
 	{
-		if (WEXITSTATUS(ret_code) != 0)
-			return (WEXITSTATUS(ret_code));
+		if (ret_code != 0)
+			return (ret_code);
 		ret_code = execute_command_ast(root, tokens, node->right, context);
-		if (WIFEXITED(ret_code))
-			return (WEXITSTATUS(ret_code));
-		else if (WIFSIGNALED(ret_code))
-			return (128 + WTERMSIG(ret_code));
+		return (ret_code);
 	}
-	else if (WIFSIGNALED(ret_code))
-		return (128 + WTERMSIG(ret_code));
-	return (255);
+	return (ret_code);
 }
 
 void	exec_pipe_left_child(t_parse_context *parse_context,
@@ -638,7 +636,7 @@ unsigned char	execute_pipe(t_ast_node *root,
 	return ((unsigned char)255);
 }
 
-unsigned char	execute_command_ast(t_ast_node *root,
+int	execute_command_ast(t_ast_node *root,
 	t_list *tokens,
 	t_ast_node *node,
 	t_variable_context *context)
