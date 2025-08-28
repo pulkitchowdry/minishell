@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/08/28 20:26:49 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 20:44:10 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,8 @@ void	ft_add_to_myenvp(t_variable_context *context, t_env *temp_env)
 //To update the entries in envp
 void	ft_update_envp(t_env *temp_envp, t_list *command, t_variable_context *context)
 {
-	int	i;
+	int		i;
+	char	*temp_key;
 
 	i = 0;
 	if (ft_strncmp(command->content, "cd", ft_strlen(command->content)) == 0)
@@ -195,10 +196,9 @@ void	ft_update_envp(t_env *temp_envp, t_list *command, t_variable_context *conte
 			}
 			if (temp_envp->new_env_value)
 			{
-				context->environment_variables[i] = ft_strjoin(temp_envp->new_env_key, "=");
-				context->environment_variables[i] = ft_strjoin(context->environment_variables[i], temp_envp->new_env_value);
-				i++;
-				context->environment_variables[i] = NULL;
+				temp_key = ft_strjoin(temp_envp->new_env_key, "=");
+				temp_key = ft_strjoin(temp_key, temp_envp->new_env_value);
+				context->environment_variables = ft_copy_envp(context->environment_variables, temp_key);
 			}
 			ft_add_to_myenvp(context, temp_envp);
 	}

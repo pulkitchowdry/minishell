@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 15:11:34 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/28 20:26:27 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 20:45:58 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,11 +85,6 @@ void	ft_pwd(t_list *command, t_list *redirection, t_variable_context *context)
 
 void	ft_export(t_list *command, t_list *redirection, t_variable_context *context)
 {
-		//Export command - We can have two methods, 1. export a or 2. export a=1
-		//When we receive just export a, then we need to check local var to check if a value exists.
-		//If a value exists then we need to add var in export along with the value, if not then only add the key "a". We do not add to envp
-		//When we receive export a=1, then we need to add the key and value to export and envp
-		//Another case if export a -> a=1 then we need to add the value 1 to the variable in export and envp along with the key which got added first
 		t_list	*temp_cmd;
 		t_env	temp_envp;
 		int		i;
@@ -99,7 +94,6 @@ void	ft_export(t_list *command, t_list *redirection, t_variable_context *context
 		ft_bzero(&temp_envp, sizeof(temp_envp));
 		if (temp_cmd->next)
 		{
-			//When the variable is given then we go here
 			temp_cmd = temp_cmd->next;
 			while (temp_cmd)
 			{
@@ -128,8 +122,6 @@ void	ft_export(t_list *command, t_list *redirection, t_variable_context *context
 		}
 		else if (!temp_cmd->next)
 		{
-			//Need to display environment variables with declare -x infront
-			//And values within quotes
 			i = 0;
 			while (context->dup_environment_variables[i])
 			{
