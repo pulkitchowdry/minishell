@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/28 18:44:14 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 20:09:35 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -265,7 +265,8 @@ void	execute_with_execve(t_list *command, char **envp)
 }
 
 void	print_no_file_or_directory(char *command,
-		t_list *tokens, t_ast_node *root)
+		t_list *tokens, t_ast_node *root,
+		t_variable_context *context)
 {
 	ft_putstr_fd(command, 2);
 	ft_putstr_fd(": No such file or directory\n", 2);
@@ -273,6 +274,9 @@ void	print_no_file_or_directory(char *command,
 	unlink_files(root);
 	free_command(&root);
 	ft_lstclear(&tokens, free_token);
+	free_string_array(context->environment_variables);
+	free_string_array(context->local_variables);
+	free_string_array(context->dup_environment_variables);
 	close(0);
 	close(1);
 	close(2);
@@ -341,7 +345,7 @@ void	search_and_exec(t_ast_node *root,
 	command_name = ft_strdup((char *)node->command->content);
 	path_values = extract_path_variable(context->environment_variables);
 	if (path_values == 0)
-		print_no_file_or_directory(command_name, tokens, root);
+		print_no_file_or_directory(command_name, tokens, root, context);
 	search = 0;
 	while (path_values[search])
 	{
@@ -352,7 +356,7 @@ void	search_and_exec(t_ast_node *root,
 			execute_with_execve(node->command, context->environment_variables);
 	}
 	free_string_array(path_values);
-	print_no_file_or_directory(command_name, tokens, root);
+	print_no_file_or_directory(command_name, tokens, root, context);
 }
 
 int	fork_and_wait(t_ast_node *root,
@@ -593,6 +597,9 @@ void	exec_pipe_left_child(t_parse_context *parse_context,
 	unlink_files(parse_context->root);
 	free_command(&parse_context->root);
 	ft_lstclear(&parse_context->tokens, free_token);
+	free_string_array(context->environment_variables);
+	free_string_array(context->local_variables);
+	free_string_array(context->dup_environment_variables);
 	close(2);
 	close(1);
 	close(0);
@@ -613,6 +620,9 @@ void	exec_pipe_right_child(t_parse_context *parse_context,
 	unlink_files(parse_context->root);
 	free_command(&parse_context->root);
 	ft_lstclear(&parse_context->tokens, free_token);
+	free_string_array(context->environment_variables);
+	free_string_array(context->local_variables);
+	free_string_array(context->dup_environment_variables);
 	close(2);
 	close(1);
 	close(0);
