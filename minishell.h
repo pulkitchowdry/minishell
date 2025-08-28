@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/28 18:46:32 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 22:12:41 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,6 @@ typedef struct s_env
 {
 	char	*oldpwd; //For cd
 	char	*pwd; //For cd
-	char	**new_env; //For export to store both key and value
 	char	*new_env_key; //For export
 	char	*new_env_value; //For export
 	char	*local_key; //For export

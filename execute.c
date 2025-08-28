@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/28 20:09:35 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/28 21:36:44 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -488,6 +488,7 @@ int	execute_buildin_command(t_ast_node *root,
 		t_list *token, t_ast_node *node,
 		t_variable_context *context)
 {
+	configure_redirection(node->redirection);
 	if (ft_strncmp(node->command->content, "echo", ft_strlen(node->command->content) + 1) == 0)
 		ft_echo(node->command, node->redirection, context);
 	if (ft_strncmp(node->command->content, "cd", ft_strlen(node->command->content) + 1) == 0)

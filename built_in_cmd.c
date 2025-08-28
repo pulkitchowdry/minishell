@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 15:11:34 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/28 20:45:58 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 22:23:39 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ void	ft_export(t_list *command, t_list *redirection, t_variable_context *context
 							temp_envp.local_key, ft_strlen(temp_envp.local_key) + 1) == 0)
 						{
 							if (temp_envp.local_value)
-								temp_envp.new_env_key = temp_envp.local_value;
+								temp_envp.new_env_value = temp_envp.local_value;
 						}
 						i++;
 					}

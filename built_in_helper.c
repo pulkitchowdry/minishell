@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/08/28 20:44:10 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 22:26:01 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,48 +66,76 @@ char	**ft_dup_str_array(char **envp)
 //Initially duplicating envp into temp for export command
 char	**ft_dup_envp(char **envp)
 {
-	size_t	envp_len;
 	char	**copy;
+	char	*temp_key;
+	char	*temp_value;
 	int		i;
-	t_env	temp;
-	int		j;
-	char	*temp_string;
 	
+	copy = ft_calloc(sizeof(char *), ft_size(envp) + 1);
 	i = 0;
-	envp_len = ft_env_length(envp);
-	copy = malloc((envp_len + 1) * sizeof(char *));
 	while (envp[i])
 	{
-		temp.new_env = ft_split(envp[i], '=');
-		temp.new_env_key = temp.new_env[0];
-		temp.new_env_value = temp.new_env[1];
-		copy[i] = ft_strjoin("declare -x ", temp.new_env_key);
-		temp_string = ft_strjoin(copy[i], "=\"");
-		free(copy[i]);
-		copy[i] = temp_string;
-		temp_string = ft_strjoin(copy[i], temp.new_env_value);
-		free(copy[i]);
-		copy[i] = temp_string;
-		j = 2;
-		while (temp.new_env[j] != NULL)
+		temp_key = ft_get_key(envp[i]);
+		temp_value = ft_get_value(envp[i]);
+		copy[i] = ft_strjoin("declare -x ", temp_key);
+		free(temp_key);
+		if (temp_value)
 		{
-			temp_string = ft_strjoin(copy[i], "=");
-			free(copy[i]);
-			copy[i] = temp_string;
-			temp_string = ft_strjoin(copy[i], temp.new_env[j]);
-			free(copy[i]);
-			copy[i] = temp_string;
-			j++;
+			copy[i] = ft_strjoin(copy[i], "=\"");
+			copy[i] = ft_strjoin(copy[i], temp_value);
+			copy[i] = ft_strjoin(copy[i], "\"");
 		}
-		temp_string = ft_strjoin(copy[i], "\"");
-		free(copy[i]);
-		copy[i] = temp_string;
-		free_string_array(temp.new_env);
+		free(temp_value);
 		i++;
 	}
-	copy[i] = NULL;
 	return (copy);
 }
+// char	**ft_dup_envp(char **envp)
+// {
+// 	size_t	envp_len;
+// 	char	**copy;
+// 	int		i;
+// 	t_env	temp;
+// 	int		j;
+// 	char	*temp_string;
+	
+// 	i = 0;
+// 	envp_len = ft_env_length(envp);
+// 	ft_bzero(&temp, sizeof(temp));
+// 	copy = malloc((envp_len + 1) * sizeof(char *));
+// 	while (envp[i])
+// 	{
+// 		temp.new_env = ft_split(envp[i], '=');
+// 		temp.new_env_key = ft_strdup(temp.new_env[0]);
+// 		copy[i] = ft_strjoin("declare -x ", temp.new_env_key);
+// 		if (temp.new_env[1])
+// 			temp.new_env_value = ft_strdup(temp.new_env[1]);
+// 		temp_string = ft_strjoin(copy[i], "=\"");
+// 		free(copy[i]);
+// 		copy[i] = temp_string;
+// 		temp_string = ft_strjoin(copy[i], temp.new_env_value);
+// 		free(copy[i]);
+// 		copy[i] = temp_string;
+// 		j = 2;
+// 		while (temp.new_env[j] != NULL)
+// 		{
+// 			temp_string = ft_strjoin(copy[i], "=");
+// 			free(copy[i]);
+// 			copy[i] = temp_string;
+// 			temp_string = ft_strjoin(copy[i], temp.new_env[j]);
+// 			free(copy[i]);
+// 			copy[i] = temp_string;
+// 			j++;
+// 		}
+// 		temp_string = ft_strjoin(copy[i], "\"");
+// 		free(copy[i]);
+// 		copy[i] = temp_string;
+// 		free_string_array(temp.new_env);
+// 		i++;
+// 	}
+// 	copy[i] = NULL;
+// 	return (copy);
+// }
 
 //Add values into myenvp also when its added in default envp
 void	ft_add_to_myenvp(t_variable_context *context, t_env *temp_env)
@@ -302,6 +330,8 @@ char	*ft_get_value(char *str)
 	
 	i = 0;
 	equal_pos = ft_find_equal(str);
+	if (ft_strlen(str) - equal_pos == 0)
+		return (NULL);
 	result = ft_calloc(sizeof(char), ft_strlen(str) - equal_pos);
 	equal_pos++;
 	while (equal_pos < ft_strlen(str))
