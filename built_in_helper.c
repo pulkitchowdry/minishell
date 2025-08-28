@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/08/28 17:31:46 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 20:26:49 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -253,7 +253,7 @@ char	**ft_remove_from_myenvp(t_variable_context *context, t_env *temp_envp)
 	while (context->dup_environment_variables[i])
 	{
 		if (ft_strncmp(context->dup_environment_variables[i], temp_envp->char_unset, ft_strlen(temp_envp->char_unset)) != 0 &&
-			ft_strncmp(context->dup_environment_variables[i], temp_envp->char_unset, ft_strlen(temp_envp->char_unset)) != -61)
+			ft_strncmp(context->dup_environment_variables[i], temp_envp->char_unset, ft_strlen(temp_envp->char_unset)) != -'=')
 		{
 			new[j] = context->dup_environment_variables[i];
 			j++;
