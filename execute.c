@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/28 15:11:42 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 18:44:14 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -497,7 +497,7 @@ int	execute_buildin_command(t_ast_node *root,
 	if (ft_strncmp(node->command->content, "env", ft_strlen(node->command->content) + 1) == 0)
 		ft_env(node->command, node->redirection, context);
 	if (ft_strncmp(node->command->content, "exit", ft_strlen(node->command->content) + 1) == 0)
-		ft_exit(node->command, node->redirection, context);
+		ft_exit(root, token, node, context);
 	return (0);
 }
 

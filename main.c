@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/28 14:37:02 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 17:58:13 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -269,39 +269,6 @@ int	main(int argc, char **argv, char **envp)
 				free(data.input);
 				break ;
 			}
-			//data.pipes = ft_pipe_count(data.input);
-			//if (data.pipes > 0)
-			//	data.cmd_dir = ft_split(data.input, '|');
-			//ft_minishell(&data, envp);
-			// if (data.pipes > 0)
-			// {
-			// 	data.cmd_dir = ft_split(data.input, '|');
-			// 	while (i <= data.pipes + 1)
-			// 	{
-			// 		data.cmd = ft_split(data.cmd_dir[i], ' ');
-			// 		data.path = ft_find_path(envp);
-			// 		data.path_dir = ft_split(data.path, ':');
-			// 		data.cmd_path = ft_cmd_path(&data);
-			// 		if (data.cmd_path)
-			// 		{
-			// 			ft_minishell(&data, envp);	
-			// 		}
-			// 		else
-			// 			ft_error();
-			// 		i++;
-			// 	}
-			// }
-			// else
-			// {
-			// 	data.cmd = ft_split(data.input, ' ');
-			// 	data.path = ft_find_path(envp);
-			// 	data.path_dir = ft_split(data.path, ':');
-			// 	data.cmd_path = ft_cmd_path(&data);
-			// 	if (data.cmd_path)
-			// 		ft_minishell(&data, envp);
-			// 	else
-			// 		ft_error();	
-			// }
 		}
 		rl_clear_history();
 		free_string_array(context.environment_variables);

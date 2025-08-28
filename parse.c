@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 20:17:48 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/28 13:44:47 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 18:14:20 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ char	*extract_variable_name(char *string, char *start, char *end)
 		end--;
 		end += *end != '}';
 	}
-	printf("extracted this: %s for string: %s, start:%s, end: %s\n", ft_substr(string, start - string, end - start), string, start, end);
 	return (ft_substr(string, start - string, end - start));
 }
 

@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/28 17:45:25 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 18:46:32 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,7 +232,7 @@ void	ft_pwd(t_list *command, t_list *redirection, t_variable_context *context);
 void	ft_export(t_list *command, t_list *redirection, t_variable_context *context);
 void	ft_unset(t_list *command, t_list *redirection, t_variable_context *context);
 void	ft_env(t_list *command, t_list *redirection, t_variable_context *context);
-void	ft_exit(t_list *command, t_list *redirection, t_variable_context *context);
+void	ft_exit(t_ast_node *root, t_list *token, t_ast_node *node, t_variable_context *context);
 int	append_local_variables(t_list *assignment, t_list *redirection, t_variable_context *context);
 int	append_local_variables_2(t_list *assignment, t_list *redirection, t_variable_context *context);
 char	*ft_get_key(char *str);

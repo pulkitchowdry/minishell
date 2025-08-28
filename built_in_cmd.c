@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 15:11:34 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/28 17:43:18 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 18:46:56 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,6 @@ extern int	g_ret_code;
 
 void	ft_echo(t_list *command, t_list *redirection, t_variable_context *context)
 {
-		//Displays the text provided in the input or variable. We can get inputs like below
-		//1. echo "test" testing "another" - This output like test testing another - Ignore quotes
-		//2. echo "value of 'a':$a"-$a-check - This outputs value of 'a':5-5-check if a=5
-		//3. echo "value of \"a\"" - This outputs as value of "a"
-		//4. echo -n test - The -n flag does not print a new line after the output is printed
 		t_list	*temp_cmd;
 		t_env	temp_envp;
 
@@ -31,13 +26,11 @@ void	ft_echo(t_list *command, t_list *redirection, t_variable_context *context)
 		if (temp_cmd->next)
 		{
 			temp_cmd = temp_cmd->next;
-			if (ft_strncmp(temp_cmd->content, "-n", ft_strlen(temp_cmd->content)) == 0)
+			if (ft_strlen(temp_cmd->content) > 0 && ft_strncmp(temp_cmd->content, "-n", ft_strlen(temp_cmd->content)) == 0)
 			{
 				temp_envp.no_new_line_flag = 1;
-				if (temp_cmd->next)
-					temp_cmd = temp_cmd->next;
-				else
-					write(1, "", 0);
+				write(1, "", 0);
+				temp_cmd = temp_cmd->next;
 			}
 			while (temp_cmd)
 			{
@@ -206,9 +199,13 @@ void	ft_env(t_list *command, t_list *redirection, t_variable_context *context)
 	}
 }
 
-void	ft_exit(t_list *command, t_list *redirection, t_variable_context *context)
+void	ft_exit(t_ast_node *root,
+		t_list *token, t_ast_node *node,
+		t_variable_context *context)
 {
 	rl_clear_history();
+	free_command(&root);
+	ft_lstclear(&token, free_token);
 	free_string_array(context->environment_variables);
 	free_string_array(context->dup_environment_variables);
 	free_string_array(context->local_variables);
