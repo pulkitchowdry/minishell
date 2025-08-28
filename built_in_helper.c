@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/08/28 14:59:04 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 17:31:46 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -252,7 +252,8 @@ char	**ft_remove_from_myenvp(t_variable_context *context, t_env *temp_envp)
 	new = ft_calloc(sizeof(char *), ft_env_length(context->dup_environment_variables) + 1);
 	while (context->dup_environment_variables[i])
 	{
-		if (ft_strncmp(context->dup_environment_variables[i], temp_envp->char_unset, ft_strlen(temp_envp->char_unset)) != 0)
+		if (ft_strncmp(context->dup_environment_variables[i], temp_envp->char_unset, ft_strlen(temp_envp->char_unset)) != 0 &&
+			ft_strncmp(context->dup_environment_variables[i], temp_envp->char_unset, ft_strlen(temp_envp->char_unset)) != -61)
 		{
 			new[j] = context->dup_environment_variables[i];
 			j++;
@@ -281,6 +282,52 @@ char	**ft_remove_from_local(t_variable_context *context, t_env *temp_envp)
 		i++;
 	}
 	return (new);
+}
+
+int	ft_find_equal(char *str)
+{
+	int	i;
+	
+	i = 0;
+	while (str[i] && str[i] != '=')
+		i++;
+	return (i);
+}
+
+char	*ft_get_value(char *str)
+{
+	int		i;
+	char	*result;
+	int		equal_pos;
+	
+	i = 0;
+	equal_pos = ft_find_equal(str);
+	result = ft_calloc(sizeof(char), ft_strlen(str) - equal_pos);
+	equal_pos++;
+	while (equal_pos < ft_strlen(str))
+	{
+		result[i] = str[equal_pos];
+		equal_pos++;
+		i++;
+	}
+	return(result);
+}
+
+char	*ft_get_key(char *str)
+{
+	int		i;
+	char	*result;
+	int		equal_pos;
+	
+	i = 0;
+	equal_pos = ft_find_equal(str);
+	result = ft_calloc(sizeof(char), equal_pos + 1);
+	while (i < equal_pos)
+	{
+		result[i] = str[i];
+		i++;
+	}
+	return(result);
 }
 
 // t_list	*ft_split_command(t_list *command)

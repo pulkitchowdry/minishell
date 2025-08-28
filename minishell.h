@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/28 15:03:37 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 17:45:25 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,8 @@ typedef struct s_env
 	char	**new_env; //For export to store both key and value
 	char	*new_env_key; //For export
 	char	*new_env_value; //For export
+	char	*local_key; //For export
+	char	*local_value; //For export
 	char	*char_unset; //For unset
 	int		no_new_line_flag; //For echo
 }	t_env;
@@ -233,4 +235,7 @@ void	ft_env(t_list *command, t_list *redirection, t_variable_context *context);
 void	ft_exit(t_list *command, t_list *redirection, t_variable_context *context);
 int	append_local_variables(t_list *assignment, t_list *redirection, t_variable_context *context);
 int	append_local_variables_2(t_list *assignment, t_list *redirection, t_variable_context *context);
+char	*ft_get_key(char *str);
+char	*ft_get_value(char *str);
+int	ft_find_equal(char *str);
 #endif

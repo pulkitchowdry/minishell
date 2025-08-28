@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 15:11:34 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/28 15:10:35 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 17:43:18 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,48 +110,24 @@ void	ft_export(t_list *command, t_list *redirection, t_variable_context *context
 			temp_cmd = temp_cmd->next;
 			while (temp_cmd)
 			{
-				temp_envp.new_env = ft_split(temp_cmd->content, '=');
-				j = 0;
-				while (temp_envp.new_env[j] != NULL)
-				{
-					if (j == 0)
-						temp_envp.new_env_key = temp_envp.new_env[j];
-					else if (j == 1)
-						temp_envp.new_env_value = temp_envp.new_env[j];
-					else
-					{
-						temp_envp.new_env_value = ft_strjoin(temp_envp.new_env_value, "=");
-						temp_envp.new_env_value = ft_strjoin(temp_envp.new_env_value, temp_envp.new_env[j]);
-					}
-					j++;
-				}
-				//Variable is given but there is no value provided then we go here next
-				if (j == 1)
+				temp_envp.new_env_key = ft_get_key(temp_cmd->content);
+				temp_envp.new_env_value = ft_get_value(temp_cmd->content);
+				if (!temp_envp.new_env_value)
 				{
 					i = 0;
 					while (context->local_variables && context->local_variables[i] != NULL)
 					{
-						temp_envp.new_env = ft_split(context->local_variables[i], '=');
+						temp_envp.local_key = ft_get_key(context->local_variables[i]);
+						temp_envp.local_value = ft_get_value(context->local_variables[i]);
 						if (ft_strncmp(temp_envp.new_env_key,
-							temp_envp.new_env[0], ft_strlen(temp_envp.new_env[0]) + 1) == 0)
+							temp_envp.local_key, ft_strlen(temp_envp.local_key) + 1) == 0)
 						{
-							j = 0;
-							while (temp_envp.new_env[j] != NULL)
-							{
-								if (j == 1)
-									temp_envp.new_env_value = temp_envp.new_env[j];
-								else if (j > 1)
-								{
-									temp_envp.new_env_value = ft_strjoin(temp_envp.new_env_value, "=");
-									temp_envp.new_env_value = ft_strjoin(temp_envp.new_env_value, temp_envp.new_env[j]);
-								}
-								j++;
-							}
-						}	
+							if (temp_envp.local_value)
+								temp_envp.new_env_key = temp_envp.local_value;
+						}
 						i++;
 					}
 				}
-				// context->local_variables = ft_add_to_local(&temp_envp, context);
 				append_local_variables_2(command, redirection, context);
 				ft_update_envp(&temp_envp, command, context);
 				temp_cmd = temp_cmd->next;
@@ -207,7 +183,8 @@ void	ft_unset(t_list *command, t_list *redirection, t_variable_context *context)
 			temp_envp.char_unset = ft_strjoin(temp_envp.char_unset, "=");
 			while (context->dup_environment_variables && context->dup_environment_variables[i])
 			{
-				if (ft_strncmp(context->dup_environment_variables[i], temp_envp.char_unset, ft_strlen(temp_envp.char_unset)) == 0)
+				if (ft_strncmp(context->dup_environment_variables[i], temp_envp.char_unset, ft_strlen(temp_envp.char_unset)) == -61 ||
+					ft_strncmp(context->dup_environment_variables[i], temp_envp.char_unset, ft_strlen(temp_envp.char_unset)) == 0)
 					context->dup_environment_variables = ft_remove_from_myenvp(context, &temp_envp);
 				i++;
 			}

@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 16:09:08 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/28 13:27:24 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 15:31:27 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,8 +158,6 @@ t_list	*construct_variable(char **string)
 	result->type = VARIABLE;
 	string_start = *string;
 	(*string)++;
-	// if (**string == '?')
-	// 	(*string)++;
 	if (**string)
 	{
 		curly_brackets = **string == '{';
