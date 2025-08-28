@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 15:11:34 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/28 14:35:26 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 15:10:35 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,11 +125,9 @@ void	ft_export(t_list *command, t_list *redirection, t_variable_context *context
 					}
 					j++;
 				}
-				context->export_flag = 0;
 				//Variable is given but there is no value provided then we go here next
 				if (j == 1)
 				{
-					context->export_flag = 1;
 					i = 0;
 					while (context->local_variables && context->local_variables[i] != NULL)
 					{
@@ -154,7 +152,7 @@ void	ft_export(t_list *command, t_list *redirection, t_variable_context *context
 					}
 				}
 				// context->local_variables = ft_add_to_local(&temp_envp, context);
-				append_local_variables(command, redirection, context);
+				append_local_variables_2(command, redirection, context);
 				ft_update_envp(&temp_envp, command, context);
 				temp_cmd = temp_cmd->next;
 			}
@@ -189,6 +187,7 @@ void	ft_unset(t_list *command, t_list *redirection, t_variable_context *context)
 		while (temp_cmd)
 		{
 			temp_envp.char_unset = ft_strjoin(temp_cmd->content, "=");
+			i = 0;
 			while (context->environment_variables && context->environment_variables[i])
 			{
 				if (ft_strncmp(context->environment_variables[i], temp_envp.char_unset, ft_strlen(temp_envp.char_unset)) == 0)

@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/08/27 22:58:29 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 14:59:04 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -282,6 +282,25 @@ char	**ft_remove_from_local(t_variable_context *context, t_env *temp_envp)
 	}
 	return (new);
 }
+
+// t_list	*ft_split_command(t_list *command)
+// {
+// 	t_list	*split_command;
+// 	int		i;
+
+// 	i = 0;
+// 	split_command = ft_calloc(sizeof(t_list), ft_lstsize(command));
+// 	while (command)
+// 	{
+// 		if (i = 0)
+// 			command = command->next;
+// 		else
+// 		{
+// 			split_command->content = ft_split(command->content, '=')
+// 			command = command->next;
+// 		}	
+// 	}
+// }
 
 // char	**ft_add_to_local(t_env *temp_env, t_variable_context *context)
 // {

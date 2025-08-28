@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/28 14:19:18 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 15:03:37 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,6 @@ typedef struct s_variable_context
 	char	**environment_variables;
 	char	**local_variables;
 	char	**dup_environment_variables;
-	int		export_flag;
 }	t_variable_context;
 
 typedef struct s_state_context
@@ -233,5 +232,5 @@ void	ft_unset(t_list *command, t_list *redirection, t_variable_context *context)
 void	ft_env(t_list *command, t_list *redirection, t_variable_context *context);
 void	ft_exit(t_list *command, t_list *redirection, t_variable_context *context);
 int	append_local_variables(t_list *assignment, t_list *redirection, t_variable_context *context);
-
+int	append_local_variables_2(t_list *assignment, t_list *redirection, t_variable_context *context);
 #endif

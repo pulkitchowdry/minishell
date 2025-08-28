@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/28 14:22:04 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 15:11:42 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -422,6 +422,35 @@ int	open_files(t_list *redirection)
 	return (0);
 }
 
+int	append_local_variables_2(t_list *assignment,
+		t_list *redirection, t_variable_context *context)
+{
+	int		seek;
+	char	**new_array;
+	char	*string;
+
+	new_array = (char **)ft_calloc(sizeof(char *),
+			ft_size(context->local_variables)
+			+ (ft_lstsize(assignment) - 1) + 1);
+	seek = 0;
+	while (context->local_variables && context->local_variables[seek])
+	{
+		new_array[seek] = ft_strdup(context->local_variables[seek]);
+		seek++;
+	}
+	if (ft_strncmp(assignment->content, "export", 7) == 0)
+		assignment = assignment->next;
+	while (assignment)
+	{
+		new_array[seek] = ft_strdup(assignment->content);
+		seek++;
+		assignment = assignment->next;
+	}
+	free_string_array(context->local_variables);
+	context->local_variables = new_array;
+	return (open_files(redirection));
+}
+
 int	append_local_variables(t_list *assignment,
 		t_list *redirection, t_variable_context *context)
 {
@@ -438,7 +467,7 @@ int	append_local_variables(t_list *assignment,
 		new_array[seek] = ft_strdup(context->local_variables[seek]);
 		seek++;
 	}
-	while (assignment && context->export_flag != 1)
+	while (assignment)
 	{
 		string = ft_strjoin((char *)assignment->content, "=");
 		new_array[seek] = ft_strjoin(string, (char *)assignment->next->content);
@@ -446,7 +475,6 @@ int	append_local_variables(t_list *assignment,
 		seek++;
 		assignment = assignment->next->next;
 	}
-	context->export_flag = 0;
 	free_string_array(context->local_variables);
 	context->local_variables = new_array;
 	return (open_files(redirection));
