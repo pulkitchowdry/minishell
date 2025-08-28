@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/28 22:12:41 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 22:41:30 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,4 +237,6 @@ int	append_local_variables_2(t_list *assignment, t_list *redirection, t_variable
 char	*ft_get_key(char *str);
 char	*ft_get_value(char *str);
 int	ft_find_equal(char *str);
+void	ft_add_to_others(char *str, t_variable_context *context);
+
 #endif

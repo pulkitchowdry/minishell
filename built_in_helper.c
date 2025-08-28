@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/08/28 22:26:01 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 23:14:37 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -351,6 +351,8 @@ char	*ft_get_key(char *str)
 	
 	i = 0;
 	equal_pos = ft_find_equal(str);
+	if (equal_pos == 0)
+		return (NULL);
 	result = ft_calloc(sizeof(char), equal_pos + 1);
 	while (i < equal_pos)
 	{
@@ -358,6 +360,32 @@ char	*ft_get_key(char *str)
 		i++;
 	}
 	return(result);
+}
+
+void	ft_add_to_others(char *str, t_variable_context *context)
+{
+	t_env	temp_env;
+	t_list	*command;
+	char	*copy;
+	int		i;
+	
+	i = 0;
+	command = ft_calloc(sizeof(t_list), 3);
+	command->content = "export";
+	command->next = NULL;
+	ft_bzero(&temp_env, sizeof(temp_env));
+	temp_env.new_env_key = ft_get_key(str);
+	copy = ft_strjoin("declare -x ", temp_env.new_env_key);
+	temp_env.new_env_value = ft_get_value(str);
+	while (context->dup_environment_variables && context->dup_environment_variables[i])
+	{
+		if (ft_strncmp(copy, context->dup_environment_variables[i], ft_strlen(copy) + 1) == 0)
+		{
+			ft_update_envp(&temp_env, command, context);
+			ft_add_to_myenvp(context, &temp_env);
+		}	
+		i++;
+	}
 }
 
 // t_list	*ft_split_command(t_list *command)
