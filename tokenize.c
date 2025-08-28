@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 16:09:08 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/27 23:08:54 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 13:27:24 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ t_list	*construct_single_quote(char **string)
 
 	string_start = *string;
 	(*string)++;
-	while (**string != '\'' && **string)
+	while (**string && **string != '\'')
 	{
 		if (**string == '\\')
 			(*string)++;
@@ -45,7 +45,7 @@ t_list	*construct_double_quote(char **string)
 
 	string_start = *string;
 	(*string)++;
-	while (**string != '"' && **string)
+	while (**string && **string != '"')
 	{
 		if (**string == '\\')
 			(*string)++;
@@ -119,10 +119,10 @@ t_list	*construct_string(char **string)
 	result = (t_token *)ft_calloc(sizeof(t_token), 1);
 	result->type = STRING;
 	string_start = *string;
-	while ((**string != '\'') && (**string != '"') && (**string != '>')
+	while (**string && (**string != '\'') && (**string != '"') && (**string != '>')
 		&& (**string != '<') && (**string != '|') && (**string != '&')
 		&& (**string != ' ') && (**string != '$' || **string != '?') && (**string != ')')
-		&& (**string != '=') && (**string != '(') && **string)
+		&& (**string != '=') && (**string != '('))
 		(*string)++;
 	result->string = (char *)ft_calloc(sizeof(char),
 			*string - string_start + 1);
@@ -139,7 +139,7 @@ t_list	*construct_space(char **string)
 	result = (t_token *)ft_calloc(sizeof(t_token), 1);
 	result->type = SPACES;
 	string_start = *string;
-	while (**string == ' ' && **string)
+	while (**string && **string == ' ')
 		(*string)++;
 	result->string = (char *)ft_calloc(sizeof(char),
 			*string - string_start + 1);
@@ -164,8 +164,8 @@ t_list	*construct_variable(char **string)
 	{
 		curly_brackets = **string == '{';
 		*string += curly_brackets;
-		while ((ft_isalnum(**string) || **string == '_'
-				|| (curly_brackets && **string == '}') || **string == '?') && **string)
+		while (**string && (ft_isalnum(**string) || **string == '_'
+				|| (curly_brackets && **string == '}') || **string == '?'))
 			(*string)++;
 	}
 	result->string = (char *)ft_calloc(sizeof(char),

@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/27 22:58:00 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 14:19:18 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,7 @@ typedef struct s_variable_context
 	char	**environment_variables;
 	char	**local_variables;
 	char	**dup_environment_variables;
+	int		export_flag;
 }	t_variable_context;
 
 typedef struct s_state_context

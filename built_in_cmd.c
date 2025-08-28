@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 15:11:34 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/27 22:58:55 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/28 14:35:26 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,9 +125,11 @@ void	ft_export(t_list *command, t_list *redirection, t_variable_context *context
 					}
 					j++;
 				}
+				context->export_flag = 0;
 				//Variable is given but there is no value provided then we go here next
 				if (j == 1)
 				{
+					context->export_flag = 1;
 					i = 0;
 					while (context->local_variables && context->local_variables[i] != NULL)
 					{
@@ -138,7 +140,6 @@ void	ft_export(t_list *command, t_list *redirection, t_variable_context *context
 							j = 0;
 							while (temp_envp.new_env[j] != NULL)
 							{
-								printf("J: %d - %s\n", j, temp_envp.new_env[j]);
 								if (j == 1)
 									temp_envp.new_env_value = temp_envp.new_env[j];
 								else if (j > 1)
