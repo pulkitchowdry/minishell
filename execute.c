@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/29 21:06:22 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/29 22:47:15 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 
 extern int	g_ret_code;
 
-void	close_all_fds_in_heredoc()
+void	close_all_fds_in_heredoc(void)
 {
 	close(1023);
 	close(0);
@@ -84,7 +84,8 @@ int	wait_for_heredoc_to_finish(t_list *redirection_delimiter, int *fd, int pid)
 	return (255);
 }
 
-int	fork_heredoc(t_ast_node *root, t_list *tokens, t_list *list, t_variable_context *context)
+int	fork_heredoc(t_ast_node *root, t_list *tokens, t_list *list,
+					t_variable_context *context)
 {
 	int		ret_code;
 	int		fd[2];
@@ -113,7 +114,8 @@ int	fork_heredoc(t_ast_node *root, t_list *tokens, t_list *list, t_variable_cont
 	return (ret_code);
 }
 
-int	open_temp_files(t_ast_node *root, t_list *tokens, t_list *list, t_variable_context *context)
+int	open_temp_files(t_ast_node *root, t_list *tokens, t_list *list,
+					t_variable_context *context)
 {
 	char	*redirect_type;
 	int		ret_code;
@@ -175,7 +177,8 @@ char	**extract_path_variable(char **environment_variable)
 	return (result);
 }
 
-int	print_permission_denied_child(t_ast_node *root, t_list *tokens, char *string, t_variable_context *context)
+int	print_permission_denied_child(t_ast_node *root, t_list *tokens,
+	char *string, t_variable_context *context)
 {
 	perror(string);
 	unlink_files(root);
@@ -190,7 +193,8 @@ int	print_permission_denied_child(t_ast_node *root, t_list *tokens, char *string
 	exit(1);
 }
 
-void	compare_redirect_input_child(t_ast_node *root, t_list *tokens, t_list *redirection, t_variable_context *context)
+void	compare_redirect_input_child(t_ast_node *root, t_list *tokens,
+	t_list *redirection, t_variable_context *context)
 {
 	int	fd;
 
@@ -198,7 +202,8 @@ void	compare_redirect_input_child(t_ast_node *root, t_list *tokens, t_list *redi
 	{
 		fd = open((char *)redirection->next->content, O_RDONLY);
 		if (fd == -1)
-			print_permission_denied_child(root, tokens, (char *)redirection->next->content, context);
+			print_permission_denied_child(root, tokens,
+				(char *)redirection->next->content, context);
 		else
 		{
 			dup2(fd, 0);
@@ -213,7 +218,9 @@ void	dup_fd_to_stdout(int fd)
 	close(fd);
 }
 
-void	process_other_redirect_child(t_ast_node *root, t_list *tokens, t_list *redirection, t_variable_context *context)
+void	process_other_redirect_child(t_ast_node *root, t_list *tokens,
+										t_list *redirection,
+										t_variable_context *context)
 {
 	int	fd;
 
@@ -222,7 +229,8 @@ void	process_other_redirect_child(t_ast_node *root, t_list *tokens, t_list *redi
 		fd = open((char *)redirection->next->content,
 				O_CREAT | O_APPEND | O_WRONLY, 0644);
 		if (fd == -1)
-			print_permission_denied_child(root, tokens, (char *)redirection->next->content, context);
+			print_permission_denied_child(root, tokens,
+				(char *)redirection->next->content, context);
 		else
 			dup_fd_to_stdout(fd);
 	}
@@ -231,7 +239,8 @@ void	process_other_redirect_child(t_ast_node *root, t_list *tokens, t_list *redi
 		fd = open((char *)redirection->next->content,
 				O_CREAT | O_TRUNC | O_WRONLY, 0644);
 		if (fd == -1)
-			print_permission_denied_child(root, tokens, (char *)redirection->next->content, context);
+			print_permission_denied_child(root, tokens,
+				(char *)redirection->next->content, context);
 		else
 			dup_fd_to_stdout(fd);
 	}
@@ -239,7 +248,9 @@ void	process_other_redirect_child(t_ast_node *root, t_list *tokens, t_list *redi
 		compare_redirect_input_child(root, tokens, redirection, context);
 }
 
-void	exit_ambiguous_redirect(t_ast_node *root, t_list *tokens, t_list *redirection, t_variable_context *context)
+void	exit_ambiguous_redirect(t_ast_node *root, t_list *tokens,
+								t_list *redirection,
+								t_variable_context *context)
 {
 	close(2);
 	close(1);
@@ -255,7 +266,9 @@ void	exit_ambiguous_redirect(t_ast_node *root, t_list *tokens, t_list *redirecti
 	exit(1);
 }
 
-void	configure_redirection_child(t_ast_node *root, t_list *tokens, t_list *redirection, t_variable_context *context)
+void	configure_redirection_child(t_ast_node *root, t_list *tokens,
+									t_list *redirection,
+									t_variable_context *context)
 {
 	int	heredoc;
 
@@ -430,31 +443,31 @@ char	print_permission_denied_root(char *string)
 	return (0);
 }
 
-int	open_files(t_list *redirection)
+int	open_files(t_list *redir)
 {
 	int	fd;
 
-	while (redirection)
+	while (redir)
 	{
-		if (ft_strncmp(">>", (char *)redirection->content, 3) == 0
-			|| ft_strncmp(">", (char *)redirection->content, 2) == 0)
+		if (ft_strncmp(">>", (char *)redir->content, 3) == 0
+			|| ft_strncmp(">", (char *)redir->content, 2) == 0)
 		{
-			if (is_wildcard_present((char *)redirection->next->content))
+			if (is_wildcard_present((char *)redir->next->content))
 				return (ambigous_redirect_error((char *)
-						redirection->next->content));
-			fd = open((char *)redirection->next->content, O_CREAT | O_WRONLY, 0644);
+						redir->next->content));
+			fd = open((char *)redir->next->content, O_CREAT | O_WRONLY, 0644);
 			if (fd == -1)
 			{
-				print_permission_denied_root((char *)redirection->next->content);
+				print_permission_denied_root((char *)redir->next->content);
 				break ;
 			}
 			close(fd);
 		}
-		else if (ft_strncmp("<", (char *)redirection->content, 2) == 0
-			&& is_wildcard_present((char *)redirection->next->content))
+		else if (ft_strncmp("<", (char *)redir->content, 2) == 0
+			&& is_wildcard_present((char *)redir->next->content))
 			return (ambigous_redirect_error((char *)
-					redirection->next->content));
-		redirection = redirection->next->next;
+					redir->next->content));
+		redir = redir->next->next;
 	}
 	return (0);
 }
@@ -464,7 +477,6 @@ int	append_local_variables_2(t_list *assignment,
 {
 	int		seek;
 	char	**new_array;
-	char	*string;
 
 	new_array = (char **)ft_calloc(sizeof(char *),
 			ft_size(context->local_variables)
@@ -518,7 +530,6 @@ int	append_local_variables(t_list *assignment,
 	return (open_files(redirection));
 }
 
-
 char	compare_redirect_input_root(t_list *redirection)
 {
 	int	fd;
@@ -527,7 +538,8 @@ char	compare_redirect_input_root(t_list *redirection)
 	{
 		fd = open((char *)redirection->next->content, O_RDONLY);
 		if (fd == -1)
-			return (print_permission_denied_root((char *)redirection->next->content));
+			return (print_permission_denied_root(
+					(char *)redirection->next->content));
 		else
 		{
 			dup2(fd, 0);
@@ -543,17 +555,21 @@ char	process_other_redirect_root(t_list *redirection)
 
 	if (ft_strncmp(">>", (char *)redirection->content, 3) == 0)
 	{
-		fd = open((char *)redirection->next->content, O_CREAT | O_APPEND | O_WRONLY, 0644);
+		fd = open((char *)redirection->next->content,
+				O_CREAT | O_APPEND | O_WRONLY, 0644);
 		if (fd == -1)
-			return (print_permission_denied_root((char *)redirection->next->content));
+			return (print_permission_denied_root(
+					(char *)redirection->next->content));
 		else
 			dup_fd_to_stdout(fd);
 	}
 	else if (ft_strncmp(">", (char *)redirection->content, 2) == 0)
 	{
-		fd = open((char *)redirection->next->content, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+		fd = open((char *)redirection->next->content,
+				O_CREAT | O_TRUNC | O_WRONLY, 0644);
 		if (fd == -1)
-			return (print_permission_denied_root((char *)redirection->next->content));
+			return (print_permission_denied_root(
+					(char *)redirection->next->content));
 		else
 			dup_fd_to_stdout(fd);
 	}
@@ -589,18 +605,45 @@ char	configure_redirection_root(t_list *redirection)
 	return (status);
 }
 
-void	save_stdio()
+void	save_stdio(void)
 {
 	dup2(1, 1023);
 	dup2(0, 1022);
 }
 
-void	restore_stdio()
+void	restore_stdio(void)
 {
 	dup2(1023, 1);
 	dup2(1022, 0);
 	close(1023);
 	close(1022);
+}
+
+void	decode_buildin_command(t_ast_node *root,
+			t_list *token, t_ast_node *node,
+			t_variable_context *context)
+{
+	if (ft_strncmp(node->command->content, "echo",
+			ft_strlen(node->command->content) + 1) == 0)
+		ft_echo(node->command);
+	if (ft_strncmp(node->command->content, "cd",
+			ft_strlen(node->command->content) + 1) == 0)
+		ft_cd(node->command, context);
+	if (ft_strncmp(node->command->content, "pwd",
+			ft_strlen(node->command->content) + 1) == 0)
+		ft_pwd();
+	if (ft_strncmp(node->command->content, "export",
+			ft_strlen(node->command->content) + 1) == 0)
+		ft_export(node->command, node->redirection, context);
+	if (ft_strncmp(node->command->content, "unset",
+			ft_strlen(node->command->content) + 1) == 0)
+		ft_unset(node->command, context);
+	if (ft_strncmp(node->command->content, "env",
+			ft_strlen(node->command->content) + 1) == 0)
+		ft_env(context);
+	if (ft_strncmp(node->command->content, "exit",
+			ft_strlen(node->command->content) + 1) == 0)
+		ft_exit(root, token, node, context);
 }
 
 int	execute_buildin_command(t_ast_node *root,
@@ -614,20 +657,7 @@ int	execute_buildin_command(t_ast_node *root,
 		restore_stdio();
 		return (1);
 	}
-	if (ft_strncmp(node->command->content, "echo", ft_strlen(node->command->content) + 1) == 0)
-		ft_echo(node->command, node->redirection, context);
-	if (ft_strncmp(node->command->content, "cd", ft_strlen(node->command->content) + 1) == 0)
-		ft_cd(node->command, node->redirection, context);
-	if (ft_strncmp(node->command->content, "pwd", ft_strlen(node->command->content) + 1) == 0)
-		ft_pwd(node->command, node->redirection, context);
-	if (ft_strncmp(node->command->content, "export", ft_strlen(node->command->content) + 1) == 0)
-		ft_export(node->command, node->redirection, context);
-	if (ft_strncmp(node->command->content, "unset", ft_strlen(node->command->content) + 1) == 0)
-		ft_unset(node->command, node->redirection, context);
-	if (ft_strncmp(node->command->content, "env", ft_strlen(node->command->content) + 1) == 0)
-		ft_env(node->command, node->redirection, context);
-	if (ft_strncmp(node->command->content, "exit", ft_strlen(node->command->content) + 1) == 0)
-		ft_exit(root, token, node, context);
+	decode_buildin_command(root, token, node, context);
 	if (node->redirection)
 		restore_stdio();
 	return (0);
@@ -667,7 +697,8 @@ int	execute_heredoc(t_ast_node *root, t_list *tokens,
 
 	if (ret_code != 0)
 		return (ret_code);
-	if (state_context->current == 0 || (WIFEXITED(ret_code) && WEXITSTATUS(ret_code) == 2))
+	if (state_context->current == 0
+		|| (WIFEXITED(ret_code) && WEXITSTATUS(ret_code) == 2))
 		return (ret_code);
 	if (state_context->current->node != 0)
 	{
@@ -681,7 +712,7 @@ int	execute_heredoc(t_ast_node *root, t_list *tokens,
 	}
 	if (state_context->current->redirection != 0)
 		ret_code = open_temp_files(root, tokens,
-			state_context->current->redirection, state_context->context);
+				state_context->current->redirection, state_context->context);
 	return (ret_code);
 }
 

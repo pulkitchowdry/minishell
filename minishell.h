@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 20:37:37 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/29 22:45:44 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,32 +106,15 @@ typedef struct s_parse_context
 
 typedef struct s_env
 {
-	char	*oldpwd; //For cd
-	char	*pwd; //For cd
-	char	*new_env_key; //For export
-	char	*new_env_value; //For export
-	char	*local_key; //For export
-	char	*local_value; //For export
-	char	*char_unset; //For unset
-	int		no_new_line_flag; //For echo
+	char	*oldpwd;
+	char	*pwd;
+	char	*new_env_key;
+	char	*new_env_value;
+	char	*local_key;
+	char	*local_value;
+	char	*char_unset;
+	int		no_new_line_flag;
 }	t_env;
-
-typedef struct s_data
-{
-	char	*input;
-	char	**cmd_dir;
-	char	**cmd;
-	char	*path;
-	char	**path_dir;
-	char	*p_temp;
-	char	*cmd_path;
-	pid_t	c_id;
-	int		pipes;
-	int		pipe_status;
-	int		pipe_fd[2];
-	int		prevfd;
-	char	**myenvp; //For export to duplicate envp
-}	t_data;
 
 char		**ft_split(char const *s, char c);
 char		*ft_strjoin(char const *s1, char const *s2);
@@ -206,38 +189,48 @@ t_list		*find_matches(char head_flag, char tail_flag,
 void		free_string_array(char **string_array);
 size_t		ft_size(char **string_array);
 char		is_safe_to_execute(t_ast_node *node);
-int		execute_heredoc(t_ast_node *root, t_list *tokens, t_state_context *state_context, int ret_code);
-int		execute_command_ast(t_ast_node *root, t_list *tokens, t_ast_node *node, t_variable_context *context);
-int			execute_and_wait_child(t_ast_node *node, t_variable_context *context);
+int			execute_heredoc(t_ast_node *root,
+				t_list *tokens, t_state_context *state_context, int ret_code);
+int			execute_command_ast(t_ast_node *root,
+				t_list *tokens, t_ast_node *node, t_variable_context *context);
 void		unlink_files(t_ast_node *node);
-void		print_signal(int);
+void		print_signal(int signal);
 char		*get_variable_key(char *string);
 char		*get_variable_value(char *string);
 char		**append_string_array(char **string_array, char *string);
-size_t	ft_env_length(char **envp);
-char	**ft_copy_envp(char **myenvp, char *new);
-char	**ft_dup_str_array(char **envp);
-char	**ft_dup_envp(char **envp);
-void	ft_add_to_myenvp(t_variable_context *context, t_env *temp_env);
-// char	**ft_add_to_local(t_env *temp_env, t_variable_context *context);
-void	ft_update_envp(t_env *temp_envp, t_list *command, t_variable_context *context);
-char	*ft_extract_envp(char **envp, char *str);
-char	**ft_remove_from_dup_envp(t_variable_context *context, t_env *temp_envp);
-char	**ft_remove_from_myenvp(t_variable_context *context, t_env *temp_envp);
-char	**ft_remove_from_local(t_variable_context *context, t_env *temp_envp);
-void	ft_echo(t_list *command, t_list *redirection, t_variable_context *context);
-void	ft_cd(t_list *command, t_list *redirection, t_variable_context *context);
-void	ft_pwd(t_list *command, t_list *redirection, t_variable_context *context);
-void	ft_export(t_list *command, t_list *redirection, t_variable_context *context);
-void	ft_unset(t_list *command, t_list *redirection, t_variable_context *context);
-void	ft_env(t_list *command, t_list *redirection, t_variable_context *context);
-void	ft_exit(t_ast_node *root, t_list *token, t_ast_node *node, t_variable_context *context);
-int	append_local_variables(t_list *assignment, t_list *redirection, t_variable_context *context);
-int	append_local_variables_2(t_list *assignment, t_list *redirection, t_variable_context *context);
-char	*ft_get_key(char *str);
-char	*ft_get_value(char *str);
-int	ft_find_equal(char *str);
-void	ft_add_to_others(char *str, t_variable_context *context);
-char	*ft_oldpwd(char *str, size_t start);
+size_t		ft_env_length(char **envp);
+char		**ft_copy_envp(char **myenvp, char *new);
+char		**ft_dup_str_array(char **envp);
+char		**ft_dup_envp(char **envp);
+void		ft_add_to_myenvp(t_variable_context *context, t_env *temp_env);
+void		ft_update_envp(t_env *temp_envp,
+				t_list *command, t_variable_context *context);
+char		*ft_extract_envp(char **envp, char *str);
+char		**ft_remove_from_dup_envp(t_variable_context *context,
+				t_env *temp_envp);
+char		**ft_remove_from_myenvp(t_variable_context *context,
+				t_env *temp_envp);
+char		**ft_remove_from_local(t_variable_context *context,
+				t_env *temp_envp);
+void		ft_echo(t_list *command);
+void		ft_cd(t_list *command,
+				t_variable_context *context);
+void		ft_pwd(void);
+void		ft_export(t_list *command, t_list *redirection,
+				t_variable_context *context);
+void		ft_unset(t_list *command,
+				t_variable_context *context);
+void		ft_env(t_variable_context *context);
+void		ft_exit(t_ast_node *root,
+				t_list *token, t_ast_node *node, t_variable_context *context);
+int			append_local_variables(t_list *assignment,
+				t_list *redirection, t_variable_context *context);
+int			append_local_variables_2(t_list *assignment,
+				t_list *redirection, t_variable_context *context);
+char		*ft_get_key(char *str);
+char		*ft_get_value(char *str);
+int			ft_find_equal(char *str);
+void		ft_add_to_others(char *str, t_variable_context *context);
+char		*ft_oldpwd(char *str, size_t start);
 
 #endif

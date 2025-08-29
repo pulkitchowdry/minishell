@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 20:52:24 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/29 22:43:27 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,153 +28,6 @@ void	print_signal(int signal)
 	printf("\n");
 	rl_replace_line("", 0);
 	rl_redisplay();
-}
-
-void	ft_error(void)
-{
-	write(1, strerror(errno), ft_strlen(strerror(errno)));
-	write(1, "\n", 1);
-}
-
-char	*ft_find_path(char **envp)
-{
-	char *path;
-	int		i;
-
-	i = 0;
-	while (envp[i])
-	{
-		if (envp[i][0] == 'P' && envp[i][1] == 'A'
-			&& envp[i][2] == 'T' && envp[i][3] == 'H')
-			path = envp[i] + 4;
-		i++;
-	}
-	if (!path)
-		path = "/usr/bin:/bin";
-	return (path);	
-}
-
-char	*ft_cmd_path(t_data *data)
-{
-	int 	i;
-	char	*cmd_path;
-
-	i = 0;
-	while (data->path_dir[i])
-	{
-		data->p_temp = ft_strjoin(data->path_dir[i], "/");
-		cmd_path = ft_strjoin(data->p_temp, data->cmd[0]);
-		if (access(cmd_path, X_OK) == 0)
-			return (cmd_path);
-		i++;
-	}
-	return (NULL);
-}
-
-void	ft_child_minishell(t_data *data, char **envp, int i)
-{
-	if (i == 0)
-	{
-		dup2(data->pipe_fd[1], STDOUT_FILENO);
-	}
-	else if (i > 0 && i < data->pipes)
-	{
-		dup2(data->prevfd, STDIN_FILENO);
-		dup2(data->pipe_fd[1], STDOUT_FILENO);
-	}
-	else if (i == data->pipes)
-	{
-		dup2(data->prevfd, STDIN_FILENO);
-	}
-	execve(data->cmd_path, data->cmd, envp);
-}
-
-void	ft_fd_close(t_data *data, int i)
-{
-	if (i != 0 && data->prevfd > 2)
-	{
-		close(data->prevfd);
-		data->prevfd = -1;
-	}
-	if (i < data->pipes)
-	{
-		data->prevfd = data->pipe_fd[0];
-		if (data->pipe_fd[1] > 0)
-		{
-			close(data->pipe_fd[1]);
-			data->pipe_fd[1] = -1;
-		}
-	}
-}
-
-void	ft_minishell(t_data *data, char **envp)
-{
-	int	i;
-
-	i = 0;
-	if (data->pipes == 0)
-	{
-		data->cmd = ft_split(data->input, ' ');
-		if (data->cmd[0])
-		{
-			data->path = ft_find_path(envp);
-			data->path_dir = ft_split(data->path, ':');
-			data->cmd_path = ft_cmd_path(data);
-			if (data->cmd_path)
-			{
-				data->c_id = fork();
-				if (data->c_id == 0)
-				{
-					execve(data->cmd_path, data->cmd, envp);
-				}
-			}
-			else
-			{
-				ft_error();	
-			}
-		}
-	}
-	else if (data->pipes > 0)
-	{
-		while (i <= data->pipes)
-		{
-			data->cmd = ft_split(data->cmd_dir[i], ' ');
-			data->path = ft_find_path(envp);
-			data->path_dir = ft_split(data->path, ':');
-			data->cmd_path = ft_cmd_path(data);
-			if (data->cmd_path)
-			{
-				if (i < data->pipes)
-					data->pipe_status = pipe(data->pipe_fd);
-				if (data->pipe_status == -1)
-					perror("pipe error");
-				data->c_id = fork();
-				if (data->c_id == 0)
-					ft_child_minishell(data, envp, i);
-			}
-			else
-				ft_error();
-			ft_fd_close(data, i);
-			i++;
-		}
-	}
-	waitpid(data->c_id, NULL, 0);
-}
-
-int	ft_pipe_count(char *input)
-{
-	int	i;
-	int	pipes;
-
-	i = 0;
-	pipes = 0;
-	while (input[i])
-	{
-		if (input[i] == '|')
-			pipes++;
-		i++;
-	}
-	return (pipes);
 }
 
 void	print_string_list(t_list *list)
@@ -213,71 +66,67 @@ void	print_ast(t_ast_node *node)
 	printf(")");
 }
 
-int	main(int argc, char **argv, char **envp)
+void	initialize(char **envp, t_variable_context *context,
+					t_state_context *state_context)
 {
 	signal(SIGQUIT, SIG_IGN);
 	signal(SIGINT, print_signal);
-	t_data	data;
-	t_list	*list_start;
-	t_list	*list;
+	state_context->context = context;
+	state_context->current = 0;
+	context->environment_variables = ft_dup_str_array(envp);
+	context->local_variables = 0;
+	context->dup_environment_variables = ft_dup_envp(envp);
+}
+
+void	free_no_ip(t_variable_context *context)
+{
+	rl_clear_history();
+	free_string_array(context->environment_variables);
+	free_string_array(context->dup_environment_variables);
+	free_string_array(context->local_variables);
+	close(0);
+	close(1);
+	close(2);
+}
+
+void	parse_and_exec(char	*input, t_state_context *state_context)
+{
+	t_list		*list_start;
+	t_list		*list;
+	t_ast_node	*root;
+
+	add_history(input);
+	list = create_tokens(input);
+	list_start = list;
+	root = parse_list(&list, state_context);
+	state_context->current = root;
+	g_ret_code = execute_heredoc(root, list_start, state_context, 0);
+	if (g_ret_code == 0 && root != 0 && is_safe_to_execute(root) && list == 0)
+		g_ret_code = execute_command_ast(root, list_start,
+				root, state_context->context);
+	unlink_files(root);
+	free_command(&root);
+	ft_lstclear(&list_start, free_token);
+	free(input);
+}
+
+int	main(int argc, char **argv, char **envp)
+{
+	char				*input;
 	t_variable_context	context;
 	t_state_context		state_context;
-	
-	g_ret_code = 0;
-	state_context.context = &context;
-	state_context.current = 0;
-	context.environment_variables = ft_dup_str_array(envp);
-	context.local_variables = 0;
-	context.dup_environment_variables = ft_dup_envp(envp);
-	if(argc > 0 && argv[0])
+
+	(void)argc;
+	(void)argv;
+	initialize(envp, &context, &state_context);
+	while (1)
 	{
-		while (1)
-		{
-			data.input = readline("->");
-			if (data.input && ft_strncmp(data.input, "", 1) != 0)
-			{
-				add_history(data.input);
-				list = create_tokens(data.input);
-				list_start = list;
-				t_ast_node *root = parse_list(&list, &state_context);
-				if (root != 0 && is_safe_to_execute(root) && list == 0)
-					printf("The command is valid\n");
-				else
-					printf("The command cannot execute\n");
-				state_context.current = root;
-				g_ret_code = execute_heredoc(root, list_start, &state_context, 0);
-				if (g_ret_code == 0)
-				{
-					printf("heredoc is valid\n");
-					g_ret_code = execute_command_ast(root, list_start, root, state_context.context);
-				}
-				else
-					printf("heredoc is invalid\n");
-				print_ast(root);
-				while (list)
-				{
-					t_token *tok = (t_token *)list->content;
-					printf("%s\n", tok->string);
-					list = list->next;
-				}
-				unlink_files(root);
-				free_command(&root);
-				ft_lstclear(&list_start, free_token);
-				free(data.input);
-			}
-			else if (data.input == 0)
-			{
-				free(data.input);
-				break ;
-			}
-		}
-		rl_clear_history();
-		free_string_array(context.environment_variables);
-		free_string_array(context.dup_environment_variables);
-		free_string_array(context.local_variables);
-		close(0);
-		close(1);
-		close(2);
+		input = readline("->");
+		if (input && ft_strncmp(input, "", 1) != 0)
+			parse_and_exec(input, &state_context);
+		else if (input == 0)
+			break ;
 	}
+	free_no_ip(&context);
 	return (0);
 }

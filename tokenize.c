@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 16:09:08 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/28 15:31:27 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/29 22:35:04 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,9 +119,11 @@ t_list	*construct_string(char **string)
 	result = (t_token *)ft_calloc(sizeof(t_token), 1);
 	result->type = STRING;
 	string_start = *string;
-	while (**string && (**string != '\'') && (**string != '"') && (**string != '>')
+	while (**string && (**string != '\'')
+		&& (**string != '"') && (**string != '>')
 		&& (**string != '<') && (**string != '|') && (**string != '&')
-		&& (**string != ' ') && (**string != '$' || **string != '?') && (**string != ')')
+		&& (**string != ' ') && (**string != '$' || **string != '?')
+		&& (**string != ')')
 		&& (**string != '=') && (**string != '('))
 		(*string)++;
 	result->string = (char *)ft_calloc(sizeof(char),
