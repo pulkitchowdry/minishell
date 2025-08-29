@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/28 22:41:30 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/29 19:34:30 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -238,5 +238,6 @@ char	*ft_get_key(char *str);
 char	*ft_get_value(char *str);
 int	ft_find_equal(char *str);
 void	ft_add_to_others(char *str, t_variable_context *context);
+char	*ft_oldpwd(char *str, size_t start);
 
 #endif

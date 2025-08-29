@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 15:13:21 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 17:48:15 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/29 19:38:46 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ char	**ft_copy_envp(char **myenvp, char *new)
 	copy[i] = ft_strdup(new);
 	i++;
 	copy[i] = NULL;
+	free_string_array(myenvp);
 	return (copy);
 }
 
@@ -79,7 +80,7 @@ char	*ft_get_var(char *temp_key, char *temp_value)
 		free(str);
 		str = temp;
 	}
-	return(temp);
+	return(str);
 }
 
 //Initially duplicating envp into temp for export command
@@ -157,11 +158,18 @@ char	*ft_get_key(char *str)
 char	*join_dup_envp(char *key, char *value)
 {
 	char	*join;
+	char	*temp;
 	
 	join = ft_strjoin(key, "=");
-	join = ft_strjoin(join, "\"");
-	join = ft_strjoin(join, value);
-	join = ft_strjoin(join, "\"");
+	temp = ft_strjoin(join, "\"");
+	free(join);
+	join = temp;
+	temp = ft_strjoin(join, value);
+	free(join);
+	join = temp;
+	temp = ft_strjoin(join, "\"");
+	free(join);
+	join = temp;
 	return (join);
 }
 
@@ -170,6 +178,7 @@ void	ft_add_to_myenvp(t_variable_context *context, t_env *temp_env)
 {
 	int		i;
 	char	*temp_key;
+	char	*temp;
 	char	*extract;
 
 	i = 0;
@@ -179,18 +188,24 @@ void	ft_add_to_myenvp(t_variable_context *context, t_env *temp_env)
 		extract = ft_get_key(context->dup_environment_variables[i]);
 		if (ft_strncmp(extract, temp_key, ft_strlen(extract) + 1) == 0)
 		{
+			free(context->dup_environment_variables[i]);
 			if (temp_env->new_env_value)
 				context->dup_environment_variables[i] = join_dup_envp(temp_key, temp_env->new_env_value);
 			else
 				context->dup_environment_variables[i] = ft_strdup(temp_key);
 			free(temp_key);
+			free(extract);
 			return ;
 		}
 		free(extract);
 		i++;
 	}
 	if (temp_env->new_env_value)
-		temp_key = join_dup_envp(temp_key, temp_env->new_env_value);
+	{
+		temp = join_dup_envp(temp_key, temp_env->new_env_value);
+		free(temp_key);
+		temp_key = temp;
+	}
 	context->dup_environment_variables = ft_copy_envp(context->dup_environment_variables, temp_key);
 	free(temp_key);
 }
@@ -206,6 +221,7 @@ int	ft_update_envp_2(t_env *temp_envp, char *temp_key, t_variable_context *conte
 		{
 			if (temp_envp->new_env_value)
 			{
+				free(context->environment_variables[i]);
 				context->environment_variables[i] = ft_strjoin(temp_key, temp_envp->new_env_value);
 				ft_add_to_myenvp(context, temp_envp);
 				free(temp_key);
@@ -221,6 +237,7 @@ void	ft_update_envp_exp(t_env *temp_envp, t_list *command, t_variable_context *c
 {
 	int		i;
 	char	*temp_key;
+	char	*temp;
 	int		exists;
 
 	i = 0;
@@ -230,7 +247,9 @@ void	ft_update_envp_exp(t_env *temp_envp, t_list *command, t_variable_context *c
 		return ;
 	if (temp_envp->new_env_value)
 	{
-		temp_key = ft_strjoin(temp_key, temp_envp->new_env_value);
+		temp = ft_strjoin(temp_key, temp_envp->new_env_value);
+		free(temp_key);
+		temp_key = temp;
 		context->environment_variables = ft_copy_envp(context->environment_variables, temp_key);
 	}
 	free(temp_key);
@@ -248,6 +267,7 @@ void	ft_update_envp_cd(t_env *temp_envp, t_list *command, t_variable_context *co
 		{
 			temp_envp->new_env_key = "PWD";
 			temp_envp->new_env_value = temp_envp->pwd;
+			free(context->environment_variables[i]);
 			context->environment_variables[i] = ft_strjoin("PWD=", temp_envp->pwd);
 			ft_add_to_myenvp(context, temp_envp);
 		}
@@ -255,6 +275,7 @@ void	ft_update_envp_cd(t_env *temp_envp, t_list *command, t_variable_context *co
 		{
 			temp_envp->new_env_key = "OLDPWD";
 			temp_envp->new_env_value = temp_envp->oldpwd;
+			free(context->environment_variables[i]);
 			context->environment_variables[i] = ft_strjoin("OLDPWD=", temp_envp->oldpwd);
 			ft_add_to_myenvp(context, temp_envp);
 		}
@@ -271,6 +292,22 @@ void	ft_update_envp(t_env *temp_envp, t_list *command, t_variable_context *conte
 		ft_update_envp_exp(temp_envp, command, context);
 }
 
+char	*ft_oldpwd(char *str, size_t start)
+{
+	char	*result;
+	size_t	i;
+
+	i = 0;
+	result = ft_calloc(sizeof(char), ft_strlen(str) - start + 1);
+	while (str[start])
+	{
+		result[i] = str[start];
+		i++;
+		start++;
+	}
+	return (result);
+}
+
 //To extract variable from envp
 char	*ft_extract_envp(char **envp, char *str)
 {
@@ -281,7 +318,7 @@ char	*ft_extract_envp(char **envp, char *str)
 	while (envp[i])
 	{
 		if (ft_strncmp(envp[i], str, ft_strlen(str)) == 0)
-			value = envp[i] + ft_strlen(str);
+			value = ft_oldpwd(envp[i], ft_strlen(str));
 		i++;
 	}
 	return (value);
@@ -302,12 +339,13 @@ char	**ft_remove_from_dup_envp(t_variable_context *context, t_env *temp_envp)
 		extract = ft_get_key(context->environment_variables[i]);
 		if (ft_strncmp(extract, temp_envp->char_unset, ft_strlen(extract) + 1) != 0)
 		{
-			new[j] = context->environment_variables[i];
+			new[j] = ft_strdup(context->environment_variables[i]);
 			j++;
 		}
+		free(extract);
 		i++;
 	}
-	free(extract);
+	free_string_array(context->environment_variables);
 	return (new);
 }
 
@@ -326,12 +364,13 @@ char	**ft_remove_from_myenvp(t_variable_context *context, t_env *temp_envp)
 		extract = ft_get_key(context->dup_environment_variables[i]);
 		if (ft_strncmp(extract, temp_envp->char_unset, ft_strlen(extract) + 1) != 0)
 		{
-			new[j] = context->dup_environment_variables[i];
+			new[j] = ft_strdup(context->dup_environment_variables[i]);
 			j++;
 		}
+		free(extract);
 		i++;
 	}
-	free(extract);
+	free_string_array(context->dup_environment_variables);
 	return (new);
 }
 
@@ -350,12 +389,13 @@ char	**ft_remove_from_local(t_variable_context *context, t_env *temp_envp)
 		extract = ft_get_key(context->dup_environment_variables[i]);
 		if (ft_strncmp(extract, temp_envp->char_unset, ft_strlen(extract) + 1) != 0)
 		{
-			new[j] = context->local_variables[i];
+			new[j] = ft_strdup(context->local_variables[i]);
 			j++;
 		}
+		free(extract);
 		i++;
 	}
-	free(extract);
+	free_string_array(context->local_variables);
 	return (new);
 }
 

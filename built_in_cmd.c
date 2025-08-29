@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 15:11:34 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 16:35:47 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/29 19:29:28 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,22 +67,20 @@ void	ft_cd(t_list *command, t_list *redirection, t_variable_context *context)
 			ft_update_envp(&temp_envp, command, context);
 		}
 	}
-	else
-		perror("cd");
+	free(temp_envp.pwd);
+	free(temp_envp.oldpwd);
 }
 
 void	ft_pwd(t_list *command, t_list *redirection, t_variable_context *context)
 {
 	char	*string;
-
-	string = ft_calloc(sizeof(char), ft_strlen(getcwd(NULL, 0)));
-	if (!string)
-		perror("malloc failed");
-	string = ft_strdup(getcwd(NULL, 0));
+	
+	string = getcwd(NULL, 0);
 	if (string)
 		printf("%s\n", string);
 	else
-		perror("pwd");
+		ft_putstr_fd("pwd error", 2);
+	free(string);
 }
 
 void	ft_export_3(t_env *temp_envp, t_variable_context *context)
@@ -151,17 +149,20 @@ void	ft_unset_dup(t_env *temp_envp, t_variable_context *context)
 {
 	int		i;
 	char	*extract;
+	char	*temp;
 	
 	i = 0;
-	temp_envp->char_unset = ft_strjoin("declare -x ", temp_envp->char_unset);
+	temp = ft_strjoin("declare -x ", temp_envp->char_unset);
+	free(temp_envp->char_unset);
+	temp_envp->char_unset = temp;
 	while (context->dup_environment_variables && context->dup_environment_variables[i])
 	{
 		extract = ft_get_key(context->dup_environment_variables[i]);
 		if (ft_strncmp(extract, temp_envp->char_unset, ft_strlen(extract) + 1) == 0)
 			context->dup_environment_variables = ft_remove_from_myenvp(context, temp_envp);
+		free(extract);
 		i++;
 	}
-	free(extract);
 }
 
 void	ft_unset_env(t_env *temp_envp, t_variable_context *context)
@@ -175,6 +176,7 @@ void	ft_unset_env(t_env *temp_envp, t_variable_context *context)
 		extract = ft_get_key(context->environment_variables[i]);
 		if (ft_strncmp(extract, temp_envp->char_unset, ft_strlen(extract) + 1) == 0)
 			context->environment_variables = ft_remove_from_dup_envp(context, temp_envp);
+		free(extract);
 		i++;
 	}
 	i = 0;
@@ -183,9 +185,9 @@ void	ft_unset_env(t_env *temp_envp, t_variable_context *context)
 		extract = ft_get_key(context->local_variables[i]);
 		if (ft_strncmp(extract, temp_envp->char_unset, ft_strlen(extract) + 1) == 0)
 			context->local_variables = ft_remove_from_local(context, temp_envp);
+		free(extract);
 		i++;
 	}
-	free(extract);
 }
 
 void	ft_unset(t_list *command, t_list *redirection, t_variable_context *context)
@@ -203,9 +205,9 @@ void	ft_unset(t_list *command, t_list *redirection, t_variable_context *context)
 			temp_envp.char_unset = ft_strdup(temp_cmd->content);
 			ft_unset_env(&temp_envp, context);
 			ft_unset_dup(&temp_envp, context);
+			free(temp_envp.char_unset);
 			temp_cmd = temp_cmd->next;
 		}
-		free(temp_envp.char_unset);
 	}
 }
 
