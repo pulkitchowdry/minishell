@@ -18,30 +18,31 @@ extern int	g_ret_code;
 
 void	ft_echo(t_list *command, t_list *redirection, t_variable_context *context)
 {
-		t_list	*temp_cmd;
-		t_env	temp_envp;
+	t_list	*t_cmd;
+	t_env	temp_envp;
 
-		temp_cmd = command;
-		ft_bzero(&temp_envp, sizeof(temp_envp));
-		if (temp_cmd->next)
+	t_cmd = command;
+	ft_bzero(&temp_envp, sizeof(temp_envp));
+	if (t_cmd->next)
+	{
+		t_cmd = t_cmd->next;
+		if (ft_strlen(t_cmd->content) > 0
+			&& ft_strncmp(t_cmd->content, "-n", ft_strlen(t_cmd->content)) == 0)
 		{
-			temp_cmd = temp_cmd->next;
-			if (ft_strlen(temp_cmd->content) > 0 && ft_strncmp(temp_cmd->content, "-n", ft_strlen(temp_cmd->content)) == 0)
-			{
-				temp_envp.no_new_line_flag = 1;
-				write(1, "", 0);
-				temp_cmd = temp_cmd->next;
-			}
-			while (temp_cmd)
-			{
-				write(1, temp_cmd->content, ft_strlen(temp_cmd->content));
-				if (temp_cmd->next)
-					write(1, " ", 1);
-				temp_cmd = temp_cmd->next;
-			}
+			temp_envp.no_new_line_flag = 1;
+			write(1, "", 0);
+			t_cmd = t_cmd->next;
 		}
-		if (temp_envp.no_new_line_flag != 1)
-			write(1, "\n", 1);
+		while (t_cmd)
+		{
+			write(1, t_cmd->content, ft_strlen(t_cmd->content));
+			if (t_cmd->next)
+				write(1, " ", 1);
+			t_cmd = t_cmd->next;
+		}
+	}
+	if (temp_envp.no_new_line_flag != 1)
+		write(1, "\n", 1);
 }
 
 void	ft_cd(t_list *command, t_list *redirection, t_variable_context *context)
@@ -69,6 +70,7 @@ void	ft_cd(t_list *command, t_list *redirection, t_variable_context *context)
 	else
 		perror("cd");
 }
+
 void	ft_pwd(t_list *command, t_list *redirection, t_variable_context *context)
 {
 	char	*string;
@@ -83,101 +85,127 @@ void	ft_pwd(t_list *command, t_list *redirection, t_variable_context *context)
 		perror("pwd");
 }
 
+void	ft_export_3(t_env *temp_envp, t_variable_context *context)
+{
+	int	i;
+	
+	i = 0;
+	while (context->local_variables && context->local_variables[i] != NULL)
+	{
+		temp_envp->local_key = ft_get_key(context->local_variables[i]);
+		temp_envp->local_value = ft_get_value(context->local_variables[i]);
+		if (ft_strncmp(temp_envp->new_env_key, temp_envp->local_key,
+			ft_strlen(temp_envp->local_key) + 1) == 0)
+		{
+			if (temp_envp->local_value)
+				temp_envp->new_env_value = ft_strdup(temp_envp->local_value);
+		}
+		free(temp_envp->local_key);
+		free(temp_envp->local_value);
+		i++;
+	}
+}
+
+void	ft_export_2(t_list *command, t_list *redirection, t_variable_context *context)
+{
+	t_list	*temp_cmd;
+	t_env	temp_envp;
+	int		i;
+
+	temp_cmd = command;
+	ft_bzero(&temp_envp, sizeof(temp_envp));
+	temp_cmd = temp_cmd->next;
+	while (temp_cmd)
+	{
+		temp_envp.new_env_key = ft_get_key(temp_cmd->content);
+		temp_envp.new_env_value = ft_get_value(temp_cmd->content);
+		if (!temp_envp.new_env_value)
+			ft_export_3(&temp_envp, context);
+		append_local_variables_2(command, redirection, context);
+		ft_update_envp(&temp_envp, command, context);
+		free(temp_envp.new_env_key);
+		free(temp_envp.new_env_value);
+		temp_cmd = temp_cmd->next;
+	}
+}
+
 void	ft_export(t_list *command, t_list *redirection, t_variable_context *context)
 {
-		t_list	*temp_cmd;
-		t_env	temp_envp;
-		int		i;
-		int		j;
-		
-		temp_cmd = command;
-		ft_bzero(&temp_envp, sizeof(temp_envp));
-		if (temp_cmd->next)
+	int	i;
+
+	i = 0;
+	if (command->next)
+		ft_export_2(command, redirection, context);
+	else if (!command->next)
+	{
+		while (context->dup_environment_variables[i])
 		{
-			temp_cmd = temp_cmd->next;
-			while (temp_cmd)
-			{
-				temp_envp.new_env_key = ft_get_key(temp_cmd->content);
-				temp_envp.new_env_value = ft_get_value(temp_cmd->content);
-				if (!temp_envp.new_env_value)
-				{
-					i = 0;
-					while (context->local_variables && context->local_variables[i] != NULL)
-					{
-						temp_envp.local_key = ft_get_key(context->local_variables[i]);
-						temp_envp.local_value = ft_get_value(context->local_variables[i]);
-						if (ft_strncmp(temp_envp.new_env_key,
-							temp_envp.local_key, ft_strlen(temp_envp.local_key) + 1) == 0)
-						{
-							if (temp_envp.local_value)
-								temp_envp.new_env_value = temp_envp.local_value;
-						}
-						i++;
-					}
-				}
-				append_local_variables_2(command, redirection, context);
-				ft_update_envp(&temp_envp, command, context);
-				temp_cmd = temp_cmd->next;
-			}
+			write(1, context->dup_environment_variables[i], ft_strlen(context->dup_environment_variables[i]));
+			write(1, "\n", 1);
+			i++;
 		}
-		else if (!temp_cmd->next)
-		{
-			i = 0;
-			while (context->dup_environment_variables[i])
-			{
-				write(1, context->dup_environment_variables[i], ft_strlen(context->dup_environment_variables[i]));
-				write(1, "\n", 1);
-				i++;
-			}
-			return ;
-		}
+	}
+}
+
+void	ft_unset_dup(t_env *temp_envp, t_variable_context *context)
+{
+	int		i;
+	char	*extract;
+	
+	i = 0;
+	temp_envp->char_unset = ft_strjoin("declare -x ", temp_envp->char_unset);
+	while (context->dup_environment_variables && context->dup_environment_variables[i])
+	{
+		extract = ft_get_key(context->dup_environment_variables[i]);
+		if (ft_strncmp(extract, temp_envp->char_unset, ft_strlen(extract) + 1) == 0)
+			context->dup_environment_variables = ft_remove_from_myenvp(context, temp_envp);
+		i++;
+	}
+	free(extract);
+}
+
+void	ft_unset_env(t_env *temp_envp, t_variable_context *context)
+{
+	int		i;
+	char	*extract;
+	
+	i = 0;
+	while (context->environment_variables && context->environment_variables[i])
+	{
+		extract = ft_get_key(context->environment_variables[i]);
+		if (ft_strncmp(extract, temp_envp->char_unset, ft_strlen(extract) + 1) == 0)
+			context->environment_variables = ft_remove_from_dup_envp(context, temp_envp);
+		i++;
+	}
+	i = 0;
+	while (context->local_variables && context->local_variables[i])
+	{
+		extract = ft_get_key(context->local_variables[i]);
+		if (ft_strncmp(extract, temp_envp->char_unset, ft_strlen(extract) + 1) == 0)
+			context->local_variables = ft_remove_from_local(context, temp_envp);
+		i++;
+	}
+	free(extract);
 }
 
 void	ft_unset(t_list *command, t_list *redirection, t_variable_context *context)
 {
 	t_list	*temp_cmd;
 	t_env	temp_envp;
-	int		i;
-	char	*extract;
-	
+
 	temp_cmd = command;
 	ft_bzero(&temp_envp, sizeof(temp_envp));
-	i = 0;
 	if (temp_cmd->next)
 	{
 		temp_cmd = temp_cmd->next;
 		while (temp_cmd)
 		{
-			// temp_envp.char_unset = ft_strjoin(temp_cmd->content, "=");
 			temp_envp.char_unset = ft_strdup(temp_cmd->content);
-			i = 0;
-			while (context->environment_variables && context->environment_variables[i])
-			{
-				extract = ft_get_key(context->environment_variables[i]);
-				if (ft_strncmp(extract, temp_envp.char_unset, ft_strlen(extract) + 1) == 0)
-					context->environment_variables = ft_remove_from_dup_envp(context, &temp_envp);
-				i++;
-			}
-			i = 0;
-			while (context->local_variables && context->local_variables[i])
-			{
-				extract = ft_get_key(context->local_variables[i]);
-				if (ft_strncmp(extract, temp_envp.char_unset, ft_strlen(extract) + 1) == 0)
-					context->local_variables = ft_remove_from_local(context, &temp_envp);
-				i++;
-			}
-			i = 0;
-			temp_envp.char_unset = ft_strjoin("declare -x ", temp_envp.char_unset);
-			while (context->dup_environment_variables && context->dup_environment_variables[i])
-			{
-				extract = ft_get_key(context->dup_environment_variables[i]);
-				if (ft_strncmp(extract, temp_envp.char_unset, ft_strlen(extract) + 1) == 0)
-					context->dup_environment_variables = ft_remove_from_myenvp(context, &temp_envp);
-				i++;
-			}
-			free(extract);
+			ft_unset_env(&temp_envp, context);
+			ft_unset_dup(&temp_envp, context);
 			temp_cmd = temp_cmd->next;
 		}
+		free(temp_envp.char_unset);
 	}
 }
 
