@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/29 16:36:04 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/29 21:06:22 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,18 @@
 
 extern int	g_ret_code;
 
-void	close_heredoc_pipes(int sig)
+void	close_all_fds_in_heredoc()
 {
-	(void)sig;
 	close(1023);
 	close(0);
 	close(1);
 	close(2);
+}
+
+void	close_heredoc_pipes(int sig)
+{
+	(void)sig;
+	close_all_fds_in_heredoc();
 	exit(2);
 }
 
@@ -53,7 +58,7 @@ void	write_temp_files(char *delimiter_string, int *fd)
 		&& ft_strncmp(delimiter, "\n", 2) != 0)
 		ft_putstr_fd("here-document delimited by end-of-file", 2);
 	free(line_string);
-	close_heredoc_pipes(0);
+	close_all_fds_in_heredoc();
 	exit(0);
 }
 
@@ -68,14 +73,18 @@ int	wait_for_heredoc_to_finish(t_list *redirection_delimiter, int *fd, int pid)
 	if (WIFEXITED(ret_code) && WEXITSTATUS(ret_code) == 2)
 	{
 		close(fd[0]);
-		return (ret_code);
+		return (130);
 	}
-	free(redirection_delimiter->content);
-	redirection_delimiter->content = ft_itoa(fd[0]);
-	return (ret_code);
+	else if (WIFEXITED(ret_code))
+	{
+		free(redirection_delimiter->content);
+		redirection_delimiter->content = ft_itoa(fd[0]);
+		return (WEXITSTATUS(ret_code));
+	}
+	return (255);
 }
 
-int	fork_heredoc(t_ast_node *root, t_list *tokens, t_list *list)
+int	fork_heredoc(t_ast_node *root, t_list *tokens, t_list *list, t_variable_context *context)
 {
 	int		ret_code;
 	int		fd[2];
@@ -94,6 +103,9 @@ int	fork_heredoc(t_ast_node *root, t_list *tokens, t_list *list)
 		line = ft_strjoin((char *)list->next->content, "\n");
 		free_command(&root);
 		ft_lstclear(&tokens, free_token);
+		free_string_array(context->environment_variables);
+		free_string_array(context->dup_environment_variables);
+		free_string_array(context->local_variables);
 		write_temp_files(line, fd);
 	}
 	else
@@ -101,7 +113,7 @@ int	fork_heredoc(t_ast_node *root, t_list *tokens, t_list *list)
 	return (ret_code);
 }
 
-int	open_temp_files(t_ast_node *root, t_list *tokens, t_list *list)
+int	open_temp_files(t_ast_node *root, t_list *tokens, t_list *list, t_variable_context *context)
 {
 	char	*redirect_type;
 	int		ret_code;
@@ -112,8 +124,8 @@ int	open_temp_files(t_ast_node *root, t_list *tokens, t_list *list)
 		redirect_type = (char *)list->content;
 		if (ft_strncmp("<<", redirect_type, 3) == 0)
 		{
-			ret_code = fork_heredoc(root, tokens, list);
-			if (WIFEXITED(ret_code) && WEXITSTATUS(ret_code) == 2)
+			ret_code = fork_heredoc(root, tokens, list, context);
+			if (ret_code == 2)
 				return (ret_code);
 		}
 		list = list->next->next;
@@ -208,7 +220,7 @@ void	process_other_redirect_child(t_ast_node *root, t_list *tokens, t_list *redi
 	if (ft_strncmp(">>", (char *)redirection->content, 3) == 0)
 	{
 		fd = open((char *)redirection->next->content,
-				O_CREAT | O_APPEND | O_WRONLY);
+				O_CREAT | O_APPEND | O_WRONLY, 0644);
 		if (fd == -1)
 			print_permission_denied_child(root, tokens, (char *)redirection->next->content, context);
 		else
@@ -217,7 +229,7 @@ void	process_other_redirect_child(t_ast_node *root, t_list *tokens, t_list *redi
 	else if (ft_strncmp(">", (char *)redirection->content, 2) == 0)
 	{
 		fd = open((char *)redirection->next->content,
-				O_CREAT | O_TRUNC | O_WRONLY);
+				O_CREAT | O_TRUNC | O_WRONLY, 0644);
 		if (fd == -1)
 			print_permission_denied_child(root, tokens, (char *)redirection->next->content, context);
 		else
@@ -430,7 +442,7 @@ int	open_files(t_list *redirection)
 			if (is_wildcard_present((char *)redirection->next->content))
 				return (ambigous_redirect_error((char *)
 						redirection->next->content));
-			fd = open((char *)redirection->next->content, O_CREAT | O_WRONLY);
+			fd = open((char *)redirection->next->content, O_CREAT | O_WRONLY, 0644);
 			if (fd == -1)
 			{
 				print_permission_denied_root((char *)redirection->next->content);
@@ -531,7 +543,7 @@ char	process_other_redirect_root(t_list *redirection)
 
 	if (ft_strncmp(">>", (char *)redirection->content, 3) == 0)
 	{
-		fd = open((char *)redirection->next->content, O_CREAT | O_APPEND | O_WRONLY);
+		fd = open((char *)redirection->next->content, O_CREAT | O_APPEND | O_WRONLY, 0644);
 		if (fd == -1)
 			return (print_permission_denied_root((char *)redirection->next->content));
 		else
@@ -539,7 +551,7 @@ char	process_other_redirect_root(t_list *redirection)
 	}
 	else if (ft_strncmp(">", (char *)redirection->content, 2) == 0)
 	{
-		fd = open((char *)redirection->next->content, O_CREAT | O_TRUNC | O_WRONLY);
+		fd = open((char *)redirection->next->content, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 		if (fd == -1)
 			return (print_permission_denied_root((char *)redirection->next->content));
 		else
@@ -649,17 +661,27 @@ int	execute_command(t_ast_node *root,
 }
 
 int	execute_heredoc(t_ast_node *root, t_list *tokens,
-		t_ast_node *node, int ret_code)
+		t_state_context *state_context, int ret_code)
 {
-	if (node == 0 || (WIFEXITED(ret_code) && WEXITSTATUS(ret_code) == 2))
+	t_ast_node	*current;
+
+	if (ret_code != 0)
 		return (ret_code);
-	if (node->node != 0)
+	if (state_context->current == 0 || (WIFEXITED(ret_code) && WEXITSTATUS(ret_code) == 2))
+		return (ret_code);
+	if (state_context->current->node != 0)
 	{
-		ret_code = execute_heredoc(root, tokens, node->left, ret_code);
-		ret_code = execute_heredoc(root, tokens, node->right, ret_code);
+		current = state_context->current;
+		state_context->current = current->left;
+		ret_code = execute_heredoc(root, tokens, state_context, ret_code);
+		if (ret_code != 0)
+			return (ret_code);
+		state_context->current = current->right;
+		ret_code = execute_heredoc(root, tokens, state_context, ret_code);
 	}
-	if (node->redirection != 0)
-		ret_code = open_temp_files(root, tokens, node->redirection);
+	if (state_context->current->redirection != 0)
+		ret_code = open_temp_files(root, tokens,
+			state_context->current->redirection, state_context->context);
 	return (ret_code);
 }
 

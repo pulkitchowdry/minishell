@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 16:07:59 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/29 20:52:24 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,7 +234,7 @@ int	main(int argc, char **argv, char **envp)
 		while (1)
 		{
 			data.input = readline("->");
-			if (data.input)
+			if (data.input && ft_strncmp(data.input, "", 1) != 0)
 			{
 				add_history(data.input);
 				list = create_tokens(data.input);
@@ -244,7 +244,8 @@ int	main(int argc, char **argv, char **envp)
 					printf("The command is valid\n");
 				else
 					printf("The command cannot execute\n");
-				g_ret_code = execute_heredoc(root, list_start, root, 0);
+				state_context.current = root;
+				g_ret_code = execute_heredoc(root, list_start, &state_context, 0);
 				if (g_ret_code == 0)
 				{
 					printf("heredoc is valid\n");
@@ -264,7 +265,7 @@ int	main(int argc, char **argv, char **envp)
 				ft_lstclear(&list_start, free_token);
 				free(data.input);
 			}
-			else
+			else if (data.input == 0)
 			{
 				free(data.input);
 				break ;
