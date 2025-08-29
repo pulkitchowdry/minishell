@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 22:45:44 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/29 23:42:38 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,5 +232,62 @@ char		*ft_get_value(char *str);
 int			ft_find_equal(char *str);
 void		ft_add_to_others(char *str, t_variable_context *context);
 char		*ft_oldpwd(char *str, size_t start);
+int			fork_heredoc(t_ast_node *root, t_list *tokens, t_list *list,
+				t_variable_context *context);
+int			print_permission_denied_child(t_ast_node *root, t_list *tokens,
+				char *string, t_variable_context *context);
+void		compare_redirect_input_child(t_ast_node *root, t_list *tokens,
+				t_list *redirection, t_variable_context *context);
+void		configure_redirection_child(t_ast_node *root, t_list *tokens,
+				t_list *redirection,
+				t_variable_context *context);
+void		execute_with_execve(t_list *command, char **envp);
+char		**extract_path_variable(char **environment_variable);
+int			open_files(t_list *redir);
+char		print_permission_denied_root(char *string);
+void		dup_fd_to_stdout(int fd);
+void		save_stdio(void);
+char		configure_redirection_root(t_list *redirection);
+t_list		*expand_command_wildcard(t_list *command);
+char		is_builtin_command(char *command);
+int			fork_and_wait(t_ast_node *root,
+				t_list *tokens, t_ast_node *node,
+				t_variable_context *context);
+int			open_temp_files(t_ast_node *root, t_list *tokens, t_list *list,
+				t_variable_context *context);
+void		exec_pipe_left_child(t_parse_context *parse_context,
+				int *fd, t_ast_node *node, t_variable_context *context);
+void		exec_pipe_right_child(t_parse_context *parse_context,
+				int *fd, t_ast_node *node, t_variable_context *context);
+void		close_all_pipes(int *fd);
+int			execute_command(t_ast_node *root,
+				t_list *token, t_ast_node *node,
+				t_variable_context *context);
+int			execute_logical_or(t_ast_node *root,
+				t_list *tokens,
+				t_ast_node *node,
+				t_variable_context *context);
+int			execute_logical_and(t_ast_node *root,
+				t_list *tokens,
+				t_ast_node *node,
+				t_variable_context *context);
+int			ft_add_to_myenvp_2(t_env *temp_env, char *temp_key,
+				t_variable_context *context);
+char		*join_dup_envp(char *key, char *value);
+char		*get_special_variable(char *variable);
+char		*extract_variable_name(char *string, char *start, char *end);
+char		*substitute_variable(char *string, char *start,
+				char *end, t_variable_context *context);
+t_list		*construct_single_quote(char **string);
+t_list		*construct_double_quote(char **string);
+t_list		*construct_1_character(char **string);
+t_list		*construct_2_characters(char **string);
+t_list		*construct_string(char **string);
+void		sort_string_ascii(char **string);
+char		test_for_both_ends(char **list_of_strings, char *filename);
+char		test_for_tail(char **list_of_strings, char *filename);
+char		test_for_head(char **list_of_strings, char *filename);
+void		compact_filenames(int max_files, char **filenames);
+char		**get_sorted_filenames(int dir_num);
 
 #endif

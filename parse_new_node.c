@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 17:56:58 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/27 22:56:11 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/29 23:10:14 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,92 +72,4 @@ t_ast_node	*parse_bracket(t_list **list, t_state_context *context)
 	else
 		free_command(&current);
 	return (current);
-}
-
-char	is_command_redirect_space(int current_state)
-{
-	return (current_state == COMMAND_REDIRECT_SPACE
-		|| current_state == ASSIGN_REDIRECT_SPACE);
-}
-
-char	is_command_redirect_string(int current_state)
-{
-	return (current_state == COMMAND_REDIRECT_STRING
-		|| current_state == ASSIGN_REDIRECT_STRING);
-}
-
-char	is_command_redirect(int current_state)
-{
-	return (current_state == COMMAND_REDIRECT
-		|| current_state == ASSIGN_REDIRECT);
-}
-
-int	process_state(int current_state, t_list **list,
-		t_token *cur_tok, t_state_context *state_context)
-{
-	if (current_state == ASSIGN_STRING_VAL)
-		return (process_assign_string_val(list, cur_tok,
-				&state_context->current, state_context->context));
-	else if (current_state == ASSIGN_SPACE)
-		return (process_assign_space(list, &state_context->current));
-	else if (current_state == ASSIGN_OP)
-		return (process_assign_op(list, &state_context->current));
-	else if (current_state == INITIAL_COMMAND_STRING)
-		return (process_initial_command_string(list, cur_tok,
-				&state_context->current, state_context->context));
-	else if (current_state == COMMAND_SPACE)
-		return (process_command_space(list, &state_context->current));
-	else if (is_command_redirect(current_state))
-		return (process_redirect(list, cur_tok,
-				&state_context->current, current_state));
-	else if (is_command_redirect_space(current_state))
-		return (process_redirect_space(list,
-				&state_context->current, current_state));
-	else if (is_command_redirect_string(current_state))
-		return (process_redirect_string(list,
-				cur_tok, current_state, state_context));
-	else if (current_state == COMMAND_QUOTES || current_state == COMMAND_STRING)
-		return (process_command_string(list, cur_tok,
-				&state_context->current, state_context->context));
-	return (EXIT);
-}
-
-void	append_string_to_current_node(t_token *cur_tok,
-		t_list *list, t_variable_context *context)
-{
-	char	*string;
-	t_list	*last_node;
-
-	if (cur_tok->type == DOUBLE_QUOTE_STRING)
-		cur_tok->string = process_double_quote(cur_tok->string, context);
-	else if (cur_tok->type == SINGLE_QUOTE_STRING)
-		cur_tok->string = process_single_quote(cur_tok->string);
-	else if (cur_tok->type == VARIABLE)
-		cur_tok->string = process_variable(cur_tok->string, context);
-	last_node = ft_lstlast(list);
-	string = (char *)last_node->content;
-	last_node->content = ft_strjoin(string, cur_tok->string);
-	free(string);
-}
-
-char	is_command_string(int type)
-{
-	return (type == DOUBLE_QUOTE_STRING
-		|| type == SINGLE_QUOTE_STRING
-		|| type == STRING || type == ASSIGNMENT
-		|| type == VARIABLE);
-}
-
-char	is_pipe_or_logical(int type)
-{
-	return (type == PIPE
-		|| type == LOGICAL_AND
-		|| type == LOGICAL_OR
-		|| type == CLOSE_BRACKET);
-}
-
-char	is_redirect(int type)
-{
-	return (type == REDIRECT_INPUT || type == REDIRECT_OUTPUT
-		|| type == REDIRECT_APPEND || type == HERE_DOC);
 }

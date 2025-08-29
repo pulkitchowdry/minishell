@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 22:43:27 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/29 23:07:58 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,51 +20,6 @@
 #include "minishell.h"
 
 int		g_ret_code = 0;
-
-void	print_signal(int signal)
-{
-	(void)signal;
-	rl_on_new_line();
-	printf("\n");
-	rl_replace_line("", 0);
-	rl_redisplay();
-}
-
-void	print_string_list(t_list *list)
-{
-	while (list != 0)
-	{
-		printf("%s ", (char *)list->content);
-		list = list->next;
-	}
-}
-
-void	print_ast(t_ast_node *node)
-{
-	if (node == 0)
-		return ;
-	printf("(");
-	print_ast(node->left);
-	if (node->node != 0)
-		printf("node: %s", node->node->string);
-	if (node->command != 0)
-	{
-		printf("command: ");
-		print_string_list(node->command);
-	}
-	if (node->redirection != 0)
-	{
-		printf("redirection: ");
-		print_string_list(node->redirection);
-	}
-	if (node->assignment != 0)
-	{
-		printf("assignment: ");
-		print_string_list(node->assignment);
-	}
-	print_ast(node->right);
-	printf(")");
-}
 
 void	initialize(char **envp, t_variable_context *context,
 					t_state_context *state_context)
