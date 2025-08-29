@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/28 17:58:13 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/29 16:07:59 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -274,6 +274,9 @@ int	main(int argc, char **argv, char **envp)
 		free_string_array(context.environment_variables);
 		free_string_array(context.dup_environment_variables);
 		free_string_array(context.local_variables);
+		close(0);
+		close(1);
+		close(2);
 	}
 	return (0);
 }
