@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 15:11:34 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 15:05:24 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/29 16:35:47 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,12 +198,21 @@ void	ft_exit(t_ast_node *root,
 		t_list *token, t_ast_node *node,
 		t_variable_context *context)
 {
+	if (node->redirection)
+	{
+		close(1023);
+		close(1022);
+	}
 	rl_clear_history();
 	free_command(&root);
+	unlink_files(root);
 	ft_lstclear(&token, free_token);
 	free_string_array(context->environment_variables);
 	free_string_array(context->dup_environment_variables);
 	free_string_array(context->local_variables);
-	printf("exit\n");
+	ft_putstr_fd("exit\n", 2);
+	close(0);
+	close(1);
+	close(2);
 	exit(g_ret_code);
 }
