@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 15:13:21 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 17:08:44 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/29 17:48:15 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,27 @@ char	**ft_dup_str_array(char **envp)
 	copy[i] = NULL;
 	return (copy);
 }
+char	*ft_get_var(char *temp_key, char *temp_value)
+{
+	char	*str;
+	char	*temp;
+
+	str = ft_strjoin("declare -x ", temp_key);
+	if (temp_value)
+	{
+		temp = ft_strjoin(str, "=\"");
+		free(str);
+		str = temp;
+		temp = ft_strjoin(str, temp_value);
+		free(str);
+		str = temp;
+		temp = ft_strjoin(str, "\"");
+		free(str);
+		str = temp;
+	}
+	return(temp);
+}
+
 //Initially duplicating envp into temp for export command
 char	**ft_dup_envp(char **envp)
 {
@@ -75,14 +96,8 @@ char	**ft_dup_envp(char **envp)
 	{
 		temp_key = ft_get_key(envp[i]);
 		temp_value = ft_get_value(envp[i]);
-		copy[i] = ft_strjoin("declare -x ", temp_key);
+		copy[i] = ft_get_var(temp_key, temp_value);
 		free(temp_key);
-		if (temp_value)
-		{
-			copy[i] = ft_strjoin(copy[i], "=\"");
-			copy[i] = ft_strjoin(copy[i], temp_value);
-			copy[i] = ft_strjoin(copy[i], "\"");
-		}
 		free(temp_value);
 		i++;
 	}
