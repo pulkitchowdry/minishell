@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 15:13:21 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 15:14:45 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/29 17:08:44 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,13 +180,11 @@ void	ft_add_to_myenvp(t_variable_context *context, t_env *temp_env)
 	free(temp_key);
 }
 
-void	ft_update_envp_exp(t_env *temp_envp, t_list *command, t_variable_context *context)
+int	ft_update_envp_2(t_env *temp_envp, char *temp_key, t_variable_context *context)
 {
-	int		i;
-	char	*temp_key;
+	int	i;
 
 	i = 0;
-	temp_key = ft_strjoin(temp_envp->new_env_key, "=");
 	while (context->environment_variables[i])
 	{
 		if (ft_strncmp(context->environment_variables[i], temp_key, ft_strlen(temp_key)) == 0)
@@ -196,11 +194,25 @@ void	ft_update_envp_exp(t_env *temp_envp, t_list *command, t_variable_context *c
 				context->environment_variables[i] = ft_strjoin(temp_key, temp_envp->new_env_value);
 				ft_add_to_myenvp(context, temp_envp);
 				free(temp_key);
-				return ;
+				return (1);
 			}
 		}
 		i++;
 	}
+	return (0);
+}
+
+void	ft_update_envp_exp(t_env *temp_envp, t_list *command, t_variable_context *context)
+{
+	int		i;
+	char	*temp_key;
+	int		exists;
+
+	i = 0;
+	temp_key = ft_strjoin(temp_envp->new_env_key, "=");
+	exists = ft_update_envp_2(temp_envp, temp_key, context);
+	if (exists == 1)
+		return ;
 	if (temp_envp->new_env_value)
 	{
 		temp_key = ft_strjoin(temp_key, temp_envp->new_env_value);
