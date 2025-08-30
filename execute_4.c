@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 23:03:51 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 23:22:40 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/30 20:44:15 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,11 @@ int	fork_and_wait(t_ast_node *root,
 	if (pid == 0)
 		search_and_exec(root, tokens, node, context);
 	else
+	{
+		signal(SIGINT, print_new_line);
 		waitpid(pid, &ret_code, 0);
+		signal(SIGINT, print_signal);
+	}
 	if (WIFEXITED(ret_code))
 		return (WEXITSTATUS(ret_code));
 	if (WIFSIGNALED(ret_code))

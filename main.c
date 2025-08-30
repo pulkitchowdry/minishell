@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 23:07:58 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/30 20:16:28 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,18 @@ void	parse_and_exec(char	*input, t_state_context *state_context)
 	list_start = list;
 	root = parse_list(&list, state_context);
 	state_context->current = root;
-	g_ret_code = execute_heredoc(root, list_start, state_context, 0);
-	if (g_ret_code == 0 && root != 0 && is_safe_to_execute(root) && list == 0)
-		g_ret_code = execute_command_ast(root, list_start,
-				root, state_context->context);
+	if (root != 0)
+	{
+		g_ret_code = execute_heredoc(root, list_start, state_context, 0);
+		if (g_ret_code == 0 && is_safe_to_execute(root) && list == 0)
+			g_ret_code = execute_command_ast(root, list_start,
+					root, state_context->context);
+	}
+	else
+	{
+		printf("Invalid command\n");
+		g_ret_code = 1;
+	}
 	unlink_files(root);
 	free_command(&root);
 	ft_lstclear(&list_start, free_token);

@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 19:39:31 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/29 23:18:37 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/30 17:07:42 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,4 +60,11 @@ t_list	*find_match_string(char *string_with_wildcard)
 		list_of_matches = find_matches(0, 0, list_of_strings);
 	free_string_array(list_of_strings);
 	return (list_of_matches);
+}
+
+size_t	min(size_t a, size_t b)
+{
+	if (a < b)
+		return (a);
+	return (b);
 }

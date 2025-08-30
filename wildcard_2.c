@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 23:17:22 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 23:21:01 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/30 19:20:32 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,8 @@ char	test_for_both_ends(char **list_of_strings, char *filename)
 	if ((ft_strncmp(filename, list_of_strings[0],
 				ft_strlen(list_of_strings[0])) != 0)
 		|| ft_strncmp(filename + ft_strlen(filename)
-			- ft_strlen(list_of_strings[ft_size(list_of_strings) - 1]),
+			- min(ft_strlen(list_of_strings[ft_size(list_of_strings) - 1]),
+				ft_strlen(filename)),
 			list_of_strings[ft_size(list_of_strings) - 1],
 			ft_strlen(list_of_strings[ft_size(list_of_strings) - 1])) != 0
 		|| ft_strlen(filename) == 1)
@@ -99,7 +100,8 @@ char	test_for_tail(char **list_of_strings, char *filename)
 	size_t	str_index;
 
 	if (ft_strncmp(filename + ft_strlen(filename)
-			- ft_strlen(list_of_strings[ft_size(list_of_strings) - 1]),
+			- min(ft_strlen(list_of_strings[ft_size(list_of_strings) - 1]),
+				ft_strlen(filename)),
 			list_of_strings[ft_size(list_of_strings) - 1],
 			ft_strlen(list_of_strings[ft_size(list_of_strings) - 1])) != 0)
 		return (0);
