@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 23:09:41 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 23:21:22 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/30 21:09:08 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,12 +69,7 @@ void	append_string_to_current_node(t_token *cur_tok,
 	char	*string;
 	t_list	*last_node;
 
-	if (cur_tok->type == DOUBLE_QUOTE_STRING)
-		cur_tok->string = process_double_quote(cur_tok->string, context);
-	else if (cur_tok->type == SINGLE_QUOTE_STRING)
-		cur_tok->string = process_single_quote(cur_tok->string);
-	else if (cur_tok->type == VARIABLE)
-		cur_tok->string = process_variable(cur_tok->string, context);
+	(void)context;
 	last_node = ft_lstlast(list);
 	string = (char *)last_node->content;
 	last_node->content = ft_strjoin(string, cur_tok->string);

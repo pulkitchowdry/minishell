@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 23:05:58 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 23:22:24 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/30 21:22:11 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ int	execute_command(t_ast_node *root,
 
 	if (node == 0)
 		exit(0);
-	node->command = expand_command_wildcard(node->command);
+	node->command = expand_command_wildcard_and_quotes(node->command, context);
 	ret_code = 0;
 	if (node->command == 0 && node->assignment != 0)
 		ret_code = append_local_variables(node->assignment,
