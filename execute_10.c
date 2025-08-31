@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_10.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/30 21:21:01 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/31 14:13:52 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/31 14:44:50 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	substitute_node_for_single_quote(t_list **prev,
 void	substitute_node_for_variable(t_list **result, t_list **prev,
 		t_list **command, t_variable_context *context)
 {
-	(*command)->content = process_variable((char *)(*command)->content, context);
+	(*command)->content = process_variable(
+			(char *)(*command)->content, context);
 	substitute_node_with_list(result, prev, command);
 }
-

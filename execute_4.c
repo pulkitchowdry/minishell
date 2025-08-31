@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 23:03:51 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/31 14:11:05 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/31 14:47:05 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,30 +66,30 @@ void	substitute_node_with_list(t_list **result,
 	*command = (*prev)->next;
 }
 
-t_list	*expand_command_wildcard_and_quotes(t_list *command,
+t_list	*expand_command_wildcard_and_quotes(t_list *cmd,
 		t_variable_context *context)
 {
 	t_list	*result;
 	t_list	*prev;
 
 	prev = 0;
-	result = command;
-	while (command)
+	result = cmd;
+	while (cmd)
 	{
-		if (((char *)command->content)[0] == '"'
-			&& ((char *)command->content)[ft_strlen((char *)command->content) - 1] == '"')
-			substitute_node_for_double_quote(&prev, &command, context);
-		else if (((char *)command->content)[0] == '\''
-			&& ((char *)command->content)[ft_strlen((char *)command->content) - 1] == '\'')
-			substitute_node_for_single_quote(&prev, &command);
-		else if (((char *)command->content)[0] == '$')
-			substitute_node_for_variable(&result, &prev, &command, context);
-		else if (is_wildcard_present((char *)command->content))
-			substitute_node_with_list(&result, &prev, &command);
+		if (((char *)cmd->content)[0] == '"' && ((char *)cmd->content)[
+			ft_strlen((char *)cmd->content) - 1] == '"')
+			substitute_node_for_double_quote(&prev, &cmd, context);
+		else if (((char *)cmd->content)[0] == '\'' && ((char *)cmd->content)[
+			ft_strlen((char *)cmd->content) - 1] == '\'')
+			substitute_node_for_single_quote(&prev, &cmd);
+		else if (((char *)cmd->content)[0] == '$')
+			substitute_node_for_variable(&result, &prev, &cmd, context);
+		else if (is_wildcard_present((char *)cmd->content))
+			substitute_node_with_list(&result, &prev, &cmd);
 		else
 		{
-			prev = command;
-			command = command->next;
+			prev = cmd;
+			cmd = cmd->next;
 		}
 	}
 	return (result);
