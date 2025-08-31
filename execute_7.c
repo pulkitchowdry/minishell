@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 23:05:58 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/31 20:33:22 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/31 21:33:52 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,8 @@ int	execute_buildin_command(t_ast_node *root,
 		t_list *token, t_ast_node *node,
 		t_variable_context *context)
 {
+	int	ret_code;
+
 	if (node->redirection)
 		save_stdio();
 	if (node->redirection && configure_redirection_root(node->redirection) == 0)
@@ -67,10 +69,10 @@ int	execute_buildin_command(t_ast_node *root,
 		restore_stdio();
 		return (1);
 	}
-	decode_buildin_command(root, token, node, context);
+	ret_code = decode_buildin_command(root, token, node, context);
 	if (node->redirection)
 		restore_stdio();
-	return (0);
+	return (ret_code);
 }
 
 int	execute_command(t_ast_node *root,
