@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 23:08:08 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/30 20:43:59 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/31 17:12:19 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,14 @@ void	print_signal(int signal)
 	printf("\n");
 	rl_replace_line("", 0);
 	rl_redisplay();
+	g_ret_code = 130;
 }
 
 void	print_new_line(int signal)
 {
 	(void)signal;
 	printf("\n");
+	g_ret_code = 130;
 }
 
 void	print_string_list(t_list *list)

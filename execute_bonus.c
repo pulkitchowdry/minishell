@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 20:40:39 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/31 15:21:37 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/31 17:10:54 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int	wait_for_heredoc_to_finish(t_list *redirection_delimiter, int *fd, int pid)
 {
 	int	ret_code;
 
-	signal(SIGINT, SIG_IGN);
+	signal(SIGINT, print_new_line);
 	close(fd[1]);
 	waitpid(pid, &ret_code, 0);
 	signal(SIGINT, print_signal);
