@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 23:04:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 23:22:34 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/31 21:17:20 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,10 @@ int	append_local_variables_2(t_list *assignment,
 	}
 	if (ft_strncmp(assignment->content, "export", 7) == 0)
 		assignment = assignment->next;
-	while (assignment)
+	while (assignment && ft_get_key(assignment->content)
+			&& ft_get_value(assignment->content)
+			&& ft_isalpha(((char *)assignment->content)[0])
+			&& (((char *)assignment->content)[0] != '_'))
 	{
 		new_array[seek] = ft_strdup(assignment->content);
 		seek++;

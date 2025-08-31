@@ -6,17 +6,17 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 22:53:23 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/31 15:21:09 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/31 21:20:36 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell_bonus.h"
+#include "minishell.h"
 #include "libft/libft.h"
 #include "libft/get_next_line.h"
 
 extern int	g_ret_code;
 
-void	ft_cd(t_list *command, t_variable_context *context)
+int	ft_cd(t_list *command, t_variable_context *context)
 {
 	t_list	*temp_cmd;
 	t_env	temp_envp;
@@ -42,9 +42,10 @@ void	ft_cd(t_list *command, t_variable_context *context)
 	}
 	free(temp_envp.pwd);
 	free(temp_envp.oldpwd);
+	return (0);
 }
 
-void	ft_pwd(void)
+int	ft_pwd(void)
 {
 	char	*string;
 
@@ -54,6 +55,7 @@ void	ft_pwd(void)
 	else
 		ft_putstr_fd("pwd error", 2);
 	free(string);
+	return (0);
 }
 
 void	ft_export_3(t_env *temp_envp, t_variable_context *context)
@@ -65,8 +67,9 @@ void	ft_export_3(t_env *temp_envp, t_variable_context *context)
 	{
 		temp_envp->local_key = ft_get_key(context->local_variables[i]);
 		temp_envp->local_value = ft_get_value(context->local_variables[i]);
-		if (ft_strncmp(temp_envp->new_env_key, temp_envp->local_key,
-				ft_strlen(temp_envp->local_key) + 1) == 0)
+		if (temp_envp->local_key && ft_strncmp(temp_envp->new_env_key, temp_envp->local_key,
+				ft_strlen(temp_envp->local_key) + 1) == 0
+				&& ft_strlen(temp_envp->local_key))
 		{
 			if (temp_envp->local_value)
 				temp_envp->new_env_value = ft_strdup(temp_envp->local_value);
@@ -77,17 +80,26 @@ void	ft_export_3(t_env *temp_envp, t_variable_context *context)
 	}
 }
 
-void	ft_export_2(t_list *command, t_list *redirection,
+int	ft_export_2(t_list *command, t_list *redirection,
 						t_variable_context *context)
 {
 	t_list	*temp_cmd;
 	t_env	temp_envp;
+	int		flag;
 
+	flag = 0;
 	temp_cmd = command;
 	ft_bzero(&temp_envp, sizeof(temp_envp));
 	temp_cmd = temp_cmd->next;
 	while (temp_cmd)
 	{
+		if (ft_strncmp(temp_cmd->content, "=", 2) == 0
+			|| !ft_isalpha(((char *)temp_cmd->content)[0])
+			|| (((char *)temp_cmd->content)[0] == '_'))
+		{
+			printf("export: `%s': not a valid identifier\n", (char *)temp_cmd->content);
+			flag = 1;
+		}
 		temp_envp.new_env_key = ft_get_key(temp_cmd->content);
 		temp_envp.new_env_value = ft_get_value(temp_cmd->content);
 		if (!temp_envp.new_env_value)
@@ -98,16 +110,17 @@ void	ft_export_2(t_list *command, t_list *redirection,
 		free(temp_envp.new_env_value);
 		temp_cmd = temp_cmd->next;
 	}
+	return (flag);
 }
 
-void	ft_export(t_list *command, t_list *redirection,
+int	ft_export(t_list *command, t_list *redirection,
 					t_variable_context *context)
 {
 	int	i;
 
 	i = 0;
 	if (command->next)
-		ft_export_2(command, redirection, context);
+		return (ft_export_2(command, redirection, context));
 	else if (!command->next)
 	{
 		while (context->dup_environment_variables[i])
@@ -118,4 +131,5 @@ void	ft_export(t_list *command, t_list *redirection,
 			i++;
 		}
 	}
+	return (0);
 }

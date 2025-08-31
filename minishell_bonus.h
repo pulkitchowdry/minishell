@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/31 15:18:30 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/31 21:02:07 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,16 +213,16 @@ char		**ft_remove_from_myenvp(t_variable_context *context,
 				t_env *temp_envp);
 char		**ft_remove_from_local(t_variable_context *context,
 				t_env *temp_envp);
-void		ft_echo(t_list *command);
-void		ft_cd(t_list *command,
+int			ft_echo(t_list *command);
+int			ft_cd(t_list *command,
 				t_variable_context *context);
-void		ft_pwd(void);
-void		ft_export(t_list *command, t_list *redirection,
+int			ft_pwd(void);
+int			ft_export(t_list *command, t_list *redirection,
 				t_variable_context *context);
-void		ft_unset(t_list *command,
+int			ft_unset(t_list *command,
 				t_variable_context *context);
-void		ft_env(t_variable_context *context);
-void		ft_exit(t_ast_node *root,
+int			ft_env(t_variable_context *context);
+int			ft_exit(t_ast_node *root,
 				t_list *token, t_ast_node *node, t_variable_context *context);
 int			append_local_variables(t_list *assignment,
 				t_list *redirection, t_variable_context *context);

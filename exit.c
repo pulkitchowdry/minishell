@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 22:55:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 23:22:13 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/31 20:29:20 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ size_t	ft_env_length(char **envp)
 	return (i);
 }
 
-void	ft_exit(t_ast_node *root,
+int	ft_exit(t_ast_node *root,
 		t_list *token, t_ast_node *node,
 		t_variable_context *context)
 {
@@ -48,4 +48,5 @@ void	ft_exit(t_ast_node *root,
 	close(1);
 	close(2);
 	exit(g_ret_code);
+	return (0);
 }

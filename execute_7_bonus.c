@@ -6,11 +6,11 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 23:05:58 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/31 15:21:28 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/31 21:20:31 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell_bonus.h"
+#include "minishell.h"
 #include "libft/libft.h"
 #include "libft/get_next_line.h"
 
@@ -28,31 +28,32 @@ void	restore_stdio(void)
 	close(1022);
 }
 
-void	decode_buildin_command(t_ast_node *root,
+int	decode_buildin_command(t_ast_node *root,
 			t_list *token, t_ast_node *node,
 			t_variable_context *context)
 {
 	if (ft_strncmp(node->command->content, "echo",
 			ft_strlen(node->command->content) + 1) == 0)
-		ft_echo(node->command);
+		return (ft_echo(node->command));
 	if (ft_strncmp(node->command->content, "cd",
 			ft_strlen(node->command->content) + 1) == 0)
-		ft_cd(node->command, context);
+		return (ft_cd(node->command, context));
 	if (ft_strncmp(node->command->content, "pwd",
 			ft_strlen(node->command->content) + 1) == 0)
-		ft_pwd();
+		return (ft_pwd());
 	if (ft_strncmp(node->command->content, "export",
 			ft_strlen(node->command->content) + 1) == 0)
-		ft_export(node->command, node->redirection, context);
+		return (ft_export(node->command, node->redirection, context));
 	if (ft_strncmp(node->command->content, "unset",
 			ft_strlen(node->command->content) + 1) == 0)
-		ft_unset(node->command, context);
+		return (ft_unset(node->command, context));
 	if (ft_strncmp(node->command->content, "env",
 			ft_strlen(node->command->content) + 1) == 0)
-		ft_env(context);
+		return (ft_env(context));
 	if (ft_strncmp(node->command->content, "exit",
 			ft_strlen(node->command->content) + 1) == 0)
-		ft_exit(root, token, node, context);
+		return (ft_exit(root, token, node, context));
+	return (0);
 }
 
 int	execute_buildin_command(t_ast_node *root,

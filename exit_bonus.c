@@ -6,11 +6,11 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 22:55:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/31 15:21:41 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/31 21:01:37 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell_bonus.h"
+#include "minishell.h"
 #include "libft/libft.h"
 #include "libft/get_next_line.h"
 
@@ -27,7 +27,7 @@ size_t	ft_env_length(char **envp)
 	return (i);
 }
 
-void	ft_exit(t_ast_node *root,
+int	ft_exit(t_ast_node *root,
 		t_list *token, t_ast_node *node,
 		t_variable_context *context)
 {
@@ -48,4 +48,5 @@ void	ft_exit(t_ast_node *root,
 	close(1);
 	close(2);
 	exit(g_ret_code);
+	return (0);
 }

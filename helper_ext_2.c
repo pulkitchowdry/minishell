@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 22:58:01 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 23:22:03 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/31 21:17:48 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,20 +73,25 @@ void	ft_update_envp_exp(t_env *temp_envp,
 	int		exists;
 
 	i = 0;
-	temp_key = ft_strjoin(temp_envp->new_env_key, "=");
-	exists = ft_update_envp_2(temp_envp, temp_key, context);
-	if (exists == 1)
-		return ;
-	if (temp_envp->new_env_value)
+	if (temp_envp->new_env_key && ft_strlen(temp_envp->new_env_key) > 0
+		&& ft_isalpha(((char *)temp_envp->new_env_key)[0])
+		&& (((char *)temp_envp->new_env_key)[0] != '_'))
 	{
-		temp = ft_strjoin(temp_key, temp_envp->new_env_value);
+		temp_key = ft_strjoin(temp_envp->new_env_key, "=");
+		exists = ft_update_envp_2(temp_envp, temp_key, context);
+		if (exists == 1)
+			return ;
+		if (temp_envp->new_env_value)
+		{
+			temp = ft_strjoin(temp_key, temp_envp->new_env_value);
+			free(temp_key);
+			temp_key = temp;
+			context->environment_variables
+				= ft_copy_envp(context->environment_variables, temp_key);
+		}
 		free(temp_key);
-		temp_key = temp;
-		context->environment_variables
-			= ft_copy_envp(context->environment_variables, temp_key);
+		ft_add_to_myenvp(context, temp_envp);
 	}
-	free(temp_key);
-	ft_add_to_myenvp(context, temp_envp);
 }
 
 void	ft_update_envp_cd(t_env *temp_envp,

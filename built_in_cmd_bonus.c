@@ -6,17 +6,17 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 15:11:34 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/31 15:21:04 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/31 21:20:41 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell_bonus.h"
+#include "minishell.h"
 #include "libft/libft.h"
 #include "libft/get_next_line.h"
 
 extern int	g_ret_code;
 
-void	ft_echo(t_list *command)
+int	ft_echo(t_list *command)
 {
 	t_list	*t_cmd;
 	t_env	temp_envp;
@@ -43,6 +43,7 @@ void	ft_echo(t_list *command)
 	}
 	if (temp_envp.no_new_line_flag != 1)
 		write(1, "\n", 1);
+	return (0);
 }
 
 void	ft_unset_dup(t_env *temp_envp, t_variable_context *context)
@@ -96,7 +97,7 @@ void	ft_unset_env(t_env *temp_envp, t_variable_context *context)
 	}
 }
 
-void	ft_unset(t_list *command,
+int	ft_unset(t_list *command,
 					t_variable_context *context)
 {
 	t_list	*temp_cmd;
@@ -116,9 +117,10 @@ void	ft_unset(t_list *command,
 			temp_cmd = temp_cmd->next;
 		}
 	}
+	return (0);
 }
 
-void	ft_env(t_variable_context *context)
+int	ft_env(t_variable_context *context)
 {
 	int	i;
 
@@ -130,4 +132,5 @@ void	ft_env(t_variable_context *context)
 		write(1, "\n", 1);
 		i++;
 	}
+	return (0);
 }
