@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/30 21:40:15 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/31 14:10:44 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -293,10 +293,12 @@ void		compact_filenames(int max_files, char **filenames);
 char		**get_sorted_filenames(int dir_num);
 size_t		min(size_t a, size_t b);
 void		print_ast(t_ast_node *root);
-void		substitute_node_for_variable(t_list **prev,
+void		substitute_node_for_variable(t_list **result, t_list **prev,
 				t_list **command, t_variable_context *context);
 void		substitute_node_for_single_quote(t_list **prev,
 				t_list **command);
 void		substitute_node_for_double_quote(t_list **prev,
 				t_list **command, t_variable_context *context);
+void		substitute_node_with_list(t_list **result,
+				t_list **prev, t_list **command);
 #endif

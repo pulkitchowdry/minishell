@@ -6,7 +6,7 @@
 /*   By: chikoh <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/30 21:21:01 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/30 21:40:39 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/31 14:13:52 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,15 +36,10 @@ void	substitute_node_for_single_quote(t_list **prev,
 	*command = (*command)->next;
 }
 
-void	substitute_node_for_variable(t_list **prev,
+void	substitute_node_for_variable(t_list **result, t_list **prev,
 		t_list **command, t_variable_context *context)
 {
-	char	*result;
-
-	result = process_variable((char *)(*command)->content, context);
-	free((*command)->content);
-	(*command)->content = result;
-	*prev = *command;
-	*command = (*command)->next;
+	(*command)->content = process_variable((char *)(*command)->content, context);
+	substitute_node_with_list(result, prev, command);
 }
 
