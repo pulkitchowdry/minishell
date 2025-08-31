@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 22:59:15 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 23:21:58 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/31 14:20:41 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,7 @@ void	ft_add_to_others(char *str, t_variable_context *context)
 		&& context->dup_environment_variables[i])
 	{
 		if (ft_strncmp(copy, context->dup_environment_variables[i],
-				ft_strlen(copy) + 1) == 0)
+				ft_strlen(copy)) == 0)
 			ft_update_envp(&temp_env, command, context);
 		i++;
 	}
