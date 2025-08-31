@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 23:03:51 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 23:22:40 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/31 14:11:05 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,8 @@ void	substitute_node_with_list(t_list **result,
 	*command = (*prev)->next;
 }
 
-t_list	*expand_command_wildcard(t_list *command)
+t_list	*expand_command_wildcard_and_quotes(t_list *command,
+		t_variable_context *context)
 {
 	t_list	*result;
 	t_list	*prev;
@@ -75,7 +76,15 @@ t_list	*expand_command_wildcard(t_list *command)
 	result = command;
 	while (command)
 	{
-		if (is_wildcard_present((char *)command->content))
+		if (((char *)command->content)[0] == '"'
+			&& ((char *)command->content)[ft_strlen((char *)command->content) - 1] == '"')
+			substitute_node_for_double_quote(&prev, &command, context);
+		else if (((char *)command->content)[0] == '\''
+			&& ((char *)command->content)[ft_strlen((char *)command->content) - 1] == '\'')
+			substitute_node_for_single_quote(&prev, &command);
+		else if (((char *)command->content)[0] == '$')
+			substitute_node_for_variable(&result, &prev, &command, context);
+		else if (is_wildcard_present((char *)command->content))
 			substitute_node_with_list(&result, &prev, &command);
 		else
 		{
@@ -127,7 +136,11 @@ int	fork_and_wait(t_ast_node *root,
 	if (pid == 0)
 		search_and_exec(root, tokens, node, context);
 	else
+	{
+		signal(SIGINT, print_new_line);
 		waitpid(pid, &ret_code, 0);
+		signal(SIGINT, print_signal);
+	}
 	if (WIFEXITED(ret_code))
 		return (WEXITSTATUS(ret_code));
 	if (WIFSIGNALED(ret_code))

@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 23:42:38 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/31 14:10:44 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,6 +195,7 @@ int			execute_command_ast(t_ast_node *root,
 				t_list *tokens, t_ast_node *node, t_variable_context *context);
 void		unlink_files(t_ast_node *node);
 void		print_signal(int signal);
+void		print_new_line(int signal);
 char		*get_variable_key(char *string);
 char		*get_variable_value(char *string);
 char		**append_string_array(char **string_array, char *string);
@@ -248,7 +249,8 @@ char		print_permission_denied_root(char *string);
 void		dup_fd_to_stdout(int fd);
 void		save_stdio(void);
 char		configure_redirection_root(t_list *redirection);
-t_list		*expand_command_wildcard(t_list *command);
+t_list		*expand_command_wildcard_and_quotes(t_list *command,
+				t_variable_context *context);
 char		is_builtin_command(char *command);
 int			fork_and_wait(t_ast_node *root,
 				t_list *tokens, t_ast_node *node,
@@ -289,5 +291,14 @@ char		test_for_tail(char **list_of_strings, char *filename);
 char		test_for_head(char **list_of_strings, char *filename);
 void		compact_filenames(int max_files, char **filenames);
 char		**get_sorted_filenames(int dir_num);
-
+size_t		min(size_t a, size_t b);
+void		print_ast(t_ast_node *root);
+void		substitute_node_for_variable(t_list **result, t_list **prev,
+				t_list **command, t_variable_context *context);
+void		substitute_node_for_single_quote(t_list **prev,
+				t_list **command);
+void		substitute_node_for_double_quote(t_list **prev,
+				t_list **command, t_variable_context *context);
+void		substitute_node_with_list(t_list **result,
+				t_list **prev, t_list **command);
 #endif

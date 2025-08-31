@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 23:11:12 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 23:21:51 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/31 14:22:34 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,6 @@ char	*process_double_quote(char *string, t_variable_context *context)
 	char	*result;
 
 	result = ft_strtrim(string, "\"");
-	free(string);
 	start = ft_strchr(result, '$');
 	while (start)
 	{
@@ -110,7 +109,7 @@ char	*process_double_quote(char *string, t_variable_context *context)
 		}
 		result = substitute_variable(result, start + 1,
 				end + (curly_brackets && *end == '}'), context);
-		start = ft_strchr(end, '$');
+		start = ft_strchr(result, '$');
 	}
 	return (result);
 }

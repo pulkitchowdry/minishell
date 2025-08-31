@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 23:12:53 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/29 23:21:35 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/30 20:29:09 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,5 +130,5 @@ t_ast_node	*extract_command(t_list **list, t_state_context *context)
 		current_state = process_state(current_state, list,
 				cur_tok, context);
 	}
-	return (current);
+	return (context->current);
 }

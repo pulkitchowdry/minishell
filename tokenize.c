@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 16:09:08 by chikoh            #+#    #+#             */
-/*   Updated: 2025/08/29 23:16:37 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/08/30 19:55:39 by chikoh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,8 @@ t_list	*construct_single_quote(char **string)
 			(*string)++;
 		(*string)++;
 	}
-	(*string)++;
+	if (**string == '\'')
+		(*string)++;
 	result = (t_token *)ft_calloc(sizeof(t_token), 1);
 	result->type = SINGLE_QUOTE_STRING;
 	result->string = (char *)ft_calloc(sizeof(char),
@@ -51,7 +52,8 @@ t_list	*construct_double_quote(char **string)
 			(*string)++;
 		(*string)++;
 	}
-	(*string)++;
+	if (**string == '"')
+		(*string)++;
 	result = (t_token *)ft_calloc(sizeof(t_token), 1);
 	result->type = DOUBLE_QUOTE_STRING;
 	result->string = (char *)ft_calloc(sizeof(char),
@@ -121,8 +123,9 @@ t_list	*construct_string(char **string)
 	string_start = *string;
 	while (**string && (**string != '\'')
 		&& (**string != '"') && (**string != '>')
-		&& (**string != '<') && (**string != '|') && (**string != '&')
-		&& (**string != ' ') && (**string != '$' || **string != '?')
+		&& (**string != '<') && (**string != '|')
+		&& (**string != '&' || *(*string + 1) != '&')
+		&& (**string != ' ') && (**string != '$' || *(*string + 1) != '?')
 		&& (**string != ')')
 		&& (**string != '=') && (**string != '('))
 		(*string)++;
