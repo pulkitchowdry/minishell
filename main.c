@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:08:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/30 21:46:59 by chikoh           ###   ########.fr       */
+/*   Updated: 2025/08/31 14:42:41 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,10 @@ void	parse_and_exec(char	*input, t_state_context *state_context)
 	list_start = list;
 	root = parse_list(&list, state_context);
 	state_context->current = root;
-	if (root != 0)
+	if (root != 0 && is_safe_to_execute(root) && list == 0)
 	{
 		g_ret_code = execute_heredoc(root, list_start, state_context, 0);
-		if (g_ret_code == 0 && is_safe_to_execute(root) && list == 0)
+		if (g_ret_code == 0)
 			g_ret_code = execute_command_ast(root, list_start,
 					root, state_context->context);
 	}
