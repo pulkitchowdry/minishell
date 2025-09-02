@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 23:04:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/09/02 13:53:41 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/09/02 14:47:23 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,27 +71,6 @@ int	open_files(t_list *redir)
 		redir = redir->next->next;
 	}
 	return (0);
-}
-
-int	ft_asgmt(char *str, int type)
-{
-	char	*key;
-	char	*value;
-	int		valid;
-	
-	valid = 0;
-	key = ft_get_key(str);
-	value = ft_get_value(str);
-
-	if (type == 1 && key)
-		valid = 1;
-	else if (type == 2 && value)
-		valid = 1;
-	else
-		valid = 0;
-	free(key);
-	free(value);
-	return (valid);
 }
 
 int	append_local_variables_2(t_list *asgmt,

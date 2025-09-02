@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/09/02 11:36:37 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/09/02 14:46:54 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -309,5 +309,6 @@ void		ft_cd_home(t_env *temp_envp, t_list *command,
 				t_variable_context *context);
 int			ft_export_2_error(char *str);
 void		ft_echo_new_line(t_env *temp_envp);
+int			ft_asgmt(char *str, int type);
 
 #endif

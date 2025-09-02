@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 22:55:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/09/02 13:54:30 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/09/02 14:47:55 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,4 +61,24 @@ void	ft_echo_new_line(t_env *temp_envp)
 {
 	if (temp_envp->no_new_line_flag != 1)
 		write(1, "\n", 1);
+}
+
+int	ft_asgmt(char *str, int type)
+{
+	char	*key;
+	char	*value;
+	int		valid;
+
+	valid = 0;
+	key = ft_get_key(str);
+	value = ft_get_value(str);
+	if (type == 1 && key)
+		valid = 1;
+	else if (type == 2 && value)
+		valid = 1;
+	else
+		valid = 0;
+	free(key);
+	free(value);
+	return (valid);
 }
