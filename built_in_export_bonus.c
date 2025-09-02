@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 22:53:23 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/31 21:20:36 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/09/02 11:04:35 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,9 @@ int	ft_cd(t_list *command, t_variable_context *context)
 {
 	t_list	*temp_cmd;
 	t_env	temp_envp;
+	int		ret_code;
 
+	ret_code = 0;
 	temp_cmd = command;
 	ft_bzero(&temp_envp, sizeof(temp_envp));
 	if (temp_cmd->next && chdir(temp_cmd->next->content) == 0)
@@ -30,19 +32,14 @@ int	ft_cd(t_list *command, t_variable_context *context)
 				"PWD=");
 		ft_update_envp(&temp_envp, command, context);
 	}
-	else if (!temp_cmd->next)
-	{
-		if (chdir(getenv("HOME")) == 0)
-		{
-			temp_envp.pwd = getcwd(NULL, 0);
-			temp_envp.oldpwd = ft_extract_envp(context->environment_variables,
-					"PWD=");
-			ft_update_envp(&temp_envp, command, context);
-		}
-	}
+	else if (!temp_cmd->next
+		|| (temp_cmd->next && ft_strncmp(temp_cmd->next->content, "~", 2) == 0))
+		ft_cd_home(&temp_envp, command, context);
+	else
+		ret_code = ft_cd_error(command);
 	free(temp_envp.pwd);
 	free(temp_envp.oldpwd);
-	return (0);
+	return (ret_code);
 }
 
 int	ft_pwd(void)

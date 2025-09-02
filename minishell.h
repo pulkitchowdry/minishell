@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:32:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/31 20:26:51 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/09/02 11:01:23 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -301,4 +301,10 @@ void		substitute_node_for_double_quote(t_list **prev,
 				t_list **command, t_variable_context *context);
 void		substitute_node_with_list(t_list **result,
 				t_list **prev, t_list **command);
+int			ft_cd_path_len(char *str);
+char		*ft_cd_path(char *str);
+char		*ft_get_cd_path(t_list *command);
+int			ft_cd_error(t_list *command);
+void		ft_cd_home(t_env *temp_envp, t_list *command,
+					t_variable_context *context);
 #endif
