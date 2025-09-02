@@ -5,12 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/02 10:57:51 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/09/02 11:00:34 by pchowdry         ###   ########.fr       */
+/*   Created: 2025/09/02 10:57:44 by pchowdry          #+#    #+#             */
+/*   Updated: 2025/09/02 11:10:51 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "minishell_bonus.h"
 #include "libft/libft.h"
 #include "libft/get_next_line.h"
 
@@ -25,11 +25,14 @@ int		ft_cd_path_len(char *str)
 	len = 0;
 	while (str[i])
 	{
-		if (str[i] != '\\')
+		if (str[i] && str[i] != '\\')
 			len++;
 		else if (str[i] && str[i + 1]
 					&& str[i] == '\\' && str[i + 1] == '\\')
+		{
 			len++;
+			i++;
+		}
 		i++;
 	}
 	return (len);
@@ -39,16 +42,14 @@ char	*ft_cd_path(char *str)
 {
 	int		i;
 	int		j;
-	int		len;
 	char	*path;
 	
 	i = 0;
 	j = 0;
-	len = ft_cd_path_len(str);
-	path = ft_calloc(len + 1, sizeof(char));
+	path = ft_calloc(ft_cd_path_len(str) + 1, sizeof(char));
 	while (str[i])
 	{
-		if (str[i] != '\\')
+		if (str[i] && str[i] != '\\')
 		{
 			path[j] = str[i];
 			j++;
@@ -58,6 +59,7 @@ char	*ft_cd_path(char *str)
 		{
 			path[j] = str[i];
 			j++;
+			i++;
 		}
 		i++;
 	}
