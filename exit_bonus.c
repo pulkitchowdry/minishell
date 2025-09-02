@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 22:55:31 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/31 21:01:37 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/09/02 11:36:14 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,4 +49,16 @@ int	ft_exit(t_ast_node *root,
 	close(2);
 	exit(g_ret_code);
 	return (0);
+}
+
+int	ft_export_2_error(char *str)
+{
+	printf("export: `%s': not a valid identifier\n", str);
+	return (1);
+}
+
+void	ft_echo_new_line(t_env *temp_envp)
+{
+	if (temp_envp->no_new_line_flag != 1)
+		write(1, "\n", 1);
 }

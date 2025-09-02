@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/02 10:57:44 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/09/02 11:10:40 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/09/02 11:25:00 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 extern int	g_ret_code;
 
-int		ft_cd_path_len(char *str)
+int	ft_cd_path_len(char *str)
 {
 	int	i;
 	int	len;
@@ -28,7 +28,7 @@ int		ft_cd_path_len(char *str)
 		if (str[i] && str[i] != '\\')
 			len++;
 		else if (str[i] && str[i + 1]
-					&& str[i] == '\\' && str[i + 1] == '\\')
+			&& str[i] == '\\' && str[i + 1] == '\\')
 		{
 			len++;
 			i++;
@@ -43,7 +43,7 @@ char	*ft_cd_path(char *str)
 	int		i;
 	int		j;
 	char	*path;
-	
+
 	i = 0;
 	j = 0;
 	path = ft_calloc(ft_cd_path_len(str) + 1, sizeof(char));
@@ -55,7 +55,7 @@ char	*ft_cd_path(char *str)
 			j++;
 		}
 		else if (str[i] && str[i + 1]
-					&& str[i] == '\\' && str[i + 1] == '\\')
+			&& str[i] == '\\' && str[i + 1] == '\\')
 		{
 			path[j] = str[i];
 			j++;
@@ -105,5 +105,5 @@ void	ft_cd_home(t_env *temp_envp, t_list *command,
 		temp_envp->oldpwd = ft_extract_envp(context->environment_variables,
 				"PWD=");
 		ft_update_envp(temp_envp, command, context);
-	}	
+	}
 }

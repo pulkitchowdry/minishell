@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 23:04:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/31 21:17:20 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/09/02 11:32:40 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ int	open_files(t_list *redir)
 	return (0);
 }
 
-int	append_local_variables_2(t_list *assignment,
+int	append_local_variables_2(t_list *asgmt,
 		t_list *redirection, t_variable_context *context)
 {
 	int		seek;
@@ -81,23 +81,22 @@ int	append_local_variables_2(t_list *assignment,
 
 	new_array = (char **)ft_calloc(sizeof(char *),
 			ft_size(context->local_variables)
-			+ (ft_lstsize(assignment) - 1) + 1);
+			+ (ft_lstsize(asgmt) - 1) + 1);
 	seek = 0;
 	while (context->local_variables && context->local_variables[seek])
 	{
 		new_array[seek] = ft_strdup(context->local_variables[seek]);
 		seek++;
 	}
-	if (ft_strncmp(assignment->content, "export", 7) == 0)
-		assignment = assignment->next;
-	while (assignment && ft_get_key(assignment->content)
-			&& ft_get_value(assignment->content)
-			&& ft_isalpha(((char *)assignment->content)[0])
-			&& (((char *)assignment->content)[0] != '_'))
+	if (ft_strncmp(asgmt->content, "export", 7) == 0)
+		asgmt = asgmt->next;
+	while (asgmt && ft_get_key(asgmt->content) && ft_get_value(asgmt->content)
+		&& ft_isalpha(((char *)asgmt->content)[0])
+			&& (((char *)asgmt->content)[0] != '_'))
 	{
-		new_array[seek] = ft_strdup(assignment->content);
+		new_array[seek] = ft_strdup(asgmt->content);
 		seek++;
-		assignment = assignment->next;
+		asgmt = asgmt->next;
 	}
 	free_string_array(context->local_variables);
 	context->local_variables = new_array;

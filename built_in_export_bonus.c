@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 22:53:23 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/09/02 11:04:35 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/09/02 11:21:55 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,9 +64,10 @@ void	ft_export_3(t_env *temp_envp, t_variable_context *context)
 	{
 		temp_envp->local_key = ft_get_key(context->local_variables[i]);
 		temp_envp->local_value = ft_get_value(context->local_variables[i]);
-		if (temp_envp->local_key && ft_strncmp(temp_envp->new_env_key, temp_envp->local_key,
+		if (temp_envp->local_key
+			&& ft_strncmp(temp_envp->new_env_key, temp_envp->local_key,
 				ft_strlen(temp_envp->local_key) + 1) == 0
-				&& ft_strlen(temp_envp->local_key))
+			&& ft_strlen(temp_envp->local_key))
 		{
 			if (temp_envp->local_value)
 				temp_envp->new_env_value = ft_strdup(temp_envp->local_value);
@@ -93,10 +94,7 @@ int	ft_export_2(t_list *command, t_list *redirection,
 		if (ft_strncmp(temp_cmd->content, "=", 2) == 0
 			|| !ft_isalpha(((char *)temp_cmd->content)[0])
 			|| (((char *)temp_cmd->content)[0] == '_'))
-		{
-			printf("export: `%s': not a valid identifier\n", (char *)temp_cmd->content);
-			flag = 1;
-		}
+			flag = ft_export_2_error((char *)temp_cmd->content);
 		temp_envp.new_env_key = ft_get_key(temp_cmd->content);
 		temp_envp.new_env_value = ft_get_value(temp_cmd->content);
 		if (!temp_envp.new_env_value)

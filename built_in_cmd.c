@@ -6,7 +6,7 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 15:11:34 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/31 20:23:25 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/09/02 11:35:52 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,7 @@ int	ft_echo(t_list *command)
 			t_cmd = t_cmd->next;
 		}
 	}
-	if (temp_envp.no_new_line_flag != 1)
-		write(1, "\n", 1);
+	ft_echo_new_line(&temp_envp);
 	return (0);
 }
 
