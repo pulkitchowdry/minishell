@@ -6,11 +6,11 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 23:04:25 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/09/02 11:33:42 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/09/02 13:53:41 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "minishell_bonus.h"
 #include "libft/libft.h"
 #include "libft/get_next_line.h"
 
@@ -73,6 +73,27 @@ int	open_files(t_list *redir)
 	return (0);
 }
 
+int	ft_asgmt(char *str, int type)
+{
+	char	*key;
+	char	*value;
+	int		valid;
+	
+	valid = 0;
+	key = ft_get_key(str);
+	value = ft_get_value(str);
+
+	if (type == 1 && key)
+		valid = 1;
+	else if (type == 2 && value)
+		valid = 1;
+	else
+		valid = 0;
+	free(key);
+	free(value);
+	return (valid);
+}
+
 int	append_local_variables_2(t_list *asgmt,
 		t_list *redirection, t_variable_context *context)
 {
@@ -90,7 +111,7 @@ int	append_local_variables_2(t_list *asgmt,
 	}
 	if (ft_strncmp(asgmt->content, "export", 7) == 0)
 		asgmt = asgmt->next;
-	while (asgmt && ft_get_key(asgmt->content) && ft_get_value(asgmt->content)
+	while (asgmt && ft_asgmt(asgmt->content, 1) && ft_asgmt(asgmt->content, 2)
 		&& ft_isalpha(((char *)asgmt->content)[0])
 			&& (((char *)asgmt->content)[0] != '_'))
 	{

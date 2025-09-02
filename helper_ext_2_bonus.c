@@ -6,11 +6,11 @@
 /*   By: pchowdry <pchowdry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 22:58:01 by pchowdry          #+#    #+#             */
-/*   Updated: 2025/08/31 21:20:00 by pchowdry         ###   ########.fr       */
+/*   Updated: 2025/09/02 13:54:38 by pchowdry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "minishell_bonus.h"
 #include "libft/libft.h"
 #include "libft/get_next_line.h"
 
