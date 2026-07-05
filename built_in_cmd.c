@@ -44,7 +44,7 @@ int	ft_echo(t_list *command)
 					a = 5;
 				}
 				else {
-					a = 10;
+					a = 100;
 				}
 			}
 			else if (a == 100) {
