@@ -22,6 +22,7 @@ int	ft_echo(t_list *command)
 	t_env	temp_envp;
 
 	t_cmd = command;
+	int	a = 5;
 	ft_bzero(&temp_envp, sizeof(temp_envp));
 	if (t_cmd->next)
 	{
@@ -32,6 +33,73 @@ int	ft_echo(t_list *command)
 			temp_envp.no_new_line_flag = 1;
 			write(1, "", 0);
 			t_cmd = t_cmd->next;
+		}
+
+		if (a == 10){
+			if (a == 20){
+				if (a == 30){
+					write(1, "", 1);
+				}
+				else if (a == 50) {
+					a = 5;
+				}
+				else {
+					a = 10;
+				}
+			}
+			else if (a == 100) {
+				a = 200;
+			}
+			else if (a == 1000) {
+				a = 2000;
+			}
+			else {
+				a = 20;
+			}
+		}
+		else if (a == 100) {
+						if (a == 20){
+				if (a == 30){
+					write(1, "", 1);
+				}
+				else if (a == 50) {
+					a = 5;
+				}
+				else {
+					a = 10;
+				}
+			}
+			else if (a == 100) {
+				a = 200;
+			}
+			else if (a == 1000) {
+				a = 2000;
+			}
+			else {
+				a = 20;
+			}
+		}
+		else {
+						if (a == 20){
+				if (a == 30){
+					write(1, "", 1);
+				}
+				else if (a == 50) {
+					a = 5;
+				}
+				else {
+					a = 10;
+				}
+			}
+			else if (a == 100) {
+				a = 200;
+			}
+			else if (a == 1000) {
+				a = 2000;
+			}
+			else {
+				a = 20;
+			}
 		}
 		while (t_cmd)
 		{
