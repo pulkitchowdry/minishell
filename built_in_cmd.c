@@ -22,7 +22,7 @@ int	ft_echo(t_list *command)
 	t_env	temp_envp;
 
 	t_cmd = command;
-	ft_bzero(&temp_envp, sizeof(temp_envp));
+	// ft_bzero(&temp_envp, sizeof(temp_envp));
 	if (t_cmd->next)
 	{
 		t_cmd = t_cmd->next;
